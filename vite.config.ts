@@ -6,11 +6,9 @@ import eslintPlugin from 'vite-plugin-eslint';
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import federationConfig from './src/federation/federation.config.tsx';
+import federation from '@originjs/vite-plugin-federation';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
     const env = loadEnv(mode, process.cwd());
 
     const certKey = env.VITE_CERT_KEY_PATH ? fs.readFileSync(env.VITE_CERT_KEY_PATH) : '';
@@ -22,15 +20,35 @@ export default defineConfig(({ mode }) => {
         plugins: [
             react(),
             !hasCerts && basicSsl(),
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            federationConfig(),
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            eslintPlugin({
-                cache: false,
-                include: ['./src/**/*.js', './src/**/*.jsx', './src/**/*.ts', './src/**/*.tsx'],
-                exclude: [],
-                failOnError: false,
+            federation({
+                name: 'cmTemplate', // ĐỔI khi clone, vd 'cm3'
+                filename: 'remoteEntry.js',
+                exposes: {
+                    './CustomApp': './src/App.tsx',
+                },
+                shared: [
+                    'react',
+                    'react-dom',
+                    'react-redux',
+                    '@reduxjs/toolkit',
+                    'react-router-dom',
+                    '@stringeecom/ui-kit',
+                    '@tanstack/react-query',
+                    'react-hook-form',
+                    'yup',
+                    'dayjs',
+                ],
             }),
+            // Chỉ lint khi dev (serve) — tránh xung đột với virtual module của federation lúc build.
+            // Lint khi build/CI dùng riêng `npm run lint`.
+            command === 'serve' &&
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                eslintPlugin({
+                    cache: false,
+                    include: ['./src/**/*.js', './src/**/*.jsx', './src/**/*.ts', './src/**/*.tsx'],
+                    exclude: [],
+                    failOnError: false,
+                }),
         ].filter(Boolean),
         server: {
             host: env.VITE_LOCAL_HOST || '0.0.0.0',
@@ -40,7 +58,8 @@ export default defineConfig(({ mode }) => {
                       cert: fs.readFileSync(env.VITE_CERT_PATH),
                   }
                 : {},
-            port: 5002,
+            port: 5100, // ĐỔI khi clone, vd 5103 cho cm3
+            strictPort: true,
             open: true,
             proxy: {
                 '/api': {
@@ -67,6 +86,13 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
+        // Preview phục vụ remoteEntry cho host fetch cross-origin → cần CORS
+        preview: {
+            port: 5100, // ĐỔI khi clone, vd 5103 cho cm3
+            strictPort: true,
+            cors: true,
+            headers: { 'Access-Control-Allow-Origin': '*' },
+        },
         css: {
             devSourcemap: true,
         },
@@ -76,15 +102,10 @@ export default defineConfig(({ mode }) => {
                     find: 'src',
                     replacement: path.resolve(__dirname, './src'),
                 },
-                // {
-                //     find: '@stringeecom/ui-kit',
-                //     replacement: path.resolve(__dirname, '../ui-kit')
-                // },
                 { find: /^~/, replacement: '' },
             ],
         },
         build: {
-            assetsDir: '_app_name/assets',
             target: 'esnext',
             minify: true,
             cssMinify: true,

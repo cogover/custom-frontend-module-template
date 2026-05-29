@@ -1,10 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import CommonSettingsStateReducer from './commonSettingsSlice.ts';
-import managementAccountReducer from './managementAccountSlice.ts';
 
 const rootReducer = combineReducers({
     commonSettings: CommonSettingsStateReducer,
-    managementAccount: managementAccountReducer,
 });
 
 export function setupStore(preloadedState?: Partial<RootState>) {

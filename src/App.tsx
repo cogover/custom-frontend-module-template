@@ -1,19 +1,26 @@
-import type { Router } from '@remix-run/router/dist/router';
-import { RouterProvider } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import MainProvider from './providers/index.tsx';
-import router from './router/router.tsx';
+// Lazy-load các page mẫu — federation sẽ tách thành chunk riêng
+const HelloPage = lazy(() => import('./pages/HelloPage'));
+const UserPage = lazy(() => import('./pages/UserPage'));
 
-interface AppProps {
-    appRouter?: Router;
-}
-
-function App({ appRouter }: AppProps) {
+/**
+ * Component được expose ra federation (key `./CustomApp`).
+ *
+ * Lưu ý:
+ * - Đây là component BARE: KHÔNG bọc provider, KHÔNG bọc Router.
+ *   Khi chạy trong host `router`, host đã cung cấp sẵn provider + Router context.
+ *   Chế độ standalone được bọc provider/Router trong `main.tsx`.
+ * - Route dùng path TƯƠNG ĐỐI (không leading slash) vì host mount remote dưới splat `*`.
+ */
+export default function App() {
     return (
-        <MainProvider>
-            <RouterProvider router={appRouter ? appRouter : router} />
-        </MainProvider>
+        <Suspense>
+            <Routes>
+                <Route index element={<HelloPage />} />
+                <Route path='user/:userId' element={<UserPage />} />
+            </Routes>
+        </Suspense>
     );
 }
-
-export default App;
