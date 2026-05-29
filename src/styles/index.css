@@ -1,0 +1,83 @@
+/* File này chứa CSS chung cho cả Page */
+@import 'src/theme/variables.scss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    font-family: 'Nunito Variable', sans-serif;
+}
+
+/* thiết lập font-size để sử dụng 'rem' */
+body {
+    font-size: 16px;
+    min-width: 1024px;
+    overflow-x: auto;
+}
+
+/* Hide Google ReCaptcha v3 badge */
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
+.right-filter {
+    transition: all;
+    transition-property: background-color;
+    width: var(--right-filter-width);
+    height: calc(100vh - 56px);
+}
+
+@layer base {
+    .absolute-center {
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+    }
+
+    .absolute-x-center {
+        @apply absolute left-1/2 -translate-x-1/2;
+    }
+
+    .absolute-y-center {
+        @apply absolute top-1/2 -translate-y-1/2;
+    }
+
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .flex-col-center {
+        @apply flex flex-col items-center justify-center;
+    }
+
+    .flex-x-center {
+        @apply flex justify-center;
+    }
+
+    .flex-y-center {
+        @apply flex items-center;
+    }
+
+    .flex-col-x-center {
+        @apply flex items-center;
+    }
+
+    .flex-col-y-center {
+        @apply flex justify-center;
+    }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.dot-bg {
+    background-image: radial-gradient(var(--primary-main-light-94) 2px, transparent 0);
+    background-size: 20px 20px;
+}

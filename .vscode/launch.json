@@ -1,0 +1,14 @@
+{
+    // TO USE: npm run dev => ctrl+shift+d => select "Debug Chrome"
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Chrome",
+            "url": "http://http://stringee.cogover.local:5002",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

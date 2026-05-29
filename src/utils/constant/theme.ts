@@ -1,0 +1,3 @@
+export const NAV_PROGRESS_SPEED = 50;
+export const PROGRESS_MOUNTED_PERCENT = 30;
+export const PROGRESS_START_PERCENT = 5;

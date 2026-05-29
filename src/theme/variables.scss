@@ -1,0 +1,272 @@
+// https://stackoverflow.com/questions/34889962/why-put-in-front-of-the-file-name-or-in-scss-css
+:root {
+    //Bảng màu
+    --primary-brand: #6b75ca;
+    //   primary
+    --primary-main: var(--primary-brand);
+    --background-default: #fff;
+    --background-default-reverse: #000000;
+    // primary-light
+    --primary-main-light: var(--primary-main);
+    --primary-main-light-10: color-mix(in srgb, var(--primary-main) 90%, var(--background-default) 10%);
+    --primary-main-light-20: color-mix(in srgb, var(--primary-main) 80%, var(--background-default) 20%);
+    --primary-main-light-30: color-mix(in srgb, var(--primary-main) 70%, var(--background-default) 30%);
+    --primary-main-light-50: color-mix(in srgb, var(--primary-main) 50%, var(--background-default) 50%);
+    --primary-main-light-60: color-mix(in srgb, var(--primary-main) 40%, var(--background-default) 60%);
+    --primary-main-light-70: color-mix(in srgb, var(--primary-main) 30%, var(--background-default) 70%);
+    --primary-main-light-80: color-mix(in srgb, var(--primary-main) 20%, var(--background-default) 80%);
+    --primary-main-light-90: color-mix(in srgb, var(--primary-main) 10%, var(--background-default) 90%);
+    --primary-main-light-94: color-mix(in srgb, var(--primary-main) 6%, var(--background-default) 94%);
+    --primary-main-light-96: color-mix(in srgb, var(--primary-main) 4%, var(--background-default) 96%);
+    --primary-main-light-98: color-mix(in srgb, var(--primary-main) 2%, var(--background-default) 98%);
+    // primary-dark
+    --primary-main-dark: var(--primary-main);
+    --primary-main-dark-10: color-mix(in srgb, var(--primary-main) 90%, var(--background-default-reverse) 10%);
+    --primary-main-dark-20: color-mix(in srgb, var(--primary-main) 80%, var(--background-default-reverse) 20%);
+    --primary-main-dark-30: color-mix(in srgb, var(--primary-main) 70%, var(--background-default-reverse) 30%);
+    --primary-main-dark-40: color-mix(in srgb, var(--primary-main) 60%, var(--background-default-reverse) 40%);
+    --primary-main-dark-50: color-mix(in srgb, var(--primary-main) 50%, var(--background-default-reverse) 50%);
+    --primary-main-dark-60: color-mix(in srgb, var(--primary-main) 40%, var(--background-default-reverse) 60%);
+    --primary-main-dark-70: color-mix(in srgb, var(--primary-main) 30%, var(--background-default-reverse) 70%);
+    --primary-main-dark-80: color-mix(in srgb, var(--primary-main) 20%, var(--background-default-reverse) 80%);
+    --primary-main-dark-90: color-mix(in srgb, var(--primary-main) 10%, var(--background-default-reverse) 90%);
+    // secondary-main
+    --secondary-main: #f69a5b;
+    // secondary-light
+    --secondary-main-light-20: color-mix(in srgb, var(--secondary-main) 80%, var(--background-default) 20%);
+    --secondary-main-light-50: color-mix(in srgb, var(--secondary-main) 50%, var(--background-default) 50%);
+    --secondary-main-light-60: color-mix(in srgb, var(--secondary-main) 40%, var(--background-default) 60%);
+    --secondary-main-light-70: color-mix(in srgb, var(--secondary-main) 30%, var(--background-default) 70%);
+    --secondary-main-light-80: color-mix(in srgb, var(--secondary-main) 20%, var(--background-default) 80%);
+    --secondary-main-light-90: color-mix(in srgb, var(--secondary-main) 10%, var(--background-default) 90%);
+    --secondary-main-light-95: color-mix(in srgb, var(--secondary-main) 5%, var(--background-default) 95%);
+    // secondary-dark
+    --secondary-main-dark-10: color-mix(in srgb, var(--secondary-main) 10%, var(--background-default-reverse) 90%);
+    --secondary-main-dark-20: color-mix(in srgb, var(--secondary-main) 20%, var(--background-default-reverse) 80%);
+    --secondary-main-dark-30: color-mix(in srgb, var(--secondary-main) 30%, var(--background-default-reverse) 70%);
+    --secondary-main-dark-40: color-mix(in srgb, var(--secondary-main) 40%, var(--background-default-reverse) 60%);
+    --secondary-main-dark-50: color-mix(in srgb, var(--secondary-main) 50%, var(--background-default-reverse) 50%);
+    // text
+    --typography-primary: #484848;
+    --typography-secondary: color-mix(in srgb, var(--typography-primary) 70%, white 30%);
+    --typography-description: color-mix(in srgb, var(--typography-primary) 30%, white 70%);
+    // divider
+    --divider-primary: #ecebf0;
+    --divider-secondary: #ededed;
+    // gray
+    --gray-100: #272727;
+    --gray-5: color-mix(in srgb, var(--gray-100) 5%, var(--background-default) 95%);
+    --gray-10: color-mix(in srgb, var(--gray-100) 10%, var(--background-default) 90%);
+    --gray-20: color-mix(in srgb, var(--gray-100) 20%, var(--background-default) 80%);
+    --gray-30: color-mix(in srgb, var(--gray-100) 30%, var(--background-default) 70%);
+    --gray-40: color-mix(in srgb, var(--gray-100) 40%, var(--background-default) 60%);
+    --gray-50: color-mix(in srgb, var(--gray-100) 50%, var(--background-default) 50%);
+    --gray-50: color-mix(in srgb, var(--gray-100) 50%, var(--background-default) 50%);
+    --gray-70: color-mix(in srgb, var(--gray-100) 70%, var(--background-default) 30%);
+    --gray-80: color-mix(in srgb, var(--gray-100) 80%, var(--background-default) 20%);
+    --gray-90: color-mix(in srgb, var(--gray-100) 90%, var(--background-default) 10%);
+    --white: #ffffff;
+    //deepBlue
+    --deepBlue-50: #ebeef9;
+    --deepBlue-400: #5c79d2;
+    --deepBlue-400-20: color-mix(in srgb, var(--deepBlue-400) 80%, var(--background-default-reverse) 20%);
+    --deepBlue-500: #3358c7;
+    --deepBlue-500-20: color-mix(in srgb, var(--deepBlue-500) 80%, var(--background-default-reverse) 20%);
+
+    //purple
+    --purple-50: #efe6fd;
+    --purple-400: #8133f1;
+    --purple-400-20: color-mix(in srgb, var(--purple-400) 80%, var(--background-default-reverse) 20%);
+    --purple-500: #6200ee;
+    --purple-500-20: color-mix(in srgb, var(--purple-500) 80%, var(--background-default-reverse) 20%);
+    --purple-900: #290064;
+
+    //orange
+    --orange-50: #fff5e6;
+    --orange-900: #6b4000;
+
+    //blue
+    --blue-50: #e6f5fe;
+    --blue-100: #b1e1fc;
+    --blue-200: #8bd2fa;
+    --blue-300: #56bdf8;
+    --blue-400: #35b1f6;
+    --blue-500: #35b1f6;
+    --blue-600: #038fde;
+    --blue-700: #0288d1;
+    --blue-800: #025686;
+    --blue--900: #014266;
+
+    //pink
+    --pink-50: #fde9ef;
+    --pink-100: #f8b9cf;
+    --pink-200: #f598b7;
+    --pink-300: #f06896;
+    --pink-400: #ed4b82;
+    --pink-500: #e91e63;
+    --pink-600: #d81b60;
+    --pink-700: #a51546;
+    --pink-800: #801136;
+    --pink-900: #620d2a;
+    // orange-2
+    --orange-2-50: #fff0e6;
+    --orange-2-100: #ffd0b0;
+    --orange-2-200: #ffb98a;
+    --orange-2-300: #ff9854;
+    --orange-2-400: #ff8533;
+    --orange-2-500: #ff6600;
+    --orange-2-600: #e85d00;
+    --orange-2-700: #b54800;
+    --orange-2-800: #8c3800;
+    --orange-2-900: #6b2b00;
+    // green
+    --green-50: #effbef;
+    --green-100: #ccf4cc;
+    --green-200: #b4eeb4;
+    --green-300: #91e791;
+    --green-400: #7ce27c;
+    --green-500: #5bdb5b;
+    --green-600: #53c753;
+    --green-700: #419b41;
+    --green-800: #327832;
+    --green-900: #265c26;
+    // green-2
+    --green-2-50: #edf7ee;
+    --green-2-100: #c8e6c9;
+    --green-2-200: #addaaf;
+    --green-2-300: #87c98a;
+    --green-2-400: #70bf73;
+    --green-2-500: #4caf50;
+    --green-2-600: #459f49;
+    --green-2-700: #367c39;
+    --green-2-800: #2a602c;
+    --green-2-900: #204a22;
+
+    // state
+    --success-main: #27ae60;
+    --warning-main: #fcc622;
+    --error-main: #d32f2f;
+    --info-main: #2f80ed;
+    --error-main-10: #d32f2f1a;
+    // toolbar
+    --top-toolbar-width: 56px;
+    --left-toolbar-width: 240px;
+    --left-toolbar-min-width: 60px;
+    --left-toolbar-transition: all 0.25s ease;
+    // Status
+    --status-complete: #6dca6b;
+    --status-in-progress: #6b8bca;
+    --status-pending: #f69a5b;
+    --status-rejected: var(--gray-30);
+    --status-bg-complete: #27ae601a;
+    --status-bg-in-progress: var(--primary-main-light-90);
+    --status-bg-pending: #f69a5b1a;
+    --status-bg-rejected: var(--gray-5);
+    --primary-link: var(--primary-brand);
+    // Box shadow
+    --shadow-primary: 0px 9px 40px 0px rgba(0, 0, 0, 0.1);
+    --shadow-secondary: 0px 5px 10px 0px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] {
+    //khi hover qua 1 menu: background-color
+    --menu-hover-bg-color: color-mix(in srgb, var(--primary-main) 20%, white 80%);
+    //khi hover qua 1 menu: text-color
+    --menu-hover-text-color: color-mix(in srgb, var(--primary-main) 80%, black 20%);
+}
+
+[data-theme='dark'] {
+    //Bảng màu
+    --background-default: #21212b;
+    --background-default-reverse: #ffffff;
+    //   primary
+    // --primary-main:var(--primary-brand);
+    --primary-main: color-mix(in srgb, var(--primary-brand) 70%, var(--background-default) 30%);
+    // primary-light
+    --primary-main-light: var(--primary-main);
+    --primary-main-light-10: color-mix(in srgb, var(--primary-brand) 90%, var(--background-default) 10%);
+    --primary-main-light-20: color-mix(in srgb, var(--primary-brand) 80%, var(--background-default) 20%);
+    --primary-main-light-30: color-mix(in srgb, var(--primary-brand) 70%, var(--background-default) 30%);
+    --primary-main-light-50: color-mix(in srgb, var(--primary-brand) 50%, var(--background-default) 50%);
+    --primary-main-light-60: color-mix(in srgb, var(--primary-brand) 40%, var(--background-default) 60%);
+    --primary-main-light-70: color-mix(in srgb, var(--primary-brand) 30%, var(--background-default) 70%);
+    --primary-main-light-80: color-mix(in srgb, var(--primary-brand) 20%, var(--background-default) 80%);
+    --primary-main-light-90: color-mix(in srgb, var(--primary-brand) 10%, var(--background-default) 90%);
+    --primary-main-light-94: color-mix(in srgb, var(--primary-brand) 6%, var(--background-default) 94%);
+    --primary-main-light-96: color-mix(in srgb, var(--primary-brand) 4%, var(--background-default) 96%);
+    --primary-main-light-98: color-mix(in srgb, var(--primary-brand) 2%, var(--background-default) 98%);
+    // primary-dark
+    --primary-main-dark: var(--primary-main);
+    --primary-main-dark-10: color-mix(in srgb, var(--primary-brand) 90%, var(--background-default-reverse) 10%);
+    --primary-main-dark-20: color-mix(in srgb, var(--primary-brand) 80%, var(--background-default-reverse) 20%);
+    --primary-main-dark-30: color-mix(in srgb, var(--primary-brand) 70%, var(--background-default-reverse) 30%);
+    --primary-main-dark-40: color-mix(in srgb, var(--primary-brand) 60%, var(--background-default-reverse) 40%);
+    --primary-main-dark-50: color-mix(in srgb, var(--primary-brand) 50%, var(--background-default-reverse) 50%);
+    --primary-main-dark-60: color-mix(in srgb, var(--primary-brand) 40%, var(--background-default-reverse) 60%);
+    --primary-main-dark-70: color-mix(in srgb, var(--primary-brand) 30%, var(--background-default-reverse) 70%);
+    --primary-main-dark-80: color-mix(in srgb, var(--primary-brand) 20%, var(--background-default-reverse) 80%);
+    --primary-main-dark-90: color-mix(in srgb, var(--primary-brand) 10%, var(--background-default-reverse) 90%);
+    // secondary-main
+    --secondary-main: #f69a5b;
+    // secondary-light
+    --secondary-main-light-20: color-mix(in srgb, var(--secondary-main) 80%, var(--background-default) 20%);
+    --secondary-main-light-50: color-mix(in srgb, var(--secondary-main) 50%, var(--background-default) 50%);
+    --secondary-main-light-60: color-mix(in srgb, var(--secondary-main) 40%, var(--background-default) 60%);
+    --secondary-main-light-70: color-mix(in srgb, var(--secondary-main) 30%, var(--background-default) 70%);
+    --secondary-main-light-80: color-mix(in srgb, var(--secondary-main) 20%, var(--background-default) 80%);
+    --secondary-main-light-90: color-mix(in srgb, var(--secondary-main) 40%, var(--background-default) 60%);
+    --secondary-main-light-95: color-mix(in srgb, var(--secondary-main) 20%, var(--background-default) 80%);
+    // secondary-dark
+    --secondary-main-dark-10: color-mix(in srgb, var(--secondary-main) 10%, var(--background-default-reverse) 90%);
+    --secondary-main-dark-20: color-mix(in srgb, var(--secondary-main) 20%, var(--background-default-reverse) 80%);
+    --secondary-main-dark-30: color-mix(in srgb, var(--secondary-main) 30%, var(--background-default-reverse) 70%);
+    --secondary-main-dark-40: color-mix(in srgb, var(--secondary-main) 40%, var(--background-default-reverse) 60%);
+    --secondary-main-dark-50: color-mix(in srgb, var(--secondary-main) 50%, var(--background-default-reverse) 50%);
+    // text
+    --typography-primary: #dad9e3;
+    --typography-secondary: color-mix(in srgb, var(--typography-primary) 70%, var(--background-default) 30%);
+    --typography-description: color-mix(in srgb, var(--typography-primary) 40%, var(--background-default) 60%);
+    // divider
+    --divider-primary: #343341;
+    --divider-secondary: #2a2936;
+    // gray
+    --gray-100: var(--typography-primary);
+    --gray-5: color-mix(in srgb, var(--gray-100) 5%, var(--background-default) 95%);
+    --gray-10: color-mix(in srgb, var(--gray-100) 10%, var(--background-default) 90%);
+    --gray-20: color-mix(in srgb, var(--gray-100) 20%, var(--background-default) 80%);
+    --gray-30: color-mix(in srgb, var(--gray-100) 30%, var(--background-default) 70%);
+    --gray-40: color-mix(in srgb, var(--gray-100) 40%, var(--background-default) 60%);
+    --gray-50: color-mix(in srgb, var(--gray-100) 50%, var(--background-default) 50%);
+    --gray-70: color-mix(in srgb, var(--gray-100) 70%, var(--background-default) 30%);
+    --gray-80: color-mix(in srgb, var(--gray-100) 80%, var(--background-default) 20%);
+    --gray-90: color-mix(in srgb, var(--gray-100) 90%, var(--background-default) 10%);
+    --gray-badge: #667085;
+    --pink-50: #620d2a;
+    --white: var(--background-default);
+    --primary-link: var(--primary-brand);
+    //khi hover qua 1 menu: background-color
+    --menu-hover-bg-color: color-mix(in srgb, var(--primary-brand) 70%, #000000 30%);
+    //khi hover qua 1 menu: text-color
+    --menu-hover-text-color: var(--typography-primary);
+    //deepBlue
+    --deepBlue-50: #152554;
+    --deepBlue-400: #3358c7;
+    --deepBlue-500: #5c79d2;
+    //purple
+    --purple-50: #290064;
+    --purple-400: #6200ee;
+    --purple-500: #8133f1;
+    --purple-900: #efe6fd;
+
+    //orange
+    --orange-50: #6b4000;
+    --orange-900: #fff5e6;
+
+    //blue
+    --blue-50: #014266;
+    --blue--900: #e6f5fe;
+
+    //green
+    --green-50: #153615;
+    --green-900: #effbef;
+}
