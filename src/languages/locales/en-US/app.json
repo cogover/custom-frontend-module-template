@@ -1,0 +1,18 @@
+{
+    "helloPage": {
+        "title": "Hello from Custom Module 👋",
+        "subtitle": "This is a sample page with a static path."
+    },
+    "userPage": {
+        "title": "User page",
+        "subtitle": "Sample page with a dynamic path.",
+        "param": "Param read from URL: userId = {{userId}}"
+    },
+    "i18nPage": {
+        "title": "Multilingual",
+        "subtitle": "Sample page demonstrating i18n with locally bundled resources.",
+        "switchLabel": "Language:",
+        "current": "Current language: {{lang}}",
+        "greeting": "Hello {{name}}, welcome to the custom module!"
+    }
+}

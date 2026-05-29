@@ -1,7 +1,4 @@
-import i18n, { Module } from 'i18next';
-import ChainedBackend from 'i18next-chained-backend';
-import FsBackend from 'i18next-fs-backend/cjs';
-import HttpBackend from 'i18next-http-backend/cjs';
+import i18n, { Module, Resource } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { I18N_PROCESSORS } from './processors';
 import lazyLoadNamespaceProcessor from './processors/lazyLoadNamespace';
@@ -21,60 +18,46 @@ export type SupportedLanguagesKeys = keyof typeof locales;
 export enum I18nNS {
     APP = 'app',
     COMMON = 'common',
-    ACCOUNT_WORKSPACE = 'account_ws',
-    DEPARTMENT = 'department',
-    OBJECT = 'object',
-    DATA_FIELD = 'data_field',
-    IMPORT = 'import',
-    EXPORT = 'export',
-    WORKFLOW = 'workflow',
-    MULTILINGUAL = 'multilingual',
-    LAYOUT_OBJECT = 'layout_object',
-    FILTER = 'filter',
-    DATA_SECURITY_RULE = 'data_security_rule',
-    WORKFLOW_RESOURCE = 'workflow_resource',
-    FUNCTIONAL_DELEGATION = 'functional_delegation',
-    WORKFLOW_GATEWAY = 'workflow_gateway',
-    DASHBOARD = 'dashboard',
-    WORKFLOW_USER_TASK = 'workflow_user_task',
-    SITE_BUILDER = 'site_builder',
-    WORKFLOW_HTTP_REQUEST = 'workflow_http_request',
-    BUTTON_AND_LINK = 'button_and_link',
-    SEND_EMAIL = 'send_email',
-    NOTIFICATION = 'notification',
-    APP_MANAGEMENT = 'app_management',
-    WORKFLOW_END_USER = 'workflow_end_user',
-    SUBSCRIPTION = 'subscription',
 }
 
 export const defaultNS = I18nNS.APP;
 export const namespaces = Object.values(I18nNS);
 
+/**
+ * Khác với các remote khác (end-user, sla…): resource KHÔNG fetch từ dự án `static`
+ * (`/static/locales/{{lng}}/{{ns}}.json`) mà được TẠO & BUNDLE ngay trong dự án này.
+ *
+ * Mỗi file `src/languages/locales/<lng>/<ns>.json` sẽ tự động trở thành resource của
+ * namespace `<ns>` cho ngôn ngữ `<lng>`. Thêm ngôn ngữ/namespace = thêm file JSON tương ứng.
+ */
+const localeModules = import.meta.glob<{ default: Record<string, unknown> }>('./locales/**/*.json', {
+    eager: true,
+});
+
+const resources: Resource = {};
+for (const filePath in localeModules) {
+    const matched = /\.\/locales\/([^/]+)\/([^/]+)\.json$/.exec(filePath);
+    if (!matched) continue;
+    const [, lng, ns] = matched;
+    resources[lng] = resources[lng] ?? {};
+    resources[lng][ns] = localeModules[filePath].default;
+}
+
 i18n.use(lazyLoadNamespaceProcessor as Module);
 
-void i18n
-    .use(ChainedBackend)
-    .use(initReactI18next)
-    .init({
-        fallbackLng: {
-            default: ['en-US'],
-        },
-        defaultNS,
-        // ns: namespaces,
-        interpolation: {
-            escapeValue: false, // react already safes from xss
-        },
-        backend: {
-            backends: [HttpBackend, FsBackend],
-            backendOptions: [
-                {
-                    //https://asia-1.dev.cogover.net/static/locales/en/dashboard.json
-                    loadPath: '/static/locales/{{lng}}/{{ns}}.json',
-                },
-            ],
-        },
-        react: {
-            useSuspense: false,
-        },
-        postProcess: [I18N_PROCESSORS.LAZY_LOAD_NAMESPACE],
-    });
+void i18n.use(initReactI18next).init({
+    resources,
+    fallbackLng: {
+        default: ['en-US'],
+    },
+    defaultNS,
+    load: 'currentOnly',
+    ns: namespaces,
+    interpolation: {
+        escapeValue: false, // react already safes from xss
+    },
+    react: {
+        useSuspense: false,
+    },
+    postProcess: [I18N_PROCESSORS.LAZY_LOAD_NAMESPACE],
+});

@@ -1,0 +1,18 @@
+{
+    "helloPage": {
+        "title": "Xin chào từ Custom Module 👋",
+        "subtitle": "Đây là trang mẫu với đường dẫn tĩnh."
+    },
+    "userPage": {
+        "title": "Trang người dùng",
+        "subtitle": "Trang mẫu với đường dẫn động.",
+        "param": "Param đọc từ URL: userId = {{userId}}"
+    },
+    "i18nPage": {
+        "title": "Đa ngôn ngữ",
+        "subtitle": "Trang mẫu minh hoạ i18n với resource bundle sẵn trong dự án.",
+        "switchLabel": "Ngôn ngữ:",
+        "current": "Ngôn ngữ hiện tại: {{lang}}",
+        "greeting": "Xin chào {{name}}, chào mừng đến với custom module!"
+    }
+}

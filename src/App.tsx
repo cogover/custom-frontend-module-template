@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 // Lazy-load các page mẫu — federation sẽ tách thành chunk riêng
 const HelloPage = lazy(() => import('./pages/HelloPage'));
 const UserPage = lazy(() => import('./pages/UserPage'));
+const I18nPage = lazy(() => import('./pages/I18nPage'));
 
 /**
  * Component được expose ra federation (key `./CustomApp`).
@@ -20,6 +21,7 @@ export default function App() {
             <Routes>
                 <Route index element={<HelloPage />} />
                 <Route path='user/:userId' element={<UserPage />} />
+                <Route path='i18n' element={<I18nPage />} />
             </Routes>
         </Suspense>
     );
