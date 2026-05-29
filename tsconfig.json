@@ -18,7 +18,6 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "baseUrl": ".",
-        "types": ["@testing-library/jest-dom", "vitest/globals"],
         "allowJs": true
     },
     "include": ["src", "../../other/ui-kit/src/components/DataFields/DateTimePicker"],

@@ -25,10 +25,7 @@ dist-ssr
 *.sln
 *.sw?
 
-coverage
-
 .env
-.scannerwork
 
 vite.config.ts.**.mjs
 src/languages/data.xlsx
