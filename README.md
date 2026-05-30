@@ -50,7 +50,43 @@ Convention host: `/<appSlug>/cN/...` → `remoteCmN/CustomApp`. Host fetch remot
 3. Bên `router/.env.local`: thêm `VITE_FEDERATION_CUSTOM_N_ORIGIN="https://localhost:<port>"` rồi `npm run dev` (host port 5002).
 4. Truy cập `https://<workspace>.cogover.local:5002/cN` (host tự chèn `appSlug`).
 
-Slot 1/2 đang là cm1/cm2. Standalone dev thường: `npm run dev` (port 5100).
+Slot 1/2 đang là cm1/cm2.
+
+## Phát triển local & đóng gói gửi Cogover
+
+### Cấu hình `.env`
+Copy `.env.sample` → `.env.local` (file `.env.local` đã được gitignore, chứa giá trị thật).
+
+> **Thực tế chỉ cần quan tâm 2 biến: `VITE_WORKSPACE_NAME` và `VITE_ENVIRONMENT`.** Các biến URL còn lại (`VITE_API_BASE_URL`, `VITE_LOCAL_HOST`…) tự suy ra từ 2 biến này, không cần chỉnh.
+
+Tham khảo ý nghĩa các biến (đọc trong `vite.config.ts`):
+
+| Biến | Dùng để | Ghi chú |
+|---|---|---|
+| `VITE_WORKSPACE_NAME` | tên workspace (domain) | dùng suy ra các URL khác, vd `long04` |
+| `VITE_ENVIRONMENT` | hậu tố môi trường | vd `.cogover.net` |
+| `VITE_API_BASE_URL` | target proxy `/api`, `/files`, `/websocket`, `/static` | mặc định `https://${VITE_WORKSPACE_NAME}${VITE_ENVIRONMENT}` |
+| `VITE_LOCAL_HOST` | host của dev server | `${VITE_WORKSPACE_NAME}.cogover.local` — cần map về `127.0.0.1` trong `/etc/hosts` |
+| `VITE_CERT_KEY_PATH` / `VITE_CERT_PATH` | cert wildcard cho HTTPS | **tuỳ chọn**; nếu KHÔNG set → vite tự dùng `basicSsl` (self-signed) |
+
+> Các biến khác trong `.env.sample` (`VITE_PAYPAL_*`, `VITE_STRIPE_*`, `VITE_SUBSCRIPTION_*`, `VITE_ACCOUNT_*`, `VITE_ID_*`, `VITE_END_USER_*`…) là kế thừa từ template gốc, custom module này hiện **không dùng** — có thể bỏ qua. Lưu ý `.env.sample` chưa có `VITE_CERT_*`; thêm vào `.env.local` nếu muốn dùng cert thật thay cho self-signed.
+
+### Chạy dev (standalone)
+1. Cài deps (cần `.npmrc` trỏ registry Stringee): `npm install` (hoặc `npm run install-deps:dev`).
+2. `npm run dev` → Vite dev server tại `https://<VITE_LOCAL_HOST>:5100` (HTTPS qua basicSsl, tự mở browser).
+   - Entry standalone (`main.tsx`) bọc `MainProvider` + `DevConfigGate` + `MainLayout` để giả lập môi trường host.
+   - `DevConfigGate` gọi API `config-server`; nếu cần token thì truyền qua query `?authToken=<token>`.
+3. Sửa code → HMR tự reload. Thêm page mới chỉ cần sửa `APP_ROUTES` (`src/routes.tsx`).
+
+### Sau khi code xong: build & đóng gói gửi Cogover
+1. **Lint** (eslint không chạy trong `build`, chỉ chạy lúc `serve`): `npm run lint`.
+2. **Build**: `npm run build` (= `tsc && vite build`) → sinh thư mục `dist/` (gồm `dist/assets/remoteEntry.js` + các chunk).
+   - Build cho slot được cấp: `npm run build -- --base=/_cm_N/` (N = số slot Cogover gán cho module). Base phải khớp slot để host fetch đúng `/_cm_N/assets/remoteEntry.js`.
+3. **Đóng gói** thư mục `dist/` thành 1 file nén:
+   ```bash
+   cd dist && zip -r ../custom-module-dist.zip . && cd ..
+   ```
+4. **Gửi lên Cogover**: upload gói `dist` (zip) qua trang quản lý Custom Module của Cogover, gán vào slot `cN`. Sau đó host nạp module tại route `/<appSlug>/cN/...`.
 
 ## Skills nội bộ (`.claude/skills/`) — DÙNG KHI CODE
 
