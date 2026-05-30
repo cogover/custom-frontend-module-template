@@ -69,7 +69,19 @@ Tham khảo ý nghĩa các biến (đọc trong `vite.config.ts`):
 | `VITE_LOCAL_HOST` | host của dev server | `${VITE_WORKSPACE_NAME}.cogover.local` — cần map về `127.0.0.1` trong `/etc/hosts` |
 | `VITE_CERT_KEY_PATH` / `VITE_CERT_PATH` | cert wildcard cho HTTPS | **tuỳ chọn**; nếu KHÔNG set → vite tự dùng `basicSsl` (self-signed) |
 
-> Các biến khác trong `.env.sample` (`VITE_PAYPAL_*`, `VITE_STRIPE_*`, `VITE_SUBSCRIPTION_*`, `VITE_ACCOUNT_*`, `VITE_ID_*`, `VITE_END_USER_*`…) là kế thừa từ template gốc, custom module này hiện **không dùng** — có thể bỏ qua. Lưu ý `.env.sample` chưa có `VITE_CERT_*`; thêm vào `.env.local` nếu muốn dùng cert thật thay cho self-signed.
+> **Bắt buộc để `npm run dev` chạy được:** `.env` phải trỏ tới 1 **workspace thật** (vd môi trường master `.cogover.net`, release `.release.cogover.net`) **và** map domain `<workspace_slug>.cogover.local` → `127.0.0.1` trong `/etc/hosts`.
+>
+> Ví dụ với:
+> ```
+> VITE_WORKSPACE_NAME=long04
+> VITE_ENVIRONMENT=.cogover.net
+> ```
+> thì cần set host:
+> ```
+> 127.0.0.1 long04.cogover.local
+> ```
+
+> `.env.sample` không kèm `VITE_CERT_*`; thêm vào `.env.local` nếu muốn dùng cert thật thay cho self-signed.
 
 ### Chạy dev (standalone)
 1. Cài deps (cần `.npmrc` trỏ registry Stringee): `npm install` (hoặc `npm run install-deps:dev`).
