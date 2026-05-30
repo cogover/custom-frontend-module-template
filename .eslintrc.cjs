@@ -55,6 +55,18 @@ module.exports = {
                 skipBlankLines: true,
             },
         ],
+        // Cấm dùng FontAwesome trong custom module này (ui-kit dùng nội bộ ở node_modules,
+        // không bị lint nên không ảnh hưởng). Dev cần icon thì lấy từ @stringeecom/ui-kit.
+        '@typescript-eslint/no-restricted-imports': [
+            'error',
+            {
+                patterns: [
+                    {
+                        group: ['@fortawesome', '@fortawesome/*'],
+                    },
+                ],
+            },
+        ],
         '@typescript-eslint/no-unused-vars': ['warn'],
         '@typescript-eslint/prefer-nullish-coalescing': ['off'],
         '@typescript-eslint/no-misused-promises': ['off'],
