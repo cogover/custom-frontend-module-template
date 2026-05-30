@@ -1,6 +1,6 @@
 ---
 name: cogover-fe
-description: Cogover Frontend UI Kit (components, forms, hooks, design tokens), commit convention, i18n, unit test. Use when writing/reviewing UI code, creating commits, translating text, or writing unit tests.
+description: Cogover Frontend UI Kit (components, forms, hooks, design tokens), unit test. Use when writing/reviewing UI code or writing unit tests.
 license: MIT
 metadata:
   author: cogover
@@ -18,7 +18,6 @@ Mô hình **routing table + on-demand reference**. File này = index. Chi tiết
 1. Đọc file này (đã load) → xác định reference files liên quan
 2. Dùng **Read tool** đọc từ `{skill_base_dir}/reference/<name>.md`
 3. Áp dụng quy tắc khi implement. Tuân theo DO/DON'T chính xác
-4. i18n → đọc `{skill_base_dir}/reference/i18n-translation.md`
 
 ### TUYỆT ĐỐI KHÔNG (CRITICAL — HIGHEST PRIORITY):
 - **KHÔNG BAO GIỜ, TRONG BẤT KỲ TRƯỜNG HỢP NÀO**, sử dụng component/hook/API đã bị **deprecated** (`@deprecated` JSDoc, tên có hậu tố `Legacy`/`Old`/`V1`, hoặc được ghi chú deprecated trong `@stringeecom/ui-kit` / reference files). Đây là rule **BẤT KHẢ XÂM PHẠM** — vi phạm = reject PR ngay lập tức, không có ngoại lệ.
@@ -48,7 +47,7 @@ Mô hình **routing table + on-demand reference**. File này = index. Chi tiết
 ## Reference Files
 
 ### Foundation & Workflow
-`color-palette-usage` · `cx-class-grouping` · `spacing-rem-only` · `tokens-tailwind-config` · `typography-prose-classes` · `no-auto-markdown` · `no-typescript-any` · `prettier-and-lint-check` · `uikit-import-source` · `internal-import-path` · `uikit-text-vietnamese-first` · `uikit-no-auto-commit` · `uikit-parallel-sub-agents` · `i18n-translation`
+`color-palette-usage` · `cx-class-grouping` · `spacing-rem-only` · `tokens-tailwind-config` · `typography-prose-classes` · `no-auto-markdown` · `no-typescript-any` · `prettier-and-lint-check` · `uikit-import-source` · `internal-import-path` · `uikit-text-vietnamese-first` · `uikit-no-auto-commit` · `uikit-parallel-sub-agents`
 
 ### Data & Query
 `data-model/object` · `data-model/field` · `data-model/record` · `data-model/related-list` · `uikit-tanstack-query-hooks` · `dayjs-date-time`

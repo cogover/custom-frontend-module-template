@@ -6,8 +6,8 @@ description: >-
   hình", "thêm route", "thêm trang mới", "tạo custom page", hoặc thêm một đường dẫn/
   screen mới vào module — kể cả khi không nói chính xác chữ "page". Skill chỉ rõ phải
   tạo component trong src/pages/ và đăng ký vào APP_ROUTES (nguồn route DUY NHẤT, tự
-  nối cả <Routes> lẫn left menu dev), cùng convention routing tương đối, styling token
-  và i18n của dự án.
+  nối cả <Routes> lẫn left menu dev), cùng convention routing tương đối và styling token
+  của dự án.
 ---
 
 # Tạo custom page
@@ -98,23 +98,10 @@ Mở dev (`npm run dev` hoặc preview) để thấy page mới trong left menu 
   nó ép path thành tuyệt đối `/<appSlug>/...` làm mất segment `/cN`.
 - **import nội bộ:** dùng alias `src/...` khi relative vượt quá 2 cấp `..`.
 
-## i18n (tuỳ chọn — chỉ khi cần đa ngôn ngữ)
+## i18n
 
-Mặc định text mới viết **tiếng Việt** trực tiếp, không cần i18n trừ khi được yêu cầu. Khi cần:
-
-1. Thêm key vào `src/languages/locales/vi-VN/app.json` và `src/languages/locales/en-US/app.json`
-   (resource bundle local trong repo, không lấy từ dự án static).
-2. Dùng trong page:
-
-```tsx
-import { useTranslation } from 'src/languages/global';
-import { I18nNS } from 'src/languages/i18n';
-
-export default function ReportPage() {
-    const { t } = useTranslation(I18nNS.APP);
-    return <h2 className='prose-h5 text-typo-primary'>{t('reportPage.title')}</h2>;
-}
-```
+Mặc định text mới viết **tiếng Việt** trực tiếp — KHÔNG tự i18n trừ khi được yêu cầu.
+Khi cần đa ngôn ngữ, xem skill **`i18n-translation`** (quy trình thêm bản dịch + dùng trong code).
 
 ## Tuyệt đối KHÔNG
 
