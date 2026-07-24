@@ -9,6 +9,7 @@ import MainProvider from './providers';
 
 import '@fontsource-variable/nunito';
 import './styles/index.css';
+import '@stringeecom/ui-kit/style.css';
 
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
