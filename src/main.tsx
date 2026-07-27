@@ -6,10 +6,10 @@ import App from './App.tsx';
 import DevConfigGate from './dev/DevConfigGate.tsx';
 import MainLayout from './dev/MainLayout.tsx';
 import MainProvider from './providers';
+import './importUiKitStyle';
 
 import '@fontsource-variable/nunito';
 import './styles/index.css';
-import '@stringeecom/ui-kit/style.css';
 
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
