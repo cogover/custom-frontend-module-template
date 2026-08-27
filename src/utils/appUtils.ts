@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { ThemeType } from 'src/theme/theme.type';
 
 export function redirectExternalUrl(url: string) {
