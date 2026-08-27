@@ -1,6 +1,8 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { i18n } from 'src/languages/global';
 import { APP_ROUTES } from 'src/routes';
+import { useDisplayLanguage } from 'src/store/commonSettingsSlice';
 
 /**
  * Component được expose ra federation (key `./CustomApp`).
@@ -13,6 +15,14 @@ import { APP_ROUTES } from 'src/routes';
  * - Danh sách route lấy từ `APP_ROUTES` — nguồn chung mà `MainLayout` (dev) dùng để dựng left menu.
  */
 export default function App() {
+    const displayLanguage = useDisplayLanguage();
+
+    useEffect(() => {
+        if (i18n.language !== displayLanguage) {
+            void i18n.changeLanguage(displayLanguage);
+        }
+    }, [displayLanguage]);
+
     return (
         <Suspense>
             <Routes>

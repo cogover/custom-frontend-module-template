@@ -47,6 +47,7 @@ i18n.use(lazyLoadNamespaceProcessor as Module);
 
 void i18n.use(initReactI18next).init({
     resources,
+    lng: DEFAULT_LANG,
     fallbackLng: {
         default: ['en-US'],
     },
