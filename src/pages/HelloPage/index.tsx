@@ -9,7 +9,7 @@ export default function HelloPage() {
     const { t } = useTranslation(I18nNS.APP);
 
     return (
-        <div className='rounded-[0.5rem] border border-divider-primary bg-background-default p-[1rem]'>
+        <div className='p-[1rem]'>
             <h2 className='prose-h5 mb-[0.5rem] text-typo-primary'>{t('helloPage.title')}</h2>
             <p className='prose-body2 text-typo-secondary'>{t('helloPage.subtitle')}</p>
         </div>

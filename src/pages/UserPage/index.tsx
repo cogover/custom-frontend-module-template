@@ -11,7 +11,7 @@ export default function UserPage() {
     const { t } = useTranslation(I18nNS.APP);
 
     return (
-        <div className='rounded-[0.5rem] border border-divider-primary bg-background-default p-[1rem]'>
+        <div className='p-[1rem]'>
             <h2 className='prose-h5 mb-[0.5rem] text-typo-primary'>{t('userPage.title')}</h2>
             <p className='prose-body2 mb-[0.75rem] text-typo-secondary'>{t('userPage.subtitle')}</p>
             <div className='prose-body2 text-typo-secondary'>
