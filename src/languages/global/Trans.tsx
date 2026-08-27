@@ -14,6 +14,6 @@ const TransDefault: typeof I18nTrans = (props) => {
     );
 };
 
-const Trans = window.Trans ?? TransDefault;
+const Trans = TransDefault;
 
 export default Trans;

@@ -8,7 +8,7 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import {
     Controller,
     FormProvider,
@@ -21,7 +21,7 @@ import {
 import { Link, NavLink, useBlocker, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'src/languages/global';
 import Trans from 'src/languages/global/Trans';
-import { useSelectTheme } from 'src/store/commonSettingsSlice';
+import { useDisplayLanguage, useSelectTheme } from 'src/store/commonSettingsSlice';
 import { useAppSelector } from 'src/store/hooks';
 
 import { ThemeType } from 'src/theme/theme.type';
@@ -29,15 +29,22 @@ import { ThemeType } from 'src/theme/theme.type';
 function ThemeProvider({ children }: PropsWithChildren) {
     const themeMode = useSelectTheme() ?? ThemeType.light;
     const { t, i18n } = useTranslation();
+    const displayLanguage = useDisplayLanguage();
 
     const account = useAppSelector((state) => state.commonSettings.account);
 
     const workspace = useAppSelector((state) => state.commonSettings.workspace);
     const workspaceAccount = useAppSelector((state) => state.commonSettings.workspaceAccount);
 
+    useEffect(() => {
+        if (i18n.language !== displayLanguage) {
+            void i18n.changeLanguage(displayLanguage);
+        }
+    }, [displayLanguage, i18n]);
+
     return (
         <StringeeThemeProvider themeMode={themeMode}>
-            <I18nProvider t={t} locale={i18n.language} Trans={Trans}>
+            <I18nProvider t={t} locale={displayLanguage} Trans={Trans}>
                 <StringeeUtilProvider
                     useSearchParams={useSearchParams}
                     Controller={Controller}

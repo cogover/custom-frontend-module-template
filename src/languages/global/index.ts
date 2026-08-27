@@ -3,9 +3,9 @@ import { isString } from 'lodash';
 import objectPath from 'object-path';
 import { useTranslation as useTranslationDefault } from 'react-i18next';
 
-const i18n = window.i18n ?? i18nsDefault;
+const i18n = i18nsDefault;
 
-const useTranslation = window.useTranslation ?? useTranslationDefault;
+const useTranslation = useTranslationDefault;
 
 const defaultT = ((key: string, options: TOptions) => {
     try {
@@ -29,6 +29,6 @@ const defaultT = ((key: string, options: TOptions) => {
     }
 }) as TFunction;
 
-const t = window.t ?? (process.env.NODE_ENV === 'test' ? i18n.t : defaultT);
+const t = process.env.NODE_ENV === 'test' ? i18n.t : defaultT;
 
 export { i18n, t, useTranslation };
