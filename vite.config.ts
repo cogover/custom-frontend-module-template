@@ -88,7 +88,7 @@ export default defineConfig(({ command, mode }) => {
         },
         // Preview phục vụ remoteEntry cho host fetch cross-origin → cần CORS
         preview: {
-            port: 5100, // ĐỔI khi clone, vd 5103 cho cm3
+            port: 5101, // ĐỔI khi clone, vd 5103 cho cm3
             strictPort: true,
             cors: true,
             headers: { 'Access-Control-Allow-Origin': '*' },
