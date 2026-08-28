@@ -18,6 +18,12 @@
             "prompt": "Tạo một card giới thiệu hỗ trợ light/dark theme theo convention của custom module.",
             "expected_output": "Dùng theme token, rem, prose-* và cx(); không hardcode màu hoặc typography đã có token.",
             "files": []
+        },
+        {
+            "id": 4,
+            "prompt": "Thêm ảnh banner cho một Custom Page và đảm bảo chạy được cả standalone lẫn khi load qua router ở slot c1.",
+            "expected_output": "Đặt ảnh trong src/assets và import qua module; không dùng/tạo public, path /images hoặc tự ghép origin/base của router.",
+            "files": []
         }
     ]
 }

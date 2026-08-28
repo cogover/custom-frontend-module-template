@@ -16,8 +16,9 @@ File này cung cấp hướng dẫn cho Claude Code khi làm việc với reposi
 ```
 src/
 ├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
+├── assets/              # Image/static asset được Vite xử lý cho federation
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
-├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,name,to,path?,element}
+├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element}
 ├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose

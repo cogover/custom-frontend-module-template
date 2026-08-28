@@ -181,9 +181,6 @@ export default {
                 primary: '0px 9px 40px 0px rgba(0, 0, 0, 0.10)',
                 secondary: '0px 5px 10px 0px rgba(0, 0, 0, 0.05)',
             },
-            backgroundImage: {
-                'app-picking': 'url(/images/onboarding/onboarding-bg.png)',
-            },
             typography: {
                 h1: {
                     css: {

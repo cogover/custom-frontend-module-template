@@ -1,8 +1,8 @@
+import logoUrl from 'src/assets/cogover-logo.svg';
 import cx from 'src/utils/cx';
 import { useTranslation } from 'src/languages/global';
 import { I18nNS } from 'src/languages/i18n';
 
-const logoUrl = `${import.meta.env.BASE_URL}icon/logo.svg`;
 const TRAIT_KEYS = ['welcomePage.traitCreative', 'welcomePage.traitExtensible', 'welcomePage.traitIntegrated'] as const;
 
 export default function WelcomePage() {

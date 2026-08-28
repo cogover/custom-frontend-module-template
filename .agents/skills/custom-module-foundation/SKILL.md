@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, or shared UI foundations in custom-module-template.
+description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, images, assets, or shared UI foundations in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -52,7 +52,7 @@ Mọi link được viết trong custom module phải dùng component của dự
 ```tsx
 import Link from 'src/components/Link';
 
-<Link to='/records'>Danh sách bản ghi</Link>
+<Link to='/records'>Danh sách bản ghi</Link>;
 ```
 
 `Link` nội bộ chịu trách nhiệm gắn app slug ở production, giữ nguyên path ở standalone, tránh slug lặp và tránh URL dạng `//user`.
@@ -62,7 +62,7 @@ Không import trực tiếp từ React Router:
 ```tsx
 import { Link } from 'react-router-dom';
 
-<Link to='/records'>Danh sách bản ghi</Link>
+<Link to='/records'>Danh sách bản ghi</Link>;
 ```
 
 URL trên có thể thiếu app slug, khiến router host redirect lại và giao diện nháy một lần.
@@ -72,7 +72,7 @@ Không tự nối app slug:
 ```tsx
 const appSlug = useAppSlug();
 
-<Link to={`/${appSlug}/records`}>Danh sách bản ghi</Link>
+<Link to={`/${appSlug}/records`}>Danh sách bản ghi</Link>;
 ```
 
 Cách này có thể tạo `//records` ở standalone hoặc gắn slug hai lần ở production.
@@ -107,3 +107,25 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 3. Font size, weight và line-height dùng class `prose-*`.
 4. Ghép class bằng `cx()` và nhóm theo layout, spacing, visual, typography, interaction.
 5. Không hardcode giá trị khi dự án đã có token tương ứng.
+
+## 9. Image và static asset — CRITICAL
+
+Đây là rule ưu tiên cao nhất khi làm việc với image/static asset. Vi phạm sẽ khiến asset hoạt động ở standalone nhưng mất hoặc trỏ nhầm sang asset của router khi chạy production.
+
+Không dùng hoặc tạo lại thư mục `public` để chứa image/asset của custom module. Khi module chạy qua router, path bắt đầu bằng `/` trỏ vào public root của router host, không phải remote; ảnh sẽ mất hoặc lấy nhầm asset của router.
+
+Đặt asset trong `src/assets` và import để Vite xử lý URL, hash và federation base:
+
+```tsx
+import bannerUrl from 'src/assets/banner.png';
+
+<img src={bannerUrl} alt='Banner giới thiệu' />;
+```
+
+Không dùng:
+
+```tsx
+<img src='/images/banner.png' alt='Banner giới thiệu' />
+```
+
+Không tạo file theo cấu trúc `public/images/banner.png`, không tự ghép root URL và không giả định asset nằm trên origin của router. Với asset dùng trong `index.html`, tham chiếu file dưới `/src/assets/...` để Vite đưa nó vào build.
