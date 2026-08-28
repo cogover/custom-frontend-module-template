@@ -1,0 +1,23 @@
+{
+    "skill_name": "custom-module-i18n",
+    "evals": [
+        {
+            "id": 1,
+            "prompt": "Dịch title và description của WelcomePage sang tiếng Anh, tìm key dùng chung trong static nếu có.",
+            "expected_output": "Không truy cập static; chỉ search và cập nhật locale nội bộ vi-VN/en-US của custom module, dùng hook nội bộ.",
+            "files": []
+        },
+        {
+            "id": 2,
+            "prompt": "Thêm text Yêu cầu REQ-001 trong đó mã request là biến, hỗ trợ Việt/Anh.",
+            "expected_output": "Tạo key tối đa hai cấp trong locale nội bộ, dùng placeholder {{requestId}} giống nhau ở hai locale và truyền values khi gọi t().",
+            "files": []
+        },
+        {
+            "id": 3,
+            "prompt": "Xóa một page cũ và dọn toàn bộ key i18n không còn dùng.",
+            "expected_output": "Search call-site, chỉ xóa key không còn dùng ở cả hai locale, chạy Prettier, jq prefix check và locale parity diff.",
+            "files": []
+        }
+    ]
+}
