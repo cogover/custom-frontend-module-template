@@ -1,6 +1,6 @@
 # Remove ui-kit and add app-slug contract
 
-**Updated**: 2026-08-28 14:31
+**Updated**: 2026-08-28 14:48
 **Status**: verified
 **Refs**: src/App.tsx:17, src/main.tsx:17, src/routes.tsx:10, src/styles/index.css:1, src/providers/AppSlugProvider.tsx:7, src/components/Link.tsx:11
 
@@ -15,7 +15,7 @@
 - Standalone render thẳng page; dev `Header`, `Sidebar/MainLayout` và metadata menu trong `APP_ROUTES` đã bị xóa.
 - Global CSS đồng bộ phần nền tảng với router: reset box model, Nunito qua `--font`, text/background dùng theme variables; không copy selector phụ thuộc ui-kit.
 - Hai page demo cũ được thay bằng `WelcomePage`: logo Cogover ở trung tâm, bố cục quỹ đạo, hỗ trợ reduced motion và i18n Việt/Anh theo prefix `welcomePage`.
-- Repo có skill `custom-module-foundation` tại `.agents/skills/`, kèm eval prompts và symlink `.claude/skills/` để Claude dùng cùng source.
+- Repo có skill `custom-module-foundation` và `custom-module-api` tại `.agents/skills/`, kèm eval prompts và symlink `.claude/skills/` để Claude dùng cùng source.
 - Verification: Prettier, ESLint, TypeScript, locale key diff, Vite build và skill/symlink validation đã chạy thành công.
 
 ## Related memories
