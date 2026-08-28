@@ -1,0 +1,23 @@
+{
+    "skill_name": "custom-module-foundation",
+    "evals": [
+        {
+            "id": 1,
+            "prompt": "Tạo page chi tiết yêu cầu tại URL requests/:requestId và thêm link từ page danh sách.",
+            "expected_output": "Route không chứa :appSlug/cN; link import từ src/components/Link và không tự nối appSlug.",
+            "files": []
+        },
+        {
+            "id": 2,
+            "prompt": "Thêm link tới /records, phải chạy đúng cả standalone và khi module được router mount dưới /settings/c1.",
+            "expected_output": "Dùng Link nội bộ; không dùng react-router-dom Link, thẻ a hoặc tự ghép appSlug; standalone không sinh //records.",
+            "files": []
+        },
+        {
+            "id": 3,
+            "prompt": "Tạo một card giới thiệu hỗ trợ light/dark theme theo convention của custom module.",
+            "expected_output": "Dùng theme token, rem, prose-* và cx(); không hardcode màu hoặc typography đã có token.",
+            "files": []
+        }
+    ]
+}
