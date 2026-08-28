@@ -10,9 +10,9 @@ import { AppSlugProvider } from 'src/providers/AppSlugProvider';
  *
  * Lưu ý:
  * - App chỉ tự cung cấp AppSlugContext; Redux, Router và layout do host cung cấp.
- *   Chế độ standalone bọc các provider còn lại cùng `MainLayout` dev trong `main.tsx`.
+ *   Chế độ standalone bọc các provider còn lại trong `main.tsx`.
  * - Route dùng path TƯƠNG ĐỐI (không leading slash) vì host mount remote dưới splat `*`.
- * - Danh sách route lấy từ `APP_ROUTES` — nguồn chung mà `MainLayout` (dev) dùng để dựng left menu.
+ * - Danh sách route lấy từ `APP_ROUTES`.
  */
 export interface CustomAppProps {
     appSlug?: string;

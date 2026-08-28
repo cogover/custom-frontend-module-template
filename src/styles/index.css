@@ -5,8 +5,14 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 html {
-    font-family: 'Nunito Variable', sans-serif;
+    font-family: var(--font, 'Nunito Variable'), sans-serif;
 }
 
 /* thiết lập font-size để sử dụng 'rem' */
@@ -14,6 +20,9 @@ body {
     font-size: 16px;
     min-width: 1024px;
     overflow-x: auto;
+    font-family: var(--font, 'Nunito Variable'), sans-serif;
+    color: var(--typography-primary);
+    background-color: var(--background-default);
 }
 
 /* Hide Google ReCaptcha v3 badge */

@@ -18,13 +18,10 @@ src/
 ├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
 ├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,name,to,path?,element}
-├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > MainLayout > App
+├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
 ├── pages/               # HelloPage (tĩnh, index) + UserPage (động, user/:userId)
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
-│   ├── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
-│   ├── MainLayout.tsx      # Khung sidebar (map APP_ROUTES) + Header + Outlet(children)
-│   ├── Header.tsx          # Header dev: workspace name + title + avatar menu
-│   └── UserMenu.tsx        # Menu user, chỉ 1 item logout (dev stub)
+│   └── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
 ├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider
 │   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
 ├── store/               # configureStore — chỉ slice commonSettings
@@ -38,11 +35,11 @@ src/
 -   **Expose ra host**: chỉ `App.tsx` (qua `./CustomApp`). App dùng `AppSlugProvider` và `APP_ROUTES`.
 -   Host `router` truyền prop `appSlug` từ route `/:appSlug/cN/*`; `AppSlugProvider` phân phối giá trị này qua `useAppSlug()`.
 -   Chế độ standalone/dev không có app slug; `useAppSlug()` trả chuỗi rỗng.
--   **Dev-only** (mô phỏng môi trường host khi chạy riêng): `main.tsx`, `MainProvider`, `dev/*`.
+-   **Dev-only**: `main.tsx`, `MainProvider`, `DevConfigGate`; standalone render thẳng nội dung page.
 
 ### Thêm page mới
 
-Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES` (`App.tsx` map ra `<Routes>`, `dev/MainLayout` map ra left menu — tự nối cả hai). KHÔNG sửa tay `App.tsx`/`MainLayout`.
+Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES`; `App.tsx` tự map ra `<Routes>`.
 
 ## i18n (khác chuẩn Cogover)
 
@@ -98,7 +95,7 @@ Tham khảo ý nghĩa các biến (đọc trong `vite.config.ts`):
 
 1. Cài dependency: `npm install`.
 2. `npm run dev` → Vite dev server tại `https://<VITE_LOCAL_HOST>:5100` (HTTPS qua basicSsl, tự mở browser).
-    - Entry standalone (`main.tsx`) bọc `MainProvider` + `DevConfigGate` + `MainLayout` để giả lập môi trường host.
+    - Entry standalone (`main.tsx`) bọc `MainProvider` + `DevConfigGate`, sau đó render thẳng page.
     - `DevConfigGate` gọi API `config-server`; nếu cần token thì truyền qua query `?authToken=<token>`.
 3. Sửa code → HMR tự reload. Thêm page mới chỉ cần sửa `APP_ROUTES` (`src/routes.tsx`).
 
