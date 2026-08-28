@@ -3,8 +3,7 @@ import { lazy } from 'react';
 import type { ReactNode } from 'react';
 
 // Lazy-load các page mẫu — federation sẽ tách thành chunk riêng
-const HelloPage = lazy(() => import('./pages/HelloPage'));
-const UserPage = lazy(() => import('./pages/UserPage'));
+const WelcomePage = lazy(() => import('./pages/WelcomePage'));
 
 /**
  * Định nghĩa 1 route của custom module.
@@ -22,12 +21,7 @@ export interface AppRoute {
 /** Nguồn duy nhất định nghĩa router của module — `App` map ra `<Routes>`. */
 export const APP_ROUTES: AppRoute[] = [
     {
-        key: 'hello',
-        element: <HelloPage />,
-    },
-    {
-        key: 'user',
-        path: 'user/:userId',
-        element: <UserPage />,
+        key: 'welcome',
+        element: <WelcomePage />,
     },
 ];

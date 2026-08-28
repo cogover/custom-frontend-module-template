@@ -19,7 +19,7 @@ src/
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
 ├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,name,to,path?,element}
 ├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
-├── pages/               # HelloPage (tĩnh, index) + UserPage (động, user/:userId)
+├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
 │   └── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
 ├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider

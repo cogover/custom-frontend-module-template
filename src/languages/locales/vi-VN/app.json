@@ -1,11 +1,11 @@
 {
-    "helloPage": {
-        "title": "Xin chào từ Custom Module 👋",
-        "subtitle": "Đây là trang mẫu với đường dẫn tĩnh."
-    },
-    "userPage": {
-        "title": "Trang người dùng",
-        "subtitle": "Trang mẫu với đường dẫn động.",
-        "param": "Param đọc từ URL: userId = {{userId}}"
+    "welcomePage": {
+        "label": "Cogover Custom Page",
+        "title": "Một không gian dành riêng cho ý tưởng của bạn",
+        "description": "Tự do thiết kế trải nghiệm phù hợp với nhu cầu, quy trình và cách đội ngũ của bạn làm việc.",
+        "status": "Custom Page đã sẵn sàng",
+        "traitCreative": "Tự do thiết kế",
+        "traitExtensible": "Dễ mở rộng",
+        "traitIntegrated": "Liền mạch với Cogover"
     }
 }

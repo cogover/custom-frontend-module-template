@@ -1,11 +1,11 @@
 {
-    "helloPage": {
-        "title": "Hello from Custom Module 👋",
-        "subtitle": "This is a sample page with a static path."
-    },
-    "userPage": {
-        "title": "User page",
-        "subtitle": "Sample page with a dynamic path.",
-        "param": "Param read from URL: userId = {{userId}}"
+    "welcomePage": {
+        "label": "Cogover Custom Page",
+        "title": "A space made for your ideas",
+        "description": "Design experiences freely around your needs, workflows, and the way your team works.",
+        "status": "Custom Page is ready",
+        "traitCreative": "Design freely",
+        "traitExtensible": "Easy to extend",
+        "traitIntegrated": "Seamlessly connected to Cogover"
     }
 }
