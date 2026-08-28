@@ -1,8 +1,8 @@
-import { AvatarField, Typography } from '@stringeecom/ui-kit';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAppSelector } from 'src/store/hooks';
 import { redirectExternalUrl } from 'src/utils/appUtils';
 import cx from 'src/utils/cx';
+import Avatar from 'src/components/Avatar';
 
 interface Props {
     onClose?: () => void;
@@ -26,16 +26,19 @@ export default function UserMenu({ onClose = () => null }: Props) {
     };
 
     return (
-        <div className={cx('w-[16.125rem] px-[0.75rem] py-[0.5rem]', 'bg-background-default')}>
-            <div className={cx('mb-[0.75rem] mt-[0.5rem] flex items-center gap-[0.75rem]', 'mx-[0.5rem]')}>
-                <AvatarField src={account?.avatar} resolutionSize='small' alt={account?.fullName} size={36} />
+        <div
+            id='dev-user-menu'
+            role='menu'
+            className={cx('w-[16.125rem] px-[0.75rem] py-[0.5rem]', 'bg-background-default')}
+        >
+            <div
+                role='presentation'
+                className={cx('mb-[0.75rem] mt-[0.5rem] flex items-center gap-[0.75rem]', 'mx-[0.5rem]')}
+            >
+                <Avatar src={account?.avatar} alt={account?.fullName} size={36} resolutionSize='small' />
                 <div className={cx('min-w-0 flex-1')}>
-                    <Typography variant='body1' className={cx('truncate text-typo-primary')}>
-                        {account?.fullName}
-                    </Typography>
-                    <Typography variant='caption' className={cx('truncate text-typo-secondary')}>
-                        {account?.email}
-                    </Typography>
+                    <p className={cx('truncate prose-body1 text-typo-primary')}>{account?.fullName}</p>
+                    <p className={cx('truncate prose-caption text-typo-secondary')}>{account?.email}</p>
                 </div>
             </div>
 
@@ -43,6 +46,7 @@ export default function UserMenu({ onClose = () => null }: Props) {
 
             <button
                 type='button'
+                role='menuitem'
                 onClick={handleLogout}
                 className={cx(
                     'flex w-full items-center',
@@ -51,9 +55,7 @@ export default function UserMenu({ onClose = () => null }: Props) {
                     'hover:bg-menu-hover-bg-color',
                 )}
             >
-                <Typography variant='body2' className='text-typo-primary'>
-                    Đăng xuất
-                </Typography>
+                <span className={cx('prose-body2 text-typo-primary')}>Đăng xuất</span>
             </button>
         </div>
     );

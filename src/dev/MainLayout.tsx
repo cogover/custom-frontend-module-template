@@ -13,9 +13,7 @@ import Header from './Header';
  *
  * Left menu map trực tiếp từ `APP_ROUTES` (key / name / to).
  *
- * Lưu ý routing: dùng `NavLink` của `react-router-dom` (KHÔNG phải bản wrap của
- * `@stringeecom/ui-kit`). Bản ui-kit luôn ép `to` thành tuyệt đối `/<appSlug>/...`
- * nên không hợp với path TƯƠNG ĐỐI mà module dùng.
+ * Routing dùng `NavLink` của `react-router-dom` để giữ đường dẫn tương đối trong module.
  */
 export default function MainLayout({ children }: { children: ReactNode }) {
     return (

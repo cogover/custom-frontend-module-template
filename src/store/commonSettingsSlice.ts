@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { CommonSettingsState } from '@stringeecom/ui-kit';
+import { CommonSettingsState } from 'src/apis/config/config.type';
 import { DEFAULT_LANG } from 'src/languages/i18n';
 import { localBrandColor, localTheme } from 'src/utils/appUtils';
 import { useAppSelector } from './hooks';

@@ -16,8 +16,6 @@ const NOT_RETRY_STATUS = [400, 401, 403];
  * Redux (shared store), nên component `App` được expose KHÔNG cần luồng này.
  * Standalone (`npm run dev`/`preview`) thì không có host → gate này gọi config API và đổ
  * vào store để các provider (ThemeProvider…) có account/workspace/theme thật.
- *
- * Bỏ qua phần `apps` (app menu items) và `workspaces` (danh sách menu chuyển workspace).
  */
 export default function DevConfigGate({ children }: PropsWithChildren) {
     const dispatch = useAppDispatch();

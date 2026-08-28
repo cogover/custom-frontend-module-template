@@ -32,7 +32,6 @@ export default defineConfig(({ command, mode }) => {
                     'react-redux',
                     '@reduxjs/toolkit',
                     'react-router-dom',
-                    '@stringeecom/ui-kit',
                     '@tanstack/react-query',
                     'react-hook-form',
                     'yup',

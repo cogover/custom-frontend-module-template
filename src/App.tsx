@@ -3,18 +3,22 @@ import { Route, Routes } from 'react-router-dom';
 import { i18n } from 'src/languages/global';
 import { APP_ROUTES } from 'src/routes';
 import { useDisplayLanguage } from 'src/store/commonSettingsSlice';
+import { AppSlugProvider } from 'src/providers/AppSlugProvider';
 
 /**
  * Component được expose ra federation (key `./CustomApp`).
  *
  * Lưu ý:
- * - Đây là component BARE: KHÔNG bọc provider, KHÔNG bọc Router, KHÔNG bọc layout.
- *   Khi chạy trong host `router`, host đã cung cấp sẵn provider + Router context + MainLayout.
- *   Chế độ standalone được bọc provider/Router (và `MainLayout` dev) trong `main.tsx`.
+ * - App chỉ tự cung cấp AppSlugContext; Redux, Router và layout do host cung cấp.
+ *   Chế độ standalone bọc các provider còn lại cùng `MainLayout` dev trong `main.tsx`.
  * - Route dùng path TƯƠNG ĐỐI (không leading slash) vì host mount remote dưới splat `*`.
  * - Danh sách route lấy từ `APP_ROUTES` — nguồn chung mà `MainLayout` (dev) dùng để dựng left menu.
  */
-export default function App() {
+export interface CustomAppProps {
+    appSlug?: string;
+}
+
+export default function App({ appSlug }: CustomAppProps) {
     const displayLanguage = useDisplayLanguage();
 
     useEffect(() => {
@@ -24,16 +28,18 @@ export default function App() {
     }, [displayLanguage]);
 
     return (
-        <Suspense>
-            <Routes>
-                {APP_ROUTES.map((route) =>
-                    route.path ? (
-                        <Route key={route.key} path={route.path} element={route.element} />
-                    ) : (
-                        <Route key={route.key} index element={route.element} />
-                    ),
-                )}
-            </Routes>
-        </Suspense>
+        <AppSlugProvider appSlug={appSlug}>
+            <Suspense>
+                <Routes>
+                    {APP_ROUTES.map((route) =>
+                        route.path ? (
+                            <Route key={route.key} path={route.path} element={route.element} />
+                        ) : (
+                            <Route key={route.key} index element={route.element} />
+                        ),
+                    )}
+                </Routes>
+            </Suspense>
+        </AppSlugProvider>
     );
 }

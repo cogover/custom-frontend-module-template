@@ -1,5 +1,5 @@
-import { AccountSetting } from '../account/account.type';
-export { type ServerConfig } from '@stringeecom/ui-kit';
+import { AccountInfoResponse, AccountSetting } from '../account/account.type';
+import { ErrorApiResponse } from 'src/utils/types/api.type';
 
 export interface PublicConfig {
     publicKey: string;
@@ -72,4 +72,38 @@ export interface TableSetting {
     workspaceId: string;
     updated: number;
     created: number;
+}
+
+export interface AppMenu {
+    id: string;
+    slug: string;
+    [key: string]: unknown;
+}
+
+export interface ServerConfig {
+    config: PublicConfigKeys;
+    account: AccountInfoResponse | null;
+    tokenID: string;
+    workspace: WorkspaceConfig | null;
+    workspaceAccount: WorkspaceAccount | null;
+    tableSetting: TableSetting[];
+    userPermissions: Record<string, unknown>;
+    applicationConfig: Record<string, unknown>;
+    billingPermission: Record<string, unknown>;
+    apps: AppMenu[];
+    workspaces: WorkspaceConfig[];
+    personnel: unknown;
+    workspaceAuthError: unknown;
+    serviceAppUser: unknown;
+}
+
+export interface CommonSettingsState extends Omit<ServerConfig, 'tokenID'> {
+    leftMenuIsExpand?: boolean;
+    rightFilterExpand?: boolean;
+    publicConfig?: PublicConfig;
+    fetched?: boolean;
+    error?: boolean;
+    errorData?: ErrorApiResponse<unknown> | null;
+    tokenID?: string;
+    isProgressive?: boolean;
 }

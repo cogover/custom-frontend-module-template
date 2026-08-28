@@ -1,5 +1,15 @@
-import { ImageResponse } from '@stringeecom/ui-kit';
 import { ThemeType } from 'src/theme/theme.type';
+
+export interface ImageFileResponse {
+    file_id?: string;
+    fileId?: string;
+    file_ext?: string;
+    fileExt?: string;
+    resizable: boolean;
+    url: string;
+}
+
+export type ImageResponse = string | ImageFileResponse;
 
 export interface AccountInfoResponse {
     dateFormat: 1 | 2 | 3 | 4;

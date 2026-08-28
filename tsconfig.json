@@ -20,7 +20,7 @@
         "baseUrl": ".",
         "allowJs": true
     },
-    "include": ["src", "../../other/ui-kit/src/components/DataFields/DateTimePicker"],
+    "include": ["src"],
     "references": [
         {
             "path": "./tsconfig.node.json"
