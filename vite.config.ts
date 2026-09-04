@@ -17,6 +17,7 @@ export default defineConfig(({ command, mode }) => {
     const hasCerts = !!certKey && !!cert;
 
     return {
+        base: './',
         plugins: [
             react(),
             !hasCerts && basicSsl(),
