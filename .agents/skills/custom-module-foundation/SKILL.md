@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, images, assets, or shared UI foundations in custom-module-template.
+description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, or shared UI foundations in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -108,24 +108,49 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 4. Ghép class bằng `cx()` và nhóm theo layout, spacing, visual, typography, interaction.
 5. Không hardcode giá trị khi dự án đã có token tương ứng.
 
-## 9. Image và static asset — CRITICAL
+## 9. Static asset — CRITICAL
 
-Đây là rule ưu tiên cao nhất khi làm việc với image/static asset. Vi phạm sẽ khiến asset hoạt động ở standalone nhưng mất hoặc trỏ nhầm sang asset của router khi chạy production.
+Áp dụng phần này cho mọi tài nguyên tĩnh của custom module: image, SVG, video, audio, font, file download, `poster`, `<source>` và CSS `url(...)`. Asset có thể chạy đúng ở standalone nhưng trỏ nhầm sang router host nếu build tạo URL bắt đầu bằng `/`.
 
-Không dùng hoặc tạo lại thư mục `public` để chứa image/asset của custom module. Khi module chạy qua router, path bắt đầu bằng `/` trỏ vào public root của router host, không phải remote; ảnh sẽ mất hoặc lấy nhầm asset của router.
+### Build portable cho mọi slot
 
-Đặt asset trong `src/assets` và import để Vite xử lý URL, hash và federation base:
+1. Giữ `base: './'` trong `vite.config.ts`.
+2. Chỉ build bằng `npm run build`.
+3. Không truyền `--base=/_cm_N/`, không hardcode `_cm_1`, `_cm_2` hoặc bất kỳ slot nào vào source hay config build.
+
+Với relative base, Vite sinh URL dựa trên `import.meta.url`, là URL của JavaScript chunk đang chạy. Chunk được tải từ `/_cm_1/assets/*` thì asset tự resolve về `/_cm_1/assets/*`; cùng dist được tải từ `/_cm_2/assets/*` thì tự resolve về `/_cm_2/assets/*`.
+
+### Asset dùng trong TypeScript/TSX
+
+Đặt file trong `src/assets` và import URL tường minh để Vite emit file, thêm hash và giữ quan hệ tương đối với chunk:
 
 ```tsx
+import audioUrl from 'src/assets/notification.mp3';
 import bannerUrl from 'src/assets/banner.png';
+import demoVideoUrl from 'src/assets/demo.mp4';
 
 <img src={bannerUrl} alt='Banner giới thiệu' />;
+<video src={demoVideoUrl} poster={bannerUrl} controls />;
+<audio src={audioUrl} controls />;
 ```
 
-Không dùng:
+Với lựa chọn asset động, tạo map từ các import tường minh. Không ghép path bằng template string vì Vite có thể không phân tích và emit đủ file.
 
-```tsx
-<img src='/images/banner.png' alt='Banner giới thiệu' />
-```
+### Asset dùng trong CSS/SCSS và HTML
 
-Không tạo file theo cấu trúc `public/images/banner.png`, không tự ghép root URL và không giả định asset nằm trên origin của router. Với asset dùng trong `index.html`, tham chiếu file dưới `/src/assets/...` để Vite đưa nó vào build.
+1. Trong CSS/SCSS thuộc `src`, dùng `url(...)` tương đối tới file trong `src/assets`; Vite sẽ xử lý URL khi build.
+2. Trong `index.html`, tham chiếu `/src/assets/...`; Vite sẽ chuyển thành URL build. `index.html` của remote không được router host sử dụng khi load Module Federation.
+
+### Không dùng
+
+1. Không dùng hoặc tạo thư mục `public` cho asset của custom module.
+2. Không viết root-relative URL như `/assets/file.mp4`, `/images/banner.png` hoặc `url('/fonts/font.woff2')`; browser sẽ request public root của router host.
+3. Không tự nối origin, app slug hoặc `/_cm_N/` vào URL asset.
+
+URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải build asset; dùng nguyên URL đó và không thêm prefix của router.
+
+### Verification bắt buộc
+
+1. Chạy đúng `npm run build`, không thêm `--base`.
+2. Kiểm tra asset local đã được emit vào `dist/assets` và output không chứa URL root-relative `/assets/...` cho asset đó.
+3. Khi có router local hoặc staging, smoke test tại một slot `cN`: URL thực tế của asset phải chứa `/_cm_N/assets/`, request trả `200` và nội dung hiển thị/phát được.

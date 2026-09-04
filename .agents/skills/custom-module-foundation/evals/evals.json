@@ -22,7 +22,19 @@
         {
             "id": 4,
             "prompt": "Thêm ảnh banner cho một Custom Page và đảm bảo chạy được cả standalone lẫn khi load qua router ở slot c1.",
-            "expected_output": "Đặt ảnh trong src/assets và import qua module; không dùng/tạo public, path /images hoặc tự ghép origin/base của router.",
+            "expected_output": "Giữ base: './', chỉ chạy npm run build, đặt ảnh trong src/assets và import qua module; không dùng public, path /images, hardcode _cm_1 hoặc truyền --base theo slot.",
+            "files": []
+        },
+        {
+            "id": 5,
+            "prompt": "Thêm video giới thiệu có poster, audio thông báo và file PDF tải xuống cho Custom Page; tất cả phải chạy qua router host.",
+            "expected_output": "Đặt các file trong src/assets và dùng import URL tường minh cho video, poster, audio và download; CSS url() dùng path tương đối; không dùng public hoặc URL bắt đầu bằng /.",
+            "files": []
+        },
+        {
+            "id": 6,
+            "prompt": "CI chỉ chạy npm run build một lần, sau đó cùng dist custom module có thể được deploy vào c1 hoặc c2. Cấu hình asset thế nào?",
+            "expected_output": "Giữ base: './' để Vite resolve asset theo import.meta.url; không hardcode slot hoặc truyền --base=/_cm_N/; yêu cầu kiểm tra dist và smoke test URL /_cm_N/assets/.",
             "files": []
         }
     ]
