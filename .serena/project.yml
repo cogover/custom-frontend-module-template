@@ -17,6 +17,10 @@ line_ending:
 # is activated post-init, an error will be returned.
 language_backend:
 
+# Compatibility field required by Serena 1.5.x.
+languages:
+- typescript
+
 # whether to use project's .gitignore files to ignore files
 ignore_all_files_in_gitignore: true
 
@@ -167,3 +171,6 @@ activation_command:
 # maximum time in seconds to wait for activation_command to complete before killing it (default 180s).
 # must be a positive number.
 activation_command_timeout: 180.0
+
+# Compatibility field required by Serena 1.5.x.
+additional_workspace_folders: []
