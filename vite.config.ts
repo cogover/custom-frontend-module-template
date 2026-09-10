@@ -28,6 +28,7 @@ export default defineConfig(({ command, mode }) => {
                     './CustomApp': './src/App.tsx',
                 },
                 shared: [
+                    '@cogover/client-sdk',
                     'react',
                     'react-dom',
                     'react-redux',
