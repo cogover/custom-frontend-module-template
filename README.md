@@ -11,6 +11,20 @@ Tài liệu tổng quan repository `custom-module-template`.
 -   Routing dùng **path TƯƠNG ĐỐI** (không leading slash) vì nền tảng Cogover quản lý phần đường dẫn bên ngoài module.
 -   Đã loại bỏ FontAwesome khỏi code dự án; eslint chặn cứng import `@fortawesome/*`.
 
+## Chọn workspace khi chạy trên máy
+
+1. Sao chép `.env.sample` thành `.env.local`, điền tên workspace:
+
+    ```dotenv
+    VITE_WORKSPACE_NAME=cong-ty
+    ```
+
+2. Chạy `npm ci`, sau đó `npm run dev`. Truy cập `https://localhost:5100`; không cần sửa file hosts. Chấp nhận chứng chỉ HTTPS tự ký của máy phát triển khi trình duyệt yêu cầu.
+3. Các yêu cầu API, file và kết nối thời gian thực được chuyển tới `https://cong-ty.cogover.com`. Khi đổi workspace, khởi động lại máy chủ phát triển và tải lại trang. Phiên đăng nhập trên localhost được tách riêng theo workspace.
+4. Khi chưa đăng nhập, trang tự chuyển đến trang đăng nhập Cogover và quay lại localhost sau khi xác thực. Token nhận qua URL được dùng để thiết lập phiên rồi xóa khỏi URL; nội dung module chỉ hiển thị sau khi có tài khoản và cấu hình hợp lệ.
+
+Cấu hình workspace chỉ phục vụ chạy trên máy; khi được nhúng vào Cogover, module dùng môi trường của nền tảng.
+
 ## Cấu trúc `src/`
 
 ```

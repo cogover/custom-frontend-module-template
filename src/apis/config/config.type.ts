@@ -9,6 +9,11 @@ export interface ServerConfigParams {
     token?: string | null;
 }
 
+export interface SessionConfigParams extends ServerConfigParams {
+    continueUrl: string;
+    workspaceDomain: string;
+}
+
 export interface PublicConfigKeys {
     publicKey: string;
 }

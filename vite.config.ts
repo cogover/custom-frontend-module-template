@@ -1,26 +1,62 @@
 import react from '@vitejs/plugin-react-swc';
-import fs from 'fs';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import eslintPlugin from 'vite-plugin-eslint';
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, ProxyOptions } from 'vite';
+import type { ClientRequest, IncomingMessage } from 'node:http';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import federation from '@originjs/vite-plugin-federation';
 
 export default defineConfig(({ command, mode }) => {
     const env = loadEnv(mode, process.cwd());
 
-    const certKey = env.VITE_CERT_KEY_PATH ? fs.readFileSync(env.VITE_CERT_KEY_PATH) : '';
-    const cert = env.VITE_CERT_PATH ? fs.readFileSync(env.VITE_CERT_PATH) : '';
+    const workspaceName = (env.VITE_WORKSPACE_NAME ?? '').trim().toLowerCase();
+    const validWorkspace = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(workspaceName);
+    if (command === 'serve' && !validWorkspace) {
+        throw new Error('Đặt VITE_WORKSPACE_NAME trong .env.local thành tên workspace, ví dụ: cong-ty.');
+    }
 
-    const hasCerts = !!certKey && !!cert;
+    const workspaceOrigin = `https://${workspaceName}.cogover.com`;
+    const cookiePrefix = `cgv_dev_${workspaceName}__`;
+
+    // Chỉ chuyển cookie của workspace hiện tại; không dùng phiên localhost của workspace khác.
+    const forwardWorkspaceCookies = (proxyReq: ClientRequest, req: IncomingMessage) => {
+        const cookies = (req.headers.cookie ?? '')
+            .split(';')
+            .map((cookie) => cookie.trim())
+            .filter((cookie) => cookie.startsWith(cookiePrefix))
+            .map((cookie) => cookie.slice(cookiePrefix.length));
+
+        proxyReq.removeHeader('cookie');
+        proxyReq.removeHeader('X-CSRF-TOKEN');
+        if (cookies.length) proxyReq.setHeader('cookie', cookies.join('; '));
+        const csrfCookie = cookies.find((cookie) => cookie.startsWith('XSRF-TOKEN='));
+        if (csrfCookie) proxyReq.setHeader('X-CSRF-TOKEN', csrfCookie.slice('XSRF-TOKEN='.length));
+    };
+
+    const workspaceProxy: ProxyOptions = {
+        target: workspaceOrigin,
+        changeOrigin: true,
+        secure: true,
+        cookieDomainRewrite: '',
+        configure(proxy) {
+            proxy.on('proxyReq', forwardWorkspaceCookies);
+            proxy.on('proxyReqWs', forwardWorkspaceCookies);
+            proxy.on('proxyRes', (response) => {
+                const cookies = response.headers['set-cookie'];
+                if (cookies) {
+                    response.headers['set-cookie'] = cookies.map((cookie) => `${cookiePrefix}${cookie}`);
+                }
+            });
+        },
+    };
 
     return {
         base: './',
         plugins: [
             react(),
-            !hasCerts && basicSsl(),
+            basicSsl(),
             federation({
                 name: 'customModule',
                 filename: 'remoteEntry.js',
@@ -52,44 +88,22 @@ export default defineConfig(({ command, mode }) => {
                 }),
         ].filter(Boolean),
         server: {
-            host: env.VITE_LOCAL_HOST || '0.0.0.0',
-            https: hasCerts
-                ? {
-                      key: fs.readFileSync(env.VITE_CERT_KEY_PATH),
-                      cert: fs.readFileSync(env.VITE_CERT_PATH),
-                  }
-                : {},
-            port: 5100, // ĐỔI khi clone, vd 5103 cho cm3
+            host: 'localhost',
+            https: {},
+            port: 5100,
             strictPort: true,
             open: true,
             proxy: {
-                '/api': {
-                    target: env.VITE_API_BASE_URL,
-                    changeOrigin: true,
-                    secure: false,
-                },
-                '/files': {
-                    target: env.VITE_API_BASE_URL,
-                    changeOrigin: true,
-                    secure: false,
-                },
-                '/websocket': {
-                    // Thêm một proxy để chuyển tiếp WebSocket
-                    target: (env.VITE_API_BASE_URL ?? '').replace('https', 'wss'),
-                    changeOrigin: true,
-                    secure: false, // Sử dụng true nếu WebSocket server sử dụng HTTPS/WSS
-                    ws: true, // Bật hỗ trợ WebSocket
-                },
-                '/static': {
-                    target: env.VITE_API_BASE_URL,
-                    changeOrigin: true,
-                    secure: false,
-                },
+                '/api': workspaceProxy,
+                '/files': workspaceProxy,
+                '/websocket': { ...workspaceProxy, ws: true },
+                '/static': workspaceProxy,
             },
         },
         // Preview phục vụ remoteEntry cho host fetch cross-origin → cần CORS
         preview: {
-            port: 5101, // ĐỔI khi clone, vd 5103 cho cm3
+            host: 'localhost',
+            port: 5101,
             strictPort: true,
             cors: true,
             headers: { 'Access-Control-Allow-Origin': '*' },

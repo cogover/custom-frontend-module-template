@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import http, { SuccessResponse, SuccessServiceResponse } from '../apiBase';
-import { PublicConfig, ServerConfig, ServerConfigParams } from './config.type';
+import { PublicConfig, ServerConfig, ServerConfigParams, SessionConfigParams } from './config.type';
 import { AxiosProgressEvent } from 'axios';
 import { createServiceHeader } from 'src/utils/apiUtils';
 const URI = '/api/v1';
@@ -12,6 +12,11 @@ export const serverConfigURI = {
 };
 
 export const configApi = {
+    checkSession(params: SessionConfigParams) {
+        return http.post<SuccessServiceResponse<unknown>>(serverConfigURI.configServer, params, {
+            headers: createServiceHeader({ service: 2, type: 2 }),
+        });
+    },
     getPublicConfig() {
         return http.get<SuccessResponse<PublicConfig>>(serverConfigURI.public);
     },
