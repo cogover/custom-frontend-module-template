@@ -53,6 +53,11 @@ export default defineConfig(({ command, mode }) => {
         },
     };
 
+    const exposes = {
+        './CustomApp': './src/App.tsx',
+        './Components/DemoCounter': './src/components/DemoCounter.tsx',
+    };
+
     return {
         base: './',
         define: { 'import.meta.env.DEV_LOGIN_URL': JSON.stringify(`https://id.${siteDomain}/login`) },
@@ -61,10 +66,7 @@ export default defineConfig(({ command, mode }) => {
             federation({
                 name: 'customModule',
                 filename: 'remoteEntry.js',
-                exposes: {
-                    './CustomApp': './src/App.tsx',
-                    './Components/DemoCounter': './src/components/DemoCounter.tsx',
-                },
+                exposes,
                 shared: [
                     '@cogover/client-sdk',
                     'react',
@@ -88,7 +90,7 @@ export default defineConfig(({ command, mode }) => {
                     exclude: [],
                     failOnError: false,
                 }),
-            federationDev(),
+            federationDev(exposes),
         ].filter(Boolean),
         server: {
             host: 'localhost',

@@ -31,6 +31,8 @@ Requires Node.js and an account with access to your Cogover workspace. This proj
 
 Follow the project's [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md) skill to develop a Custom Page.
 
+**Keep the mapping `'./CustomApp': './src/App.tsx'` unchanged in `exposes` in `vite.config.ts`. Do not delete it, rename `./CustomApp`, or change the `./src/App.tsx` path, even when developing only Form Builder components.**
+
 ## Develop local components in Form Builder
 
 Follow the project's [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md) skill to develop components for Form Builder.
@@ -51,14 +53,19 @@ After installing dependencies and configuring your workspace above, use this wor
 
     Keep both commands running while developing.
 
-3. Set the component URL in Cogover Form Builder. For the project's sample `DemoCounter`:
+3. In the `npm run preview` terminal, find `Components/DemoCounter` under **Federation components:**:
 
     ```text
-    http://localhost:5101/#./Components/DemoCounter
+    Federation components:
+    Components/DemoCounter
+         -> http://localhost:5101/#./Components/DemoCounter
     ```
+
+    Copy the full URL after `->`. In the **Object's layout configuration**, select the **Federation component** and paste it into the **URL** field. Use this localhost URL only for local debugging.
 
 4. Open the Form Builder preview. If your browser requests permission to **“Access other apps and services on this device”**, choose **Allow** so Cogover can load the component from your machine.
 5. Edit `src/components/DemoCounter.tsx`, save, and wait for a successful build to view the updated component in Form Builder.
+6. Once development is complete and the new build is deployed to Cogover, **replace the localhost URL in the layout configuration with the actual deployment path** described in the [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md#2-xuất-component-cho-form-builder) skill. For example, if the demo is deployed in slot `_cm_1`, use `_cm_1/Components/DemoCounter`. Use the slot assigned to your module.
 
 ## Files commonly used during development
 

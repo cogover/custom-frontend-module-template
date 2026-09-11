@@ -3,8 +3,11 @@ import { readFileSync } from 'node:fs';
 import { rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-/** @returns {import('vite').Plugin} */
-export default function federationDev() {
+/**
+ * @param {Record<string, string>} exposes
+ * @returns {import('vite').Plugin}
+ */
+export default function federationDev(exposes = {}) {
     let revisionFile;
     let watchBuild = false;
 
@@ -27,6 +30,23 @@ export default function federationDev() {
             },
         },
         configurePreviewServer(server) {
+            const printUrls = server.printUrls.bind(server);
+            server.printUrls = () => {
+                printUrls();
+                const urls = server.resolvedUrls;
+                const origins = urls ? [...urls.local, ...urls.network] : [];
+                const links = origins.flatMap((origin) =>
+                    Object.keys(exposes)
+                        .filter((name) => name !== './CustomApp')
+                        .map((name) => {
+                            const url = new URL(origin);
+                            url.hash = name;
+                            return `  ${name.replace(/^\.\//, '')}\n       -> ${url.href}`;
+                        }),
+                );
+                if (links.length) server.config.logger.info(`\n  Federation components:\n${links.join('\n')}`);
+            };
+
             const clients = new Set();
             let revision = '';
             const readRevision = () => {

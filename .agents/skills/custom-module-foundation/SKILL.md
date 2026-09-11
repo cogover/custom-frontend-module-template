@@ -9,7 +9,7 @@ Giữ custom module tương thích với nền tảng Cogover và chạy ổn đ
 
 ## 1. Component expose
 
-1. Repo chỉ expose `./CustomApp` từ `src/App.tsx`.
+1. **Bắt buộc giữ nguyên mapping `'./CustomApp': './src/App.tsx'` trong `exposes` của `vite.config.ts`. Không được xóa, đổi khóa `./CustomApp` hoặc thay đổi đường dẫn `./src/App.tsx`, kể cả khi chỉ phát triển component cho Form Builder.**
 2. Giữ nguyên federation name, filename và expose key hiện tại.
 3. Chỉ thêm expose mới sau khi user duyệt contract với nền tảng Cogover.
 

@@ -31,6 +31,8 @@ Yêu cầu Node.js và tài khoản có quyền truy cập workspace Cogover. D�
 
 Tham khảo skill [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md) trong dự án để phát triển Custom Page.
 
+**Bắt buộc giữ nguyên mapping (ánh xạ) `'./CustomApp': './src/App.tsx'` trong `exposes` của `vite.config.ts`. Không được xóa, đổi khóa `./CustomApp` hoặc thay đổi đường dẫn `./src/App.tsx`, kể cả khi chỉ phát triển component cho Form Builder.**
+
 ## Phát triển component local trong Form Builder
 
 Tham khảo skill [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md) trong dự án để phát triển component cho Form Builder.
@@ -51,14 +53,19 @@ Sau khi cài thư viện và cấu hình workspace ở trên, dùng cách này �
 
     Giữ cả hai lệnh chạy trong lúc phát triển.
 
-3. Trong Form Builder của Cogover, đặt đường dẫn component cần nhúng. Với `DemoCounter` có sẵn trong dự án:
+3. Trong terminal chạy `npm run preview`, tìm `Components/DemoCounter` dưới mục **Federation components:**:
 
     ```text
-    http://localhost:5101/#./Components/DemoCounter
+    Federation components:
+    Components/DemoCounter
+         -> http://localhost:5101/#./Components/DemoCounter
     ```
+
+    Sao chép toàn bộ URL sau dấu `->`. Trong **cấu hình layout của Object**, chọn **Federation component** và điền vào trường **URL**. Chỉ dùng đường dẫn localhost này khi debug (kiểm tra, sửa lỗi) trên máy local.
 
 4. Mở trang xem trước của Form Builder. Nếu trình duyệt hỏi quyền **“Truy cập các ứng dụng và dịch vụ khác trên thiết bị này”**, chọn **Cho phép** để trang Cogover tải component từ máy của bạn.
 5. Sửa `src/components/DemoCounter.tsx`, lưu và đợi build thành công để xem phiên bản mới trên Form Builder.
+6. Sau khi hoàn tất và triển khai bản build mới lên Cogover, **thay URL localhost trong cấu hình layout bằng đường dẫn triển khai thực tế** theo skill [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md#2-xuất-component-cho-form-builder). Ví dụ với demo được triển khai ở vị trí `_cm_1`: `_cm_1/Components/DemoCounter`. Dùng đúng vị trí được cấp cho module của bạn.
 
 ## Các file thường dùng khi phát triển
 
