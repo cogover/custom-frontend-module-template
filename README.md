@@ -50,12 +50,23 @@ Resource **bundle LOCAL** trong repo: `src/languages/locales/<lng>/<ns>.json`, n
 
 Convention host: `/<appSlug>/cN/...` → `remoteCmN/CustomApp`. Host fetch remoteEntry tại `/_cm_N/assets/remoteEntry.js` (proxy `/_cm_N` → `VITE_FEDERATION_CUSTOM_N_ORIGIN`).
 
-1. Build template với base của slot: `npm run build -- --base=/_cm_N/`.
-2. Preview: `npm run preview -- --base=/_cm_N/ --port <port> --strictPort` (template chạy HTTPS qua basicSsl + cert wildcard).
+1. Build template với `base: './'` có sẵn: `npm run build`. Không truyền `--base` theo slot.
+2. Preview: `npm run preview -- --port <port> --strictPort` (template chạy HTTPS qua basicSsl + cert wildcard).
 3. Bên `router/.env.local`: thêm `VITE_FEDERATION_CUSTOM_N_ORIGIN="https://localhost:<port>"` rồi `npm run dev` (host port 5002).
 4. Truy cập `https://<workspace>.cogover.local:5002/cN` (host tự chèn `appSlug`).
 
 Slot 1/2 đang là cm1/cm2.
+
+## Địa chỉ tài nguyên tĩnh của remote
+
+`base: './'` giúp tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), thay vì theo domain của trang host (ứng dụng chủ). Với tài nguyên tham chiếu từ JavaScript, Vite dựa vào `import.meta.url` của file JavaScript remote; URL tương đối trong CSS được tính theo file CSS đang tải.
+
+1. Remote khác domain host: host ở `https://app.example.com`, file JavaScript remote ở `https://remote.example.com/assets/page.js` thì ảnh được build thành `banner-HASH.png` trong cùng thư mục phải tải từ `https://remote.example.com/assets/banner-HASH.png`, không phải `https://app.example.com/assets/banner-HASH.png`.
+2. Remote được host chuyển tiếp: file JavaScript tải từ `https://app.example.com/_cm_1/assets/page.js` thì ảnh theo `https://app.example.com/_cm_1/assets/banner-HASH.png`. Domain có thể trùng host nhưng đường dẫn phải phục vụ đúng remote.
+
+Đặt ảnh, video, audio, font và file tải xuống trong `src/assets`, import URL trong TypeScript/TSX; CSS dùng `url(...)` tương đối tới file nguồn. `base: './'` không tự sửa chuỗi URL viết trực tiếp như `/images/banner.png` trong JSX — đường dẫn đó vẫn trỏ về domain host.
+
+Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không bắt buộc URL tài nguyên khác domain host hoặc luôn có tiền tố `/_cm_N/`; phải khớp địa chỉ thực tế phục vụ remote. Chi tiết xem [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#9-static-asset--critical).
 
 ## Phát triển local & đóng gói gửi Cogover
 
@@ -104,7 +115,7 @@ Tham khảo ý nghĩa các biến (đọc trong `vite.config.ts`):
 
 1. **Lint** (eslint không chạy trong `build`, chỉ chạy lúc `serve`): `npm run lint`.
 2. **Build**: `npm run build` (= `tsc && vite build`) → sinh thư mục `dist/` (gồm `dist/assets/remoteEntry.js` + các chunk).
-    - Build cho slot được cấp: `npm run build -- --base=/_cm_N/` (N = số slot Cogover gán cho module). Base phải khớp slot để host fetch đúng `/_cm_N/assets/remoteEntry.js`.
+    - Giữ `base: './'`, không truyền `--base` theo slot. Cùng thư mục `dist/` dùng được ở các địa chỉ phục vụ remote khác nhau; đường dẫn nạp remote do host cấu hình.
 3. **Đóng gói** thư mục `dist/` thành 1 file nén:
     ```bash
     cd dist && zip -r ../custom-module-dist.zip . && cd ..

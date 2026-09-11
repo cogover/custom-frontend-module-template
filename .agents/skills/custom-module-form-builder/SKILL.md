@@ -30,7 +30,7 @@ Tạo component nhúng trong layout Form Builder và thao tác form bằng `form
     `Components/` là quy ước với router, không phải yêu cầu bắt buộc của Module Federation. Tên và chữ hoa/thường phải khớp hợp đồng thực tế.
 
 3. `./CustomApp` hiện xuất `src/App.tsx`, phục vụ các trang của module. Khi thêm component cho Form Builder, bổ sung khóa vào `exposes`, không thay thế hoặc xóa `./CustomApp` ngoài phạm vi yêu cầu.
-4. Giữ `base: './'` trong Vite theo [custom-module-foundation](../custom-module-foundation/SKILL.md). Vite tạo đường dẫn tài nguyên tương đối với file JavaScript được tải, để cùng một bản build dùng được ở nhiều slot.
+4. Giữ `base: './'` trong Vite theo [custom-module-foundation](../custom-module-foundation/SKILL.md). Mục đích chính là để tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), không theo domain của trang host (ứng dụng chủ). Nếu host chuyển tiếp remote, dùng địa chỉ chuyển tiếp thực tế; không bắt buộc URL khác domain host. Cùng một bản build dùng được ở nhiều slot là lợi ích đi kèm.
 5. `_cm_1` trong bảng chỉ là ví dụ slot được gán trên layout. Không ghi cố định `_cm_1` hoặc `/_cm_N/` vào URL ảnh, CSS, code component hay lệnh build. Dùng import tài nguyên theo skill foundation.
 6. Không bọc component bằng CustomApp, router, header hoặc sidebar của host. Với thư viện có context dùng chung như client SDK, kiểm tra provider và cấu hình `shared` của cả host lẫn remote trước khi sử dụng.
 

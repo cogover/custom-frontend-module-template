@@ -112,13 +112,18 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 
 Áp dụng phần này cho mọi tài nguyên tĩnh của custom module: image, SVG, video, audio, font, file download, `poster`, `<source>` và CSS `url(...)`. Asset có thể chạy đúng ở standalone nhưng trỏ nhầm sang router host nếu build tạo URL bắt đầu bằng `/`.
 
-### Build portable cho mọi slot
+### Resolve tài nguyên theo địa chỉ phục vụ remote
 
 1. Giữ `base: './'` trong `vite.config.ts`.
 2. Chỉ build bằng `npm run build`.
 3. Không truyền `--base=/_cm_N/`, không hardcode `_cm_1`, `_cm_2` hoặc bất kỳ slot nào vào source hay config build.
 
-Với relative base, Vite sinh URL dựa trên `import.meta.url`, là URL của JavaScript chunk đang chạy. Chunk được tải từ `/_cm_1/assets/*` thì asset tự resolve về `/_cm_1/assets/*`; cùng dist được tải từ `/_cm_2/assets/*` thì tự resolve về `/_cm_2/assets/*`.
+`base: './'` giúp tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), thay vì theo domain của trang host (ứng dụng chủ). Với tài nguyên tham chiếu từ JavaScript, Vite dựa vào `import.meta.url` của file JavaScript remote; URL tương đối trong CSS được tính theo file CSS đang tải.
+
+1. Remote khác domain host: host ở `https://app.example.com`, file JavaScript remote ở `https://remote.example.com/assets/page.js` thì ảnh được build thành `banner-HASH.png` trong cùng thư mục phải tải từ `https://remote.example.com/assets/banner-HASH.png`, không phải `https://app.example.com/assets/banner-HASH.png`.
+2. Remote được host chuyển tiếp: file JavaScript tải từ `https://app.example.com/_cm_1/assets/page.js` thì ảnh theo `https://app.example.com/_cm_1/assets/banner-HASH.png`. Domain có thể trùng host nhưng đường dẫn phải phục vụ đúng remote.
+
+`base: './'` không tự sửa chuỗi URL viết trực tiếp trong JSX như `/images/banner.png`. Phải để Vite xử lý tài nguyên qua import hoặc CSS như hướng dẫn dưới đây. Dùng cùng bản build ở nhiều slot là lợi ích đi kèm.
 
 ### Asset dùng trong TypeScript/TSX
 
@@ -153,4 +158,4 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 
 1. Chạy đúng `npm run build`, không thêm `--base`.
 2. Kiểm tra asset local đã được emit vào `dist/assets` và output không chứa URL root-relative `/assets/...` cho asset đó.
-3. Khi có router local hoặc staging, smoke test tại một slot `cN`: URL thực tế của asset phải chứa `/_cm_N/assets/`, request trả `200` và nội dung hiển thị/phát được.
+3. Khi có môi trường chạy qua host, kiểm tra URL thực tế của tài nguyên khớp địa chỉ phục vụ remote, request trả `200` và nội dung hiển thị/phát được. Nếu remote khác domain host, tài nguyên phải theo domain remote; nếu host chuyển tiếp remote, tài nguyên phải theo đường dẫn chuyển tiếp. Chỉ yêu cầu `/_cm_N/assets/` khi đó là đường dẫn triển khai thực tế, không áp dụng cho mọi môi trường.

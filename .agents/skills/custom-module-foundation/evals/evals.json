@@ -34,7 +34,7 @@
         {
             "id": 6,
             "prompt": "CI chỉ chạy npm run build một lần, sau đó cùng dist custom module có thể được deploy vào c1 hoặc c2. Cấu hình asset thế nào?",
-            "expected_output": "Giữ base: './' để Vite resolve asset theo import.meta.url; không hardcode slot hoặc truyền --base=/_cm_N/; yêu cầu kiểm tra dist và smoke test URL /_cm_N/assets/.",
+            "expected_output": "Giữ base: './' để Vite resolve asset theo import.meta.url; không hardcode slot hoặc truyền --base=/_cm_N/; yêu cầu kiểm tra dist và URL tài nguyên khớp địa chỉ phục vụ remote; chỉ yêu cầu /_cm_N/assets/ nếu triển khai thực tế dùng đường dẫn đó.",
             "files": []
         }
     ]
