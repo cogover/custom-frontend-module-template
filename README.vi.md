@@ -27,6 +27,39 @@ Yêu cầu Node.js và tài khoản có quyền truy cập workspace Cogover. D�
     npm run dev
     ```
 
+## Phát triển Custom Page
+
+Tham khảo skill [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md) trong dự án để phát triển Custom Page.
+
+## Phát triển component local trong Form Builder
+
+Tham khảo skill [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md) trong dự án để phát triển component cho Form Builder.
+
+Sau khi cài thư viện và cấu hình workspace ở trên, dùng cách này để thử component (thành phần giao diện) trực tiếp trên trang Cogover.
+
+1. Chạy lệnh theo dõi thay đổi và tự tạo lại bản build:
+
+    ```bash
+    npm run build-watch
+    ```
+
+2. Đợi bản build đầu tiên hoàn tất, mở terminal khác và chạy:
+
+    ```bash
+    npm run preview
+    ```
+
+    Giữ cả hai lệnh chạy trong lúc phát triển.
+
+3. Trong Form Builder của Cogover, đặt đường dẫn component cần nhúng. Với `DemoCounter` có sẵn trong dự án:
+
+    ```text
+    http://localhost:5101/#./Components/DemoCounter
+    ```
+
+4. Mở trang xem trước của Form Builder. Nếu trình duyệt hỏi quyền **“Access other apps and services on this device”**, chọn **Allow** để trang Cogover tải component từ máy của bạn.
+5. Sửa `src/components/DemoCounter.tsx`, lưu và đợi build thành công để xem phiên bản mới trên Form Builder.
+
 ## Các file thường dùng khi phát triển
 
 1. `src/pages/WelcomePage/index.tsx`: trang mẫu để bắt đầu chỉnh sửa giao diện.

@@ -27,6 +27,39 @@ Requires Node.js and an account with access to your Cogover workspace. This proj
     npm run dev
     ```
 
+## Develop a Custom Page
+
+Follow the project's [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md) skill to develop a Custom Page.
+
+## Develop local components in Form Builder
+
+Follow the project's [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md) skill to develop components for Form Builder.
+
+After installing dependencies and configuring your workspace above, use this workflow to test components directly on Cogover.
+
+1. Watch for source changes and rebuild automatically:
+
+    ```bash
+    npm run build-watch
+    ```
+
+2. Wait for the first build to finish, then open another terminal and run:
+
+    ```bash
+    npm run preview
+    ```
+
+    Keep both commands running while developing.
+
+3. Set the component URL in Cogover Form Builder. For the project's sample `DemoCounter`:
+
+    ```text
+    http://localhost:5101/#./Components/DemoCounter
+    ```
+
+4. Open the Form Builder preview. If your browser requests permission to **“Access other apps and services on this device”**, choose **Allow** so Cogover can load the component from your machine.
+5. Edit `src/components/DemoCounter.tsx`, save, and wait for a successful build to view the updated component in Form Builder.
+
 ## Files commonly used during development
 
 1. `src/pages/WelcomePage/index.tsx`: the sample page to start customizing.
