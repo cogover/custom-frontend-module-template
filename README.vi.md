@@ -57,7 +57,7 @@ Sau khi cài thư viện và cấu hình workspace ở trên, dùng cách này �
     http://localhost:5101/#./Components/DemoCounter
     ```
 
-4. Mở trang xem trước của Form Builder. Nếu trình duyệt hỏi quyền **“Access other apps and services on this device”**, chọn **Allow** để trang Cogover tải component từ máy của bạn.
+4. Mở trang xem trước của Form Builder. Nếu trình duyệt hỏi quyền **“Truy cập các ứng dụng và dịch vụ khác trên thiết bị này”**, chọn **Cho phép** để trang Cogover tải component từ máy của bạn.
 5. Sửa `src/components/DemoCounter.tsx`, lưu và đợi build thành công để xem phiên bản mới trên Form Builder.
 
 ## Các file thường dùng khi phát triển
