@@ -28,7 +28,7 @@ export default function DevConfigGate({ children }: PropsWithChildren) {
         return url.href;
     }, []);
     const workspaceDomain = (import.meta.env.VITE_WORKSPACE_NAME as string).trim().toLowerCase();
-    const loginUrl = new URL('https://id.cogover.com/login');
+    const loginUrl = new URL(import.meta.env.DEV_LOGIN_URL as string);
     loginUrl.searchParams.set('continue', continueUrl);
     loginUrl.searchParams.set('workspaceDomain', workspaceDomain);
     loginUrl.searchParams.set('lang', 'vi-VN');

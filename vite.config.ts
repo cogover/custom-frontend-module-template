@@ -17,8 +17,9 @@ export default defineConfig(({ command, mode }) => {
         throw new Error('Đặt VITE_WORKSPACE_NAME trong .env.local thành tên workspace, ví dụ: cong-ty.');
     }
 
-    const workspaceOrigin = `https://${workspaceName}.cogover.com`;
-    const cookiePrefix = `cgv_dev_${workspaceName}__`;
+    const siteDomain = (env.VITE_ENVIRONMENT?.trim() || 'cogover.com').replace(/^\./, '').toLowerCase();
+    const workspaceOrigin = `https://${workspaceName}.${siteDomain}`;
+    const cookiePrefix = `cgv_dev_${workspaceName}_${siteDomain}__`;
 
     // Chỉ chuyển cookie của workspace hiện tại; không dùng phiên localhost của workspace khác.
     const forwardWorkspaceCookies = (proxyReq: ClientRequest, req: IncomingMessage) => {
@@ -54,6 +55,7 @@ export default defineConfig(({ command, mode }) => {
 
     return {
         base: './',
+        define: { 'import.meta.env.DEV_LOGIN_URL': JSON.stringify(`https://id.${siteDomain}/login`) },
         plugins: [
             react(),
             basicSsl(),
