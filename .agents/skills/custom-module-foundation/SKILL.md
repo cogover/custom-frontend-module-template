@@ -5,24 +5,24 @@ description: Use when changing architecture, routing, Link navigation, providers
 
 # Custom Module Foundation
 
-Giữ custom module tương thích với router host và chạy ổn định ở cả production lẫn standalone.
+Giữ custom module tương thích với nền tảng Cogover và chạy ổn định ở cả production lẫn standalone.
 
 ## 1. Component expose
 
 1. Repo chỉ expose `./CustomApp` từ `src/App.tsx`.
 2. Giữ nguyên federation name, filename và expose key hiện tại.
-3. Chỉ thêm expose mới sau khi user duyệt contract với router host.
+3. Chỉ thêm expose mới sau khi user duyệt contract với nền tảng Cogover.
 
-## 2. Contract với router host
+## 2. Tích hợp với nền tảng Cogover
 
-1. Router host mount module tại `/:appSlug/cN/*`.
-2. Router host truyền `appSlug` vào `CustomApp` qua prop.
+1. Nền tảng Cogover quản lý phần đường dẫn ứng dụng và vị trí Custom Module bên ngoài module.
+2. Nền tảng Cogover truyền `appSlug` vào `CustomApp` qua prop.
 3. `AppSlugProvider` phân phối prop đó; component con đọc bằng `useAppSlug()`.
 4. Standalone không có app slug; context trả chuỗi rỗng.
 
-## 3. Router nội bộ
+## 3. Điều hướng trong module
 
-1. Không khai báo `:appSlug` hoặc `cN` trong router của custom module; router host đã quản lý hai segment này.
+1. Không khai báo `:appSlug` hoặc `cN` trong cấu hình đường dẫn của custom module; nền tảng Cogover đã quản lý hai segment này.
 2. Khai báo mọi route tại `src/routes.tsx`; `App.tsx` chỉ map `APP_ROUTES` thành `<Route>`.
 3. Path của page luôn tương đối.
 
@@ -65,7 +65,7 @@ import { Link } from 'react-router-dom';
 <Link to='/records'>Danh sách bản ghi</Link>;
 ```
 
-URL trên có thể thiếu app slug, khiến router host redirect lại và giao diện nháy một lần.
+URL trên có thể thiếu app slug, khiến nền tảng Cogover redirect lại và giao diện nháy một lần.
 
 Không tự nối app slug:
 
@@ -89,7 +89,7 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 ## 6. Module Federation
 
 1. Giữ React, React DOM, Redux và React Router trong `shared`.
-2. Không thay đổi contract federation ở một repo duy nhất; kiểm tra cả custom module và router host.
+2. Trước khi thay đổi cấu hình Module Federation, đối chiếu với yêu cầu tích hợp Custom Module của Cogover; nếu chưa rõ, yêu cầu thông tin từ đơn vị cung cấp nền tảng.
 3. Dùng import tường minh khi federation plugin yêu cầu string literal.
 
 ## 7. Theme và global style
@@ -97,7 +97,7 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 1. Dùng variables trong `src/theme/variables.scss`.
 2. Background dùng `--background-default`; text dùng `--typography-primary`.
 3. Font dùng `var(--font, 'Nunito Variable')` và package `@fontsource-variable/nunito`.
-4. Giữ global reset tương thích router.
+4. Giữ các quy tắc CSS toàn cục tương thích với giao diện Cogover.
 5. Page phải hiển thị đúng ở cả light và dark theme.
 
 ## 8. UI convention nền tảng
@@ -110,7 +110,7 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 
 ## 9. Static asset — CRITICAL
 
-Áp dụng phần này cho mọi tài nguyên tĩnh của custom module: image, SVG, video, audio, font, file download, `poster`, `<source>` và CSS `url(...)`. Asset có thể chạy đúng ở standalone nhưng trỏ nhầm sang router host nếu build tạo URL bắt đầu bằng `/`.
+Áp dụng phần này cho mọi tài nguyên tĩnh của custom module: image, SVG, video, audio, font, file download, `poster`, `<source>` và CSS `url(...)`. Asset có thể chạy đúng ở standalone nhưng trỏ nhầm sang nền tảng Cogover nếu build tạo URL bắt đầu bằng `/`.
 
 ### Resolve tài nguyên theo địa chỉ phục vụ remote
 
@@ -144,15 +144,15 @@ Với lựa chọn asset động, tạo map từ các import tường minh. Khô
 ### Asset dùng trong CSS/SCSS và HTML
 
 1. Trong CSS/SCSS thuộc `src`, dùng `url(...)` tương đối tới file trong `src/assets`; Vite sẽ xử lý URL khi build.
-2. Trong `index.html`, tham chiếu `/src/assets/...`; Vite sẽ chuyển thành URL build. `index.html` của remote không được router host sử dụng khi load Module Federation.
+2. Trong `index.html`, tham chiếu `/src/assets/...`; Vite sẽ chuyển thành URL build. `index.html` của remote không được nền tảng Cogover sử dụng khi load Module Federation.
 
 ### Không dùng
 
 1. Không dùng hoặc tạo thư mục `public` cho asset của custom module.
-2. Không viết root-relative URL như `/assets/file.mp4`, `/images/banner.png` hoặc `url('/fonts/font.woff2')`; browser sẽ request public root của router host.
+2. Không viết root-relative URL như `/assets/file.mp4`, `/images/banner.png` hoặc `url('/fonts/font.woff2')`; browser sẽ request public root của nền tảng Cogover.
 3. Không tự nối origin, app slug hoặc `/_cm_N/` vào URL asset.
 
-URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải build asset; dùng nguyên URL đó và không thêm prefix của router.
+URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải build asset; dùng nguyên URL đó và không thêm tiền tố đường dẫn ứng dụng.
 
 ### Verification bắt buộc
 

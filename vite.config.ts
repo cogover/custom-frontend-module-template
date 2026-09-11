@@ -22,7 +22,7 @@ export default defineConfig(({ command, mode }) => {
             react(),
             !hasCerts && basicSsl(),
             federation({
-                name: 'cmTemplate', // ĐỔI khi clone, vd 'cm3'
+                name: 'customModule',
                 filename: 'remoteEntry.js',
                 exposes: {
                     './CustomApp': './src/App.tsx',

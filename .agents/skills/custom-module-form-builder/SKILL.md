@@ -12,27 +12,26 @@ Tạo component nhúng trong layout Form Builder và thao tác form bằng `form
 1. Tìm component và cấu hình `exposes` hiện có trước khi tạo mới; sửa hoặc tái sử dụng phần phù hợp.
 2. Đọc [src/types/form-builder.d.ts](../../../src/types/form-builder.d.ts). Đây là hợp đồng kiểu nội bộ cho `FormBuilderComponentProps`, `FormBuilderApi`, `FormBuilderScript`, `FormBuilderScriptContext` và toàn bộ `screen`.
 3. Đọc các khối `@example` ngay trên kiểu và phương thức liên quan; không tạo bản sao tài liệu hoặc định nghĩa lại các kiểu này trong component.
-4. Không dùng `any`, không cài/import `@stringeecom/ui-kit` để lấy API Form Builder. Chỉ dùng `import type` từ file khai báo nội bộ.
-5. Nếu cần API chưa được khai báo, kiểm tra code ui-kit khi có quyền truy cập hoặc yêu cầu hợp đồng API từ host; không tự bịa phương thức hay ép kiểu để bỏ qua lỗi.
+4. Không dùng `any` hoặc cài thư viện khác để lấy API Form Builder. Chỉ dùng `import type` từ file khai báo có sẵn trong dự án.
+5. Nếu cần API chưa được khai báo, yêu cầu tài liệu API từ đơn vị cung cấp nền tảng Cogover; không tự bịa phương thức hay ép kiểu để bỏ qua lỗi.
 
-## 2. Xuất component cho router
+## 2. Xuất component cho Form Builder
 
 1. Đặt component trong `src/components/` hoặc cấu trúc tương đương đã có. Component nhận `FormBuilderComponentProps` và được xuất mặc định.
 2. Đối chiếu đường dẫn host cần gọi trước khi thêm `exposes`. Quy ước đã thống nhất cho component trong Form Builder là:
 
-    | Vị trí                    | Ví dụ                                |
-    | ------------------------- | ------------------------------------ |
-    | File component            | `src/components/PromotionCard.tsx`   |
-    | Khóa trong `exposes`      | `./Components/PromotionCard`         |
-    | Path cấu hình trên layout | `_cm_1/Components/PromotionCard`     |
-    | Module router gọi         | `remoteCm1/Components/PromotionCard` |
+    | Vị trí                    | Ví dụ                              |
+    | ------------------------- | ---------------------------------- |
+    | File component            | `src/components/PromotionCard.tsx` |
+    | Khóa trong `exposes`      | `./Components/PromotionCard`       |
+    | Path cấu hình trên layout | `_cm_1/Components/PromotionCard`   |
 
-    `Components/` là quy ước với router, không phải yêu cầu bắt buộc của Module Federation. Tên và chữ hoa/thường phải khớp hợp đồng thực tế.
+    `Components/` là quy ước tích hợp với Form Builder của Cogover, không phải yêu cầu bắt buộc của Module Federation. Tên và chữ hoa/thường phải khớp hợp đồng thực tế.
 
 3. `./CustomApp` hiện xuất `src/App.tsx`, phục vụ các trang của module. Khi thêm component cho Form Builder, bổ sung khóa vào `exposes`, không thay thế hoặc xóa `./CustomApp` ngoài phạm vi yêu cầu.
 4. Giữ `base: './'` trong Vite theo [custom-module-foundation](../custom-module-foundation/SKILL.md). Mục đích chính là để tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), không theo domain của trang host (ứng dụng chủ). Nếu host chuyển tiếp remote, dùng địa chỉ chuyển tiếp thực tế; không bắt buộc URL khác domain host. Cùng một bản build dùng được ở nhiều slot là lợi ích đi kèm.
 5. `_cm_1` trong bảng chỉ là ví dụ slot được gán trên layout. Không ghi cố định `_cm_1` hoặc `/_cm_N/` vào URL ảnh, CSS, code component hay lệnh build. Dùng import tài nguyên theo skill foundation.
-6. Không bọc component bằng CustomApp, router, header hoặc sidebar của host. Với thư viện có context dùng chung như client SDK, kiểm tra provider và cấu hình `shared` của cả host lẫn remote trước khi sử dụng.
+6. Không bọc component bằng CustomApp, bộ định tuyến riêng, header hoặc sidebar của ứng dụng chủ. Với thư viện có context dùng chung như client SDK, đối chiếu yêu cầu provider và cấu hình `shared` với tài liệu tích hợp Cogover trước khi sử dụng.
 
 ## 3. Nhận formBuilder và gọi execScript
 
@@ -40,7 +39,7 @@ Tạo component nhúng trong layout Form Builder và thao tác form bằng `form
 import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/form-builder';
 ```
 
-1. Nhận `formBuilder` qua props của component. Không tự gọi hook ui-kit từ custom module, không yêu cầu host truyền riêng `screen`.
+1. Nhận `formBuilder` qua props của component. Dùng API qua prop này; không yêu cầu nền tảng truyền riêng `screen`.
 2. Viết logic bằng hàm và truyền trực tiếp vào `execScript`:
 
     ```ts
@@ -50,7 +49,7 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
     ```
 
 3. Không dùng `toString()`, nối chuỗi, `eval` hoặc `new Function` để chuyển hay chạy hàm. Kiểu hiện vẫn nhận chuỗi nhằm tương thích script cũ; component mới dùng hàm trực tiếp.
-4. Host tạo screen cho lần thực thi; LayoutRuleProvider chịu trách nhiệm áp dụng thay đổi trường và bố cục. Component không tự gọi setScreen hay thay thế luồng cập nhật form của host.
+4. Nền tảng Cogover tạo `screen` cho mỗi lần thực thi và áp dụng thay đổi trường, bố cục. Component chỉ thao tác qua API được cung cấp, không thay thế luồng cập nhật form của nền tảng.
 5. Nếu cần tách logic dùng lại, dùng `FormBuilderScript` hoặc `FormBuilderScriptContext` hiện có thay vì tự định nghĩa chữ ký mới.
 
 ## 4. Điều khiển các thành phần
@@ -73,7 +72,7 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
 
 ## 6. Kiểm tra trước khi bàn giao
 
-1. Kiểm tra đường dẫn expose, file đích và chữ hoa/thường khớp với đường dẫn router sẽ gọi.
+1. Kiểm tra đường dẫn expose, file đích và chữ hoa/thường khớp với đường dẫn được cấu hình trên Form Builder.
 2. Chạy Prettier, ESLint và TypeScript cho phần thay đổi; kiểm tra dependencies của hook nếu có.
 3. Kiểm thử hành vi có sửa: thiếu API/thành phần, cập nhật trường hoặc ô, và lỗi được trả về component. Không dùng mock để thay thế chính luồng cập nhật đang cần xác nhận.
 4. Build theo yêu cầu của người dùng. Nếu được yêu cầu không build, không chạy build; báo rõ phạm vi đã kiểm tra. Khi build, dùng cấu hình relative base của foundation, không thêm slot cố định.

@@ -9,7 +9,7 @@
         },
         {
             "id": 2,
-            "prompt": "Thêm link tới /records, phải chạy đúng cả standalone và khi module được router mount dưới /settings/c1.",
+            "prompt": "Thêm link tới /records, phải chạy đúng cả standalone và khi module được nền tảng Cogover nhúng dưới /settings/c1.",
             "expected_output": "Dùng Link nội bộ; không dùng react-router-dom Link, thẻ a hoặc tự ghép appSlug; standalone không sinh //records.",
             "files": []
         },
@@ -21,13 +21,13 @@
         },
         {
             "id": 4,
-            "prompt": "Thêm ảnh banner cho một Custom Page và đảm bảo chạy được cả standalone lẫn khi load qua router ở slot c1.",
+            "prompt": "Thêm ảnh banner cho một Custom Page và đảm bảo chạy được cả standalone lẫn khi load qua nền tảng Cogover ở slot c1.",
             "expected_output": "Giữ base: './', chỉ chạy npm run build, đặt ảnh trong src/assets và import qua module; không dùng public, path /images, hardcode _cm_1 hoặc truyền --base theo slot.",
             "files": []
         },
         {
             "id": 5,
-            "prompt": "Thêm video giới thiệu có poster, audio thông báo và file PDF tải xuống cho Custom Page; tất cả phải chạy qua router host.",
+            "prompt": "Thêm video giới thiệu có poster, audio thông báo và file PDF tải xuống cho Custom Page; tất cả phải chạy khi nhúng vào Cogover.",
             "expected_output": "Đặt các file trong src/assets và dùng import URL tường minh cho video, poster, audio và download; CSS url() dùng path tương đối; không dùng public hoặc URL bắt đầu bằng /.",
             "files": []
         },

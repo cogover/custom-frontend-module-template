@@ -24,8 +24,7 @@ export const defaultNS = I18nNS.APP;
 export const namespaces = Object.values(I18nNS);
 
 /**
- * Khác với các remote khác (end-user, sla…): resource KHÔNG fetch từ dự án `static`
- * (`/static/locales/{{lng}}/{{ns}}.json`) mà được TẠO & BUNDLE ngay trong dự án này.
+ * Bản dịch được đóng gói ngay trong dự án, không tải từ kho bản dịch bên ngoài.
  *
  * Mỗi file `src/languages/locales/<lng>/<ns>.json` sẽ tự động trở thành resource của
  * namespace `<ns>` cho ngôn ngữ `<lng>`. Thêm ngôn ngữ/namespace = thêm file JSON tương ứng.

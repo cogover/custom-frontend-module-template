@@ -24,8 +24,8 @@ import { I18nNS } from 'src/languages/i18n';
 
 Không đọc, tìm, cập nhật hoặc phụ thuộc vào:
 
-1. Dự án `static`.
-2. Locale của router hoặc remote Cogover khác.
+1. Kho bản dịch bên ngoài dự án.
+2. Bản dịch của ứng dụng chủ hoặc module khác.
 3. URL `/static/locales/...`.
 4. Hook/i18n instance do host cung cấp.
 5. Tài nguyên dịch từ API bên ngoài.
@@ -124,7 +124,7 @@ JSX:
 ```tsx
 const { t: tApp } = useTranslation(I18nNS.APP);
 
-<h1>{tApp('welcomePage.title')}</h1>
+<h1>{tApp('welcomePage.title')}</h1>;
 ```
 
 Không hardcode text đã thuộc phạm vi i18n trong JSX.
@@ -152,11 +152,7 @@ Không dùng `{requestId}` hoặc `${requestId}` trong locale string.
 Dùng `Trans` nội bộ:
 
 ```tsx
-<Trans
-    ns={I18nNS.APP}
-    i18nKey='welcomePage.description'
-    components={{ 1: <strong /> }}
-/>
+<Trans ns={I18nNS.APP} i18nKey='welcomePage.description' components={{ 1: <strong /> }} />
 ```
 
 Locale:

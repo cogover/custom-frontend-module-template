@@ -1,4 +1,4 @@
-// Đối chiếu ui-kit/src/components/FormBuilder/type.ts và apis/record/record.type.ts.
+// Khai báo kiểu cho API Form Builder được nền tảng Cogover cung cấp.
 // Các ví dụ dùng slug/ID minh họa; thay bằng cấu hình thực tế của layout.
 
 /**
@@ -418,7 +418,7 @@ export interface FormBuilderApi {
 }
 
 /**
- * Props router truyền cho federation component; chỉ import type, không cần runtime ui-kit.
+ * Props nền tảng Cogover truyền cho component nhúng; chỉ dùng import type.
  *
  * @example
  * ```ts

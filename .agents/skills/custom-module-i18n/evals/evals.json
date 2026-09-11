@@ -3,8 +3,8 @@
     "evals": [
         {
             "id": 1,
-            "prompt": "Dịch title và description của WelcomePage sang tiếng Anh, tìm key dùng chung trong static nếu có.",
-            "expected_output": "Không truy cập static; chỉ search và cập nhật locale nội bộ vi-VN/en-US của custom module, dùng hook nội bộ.",
+            "prompt": "Dịch title và description của WelcomePage sang tiếng Anh, tìm key dùng chung trong kho bản dịch bên ngoài nếu có.",
+            "expected_output": "Không truy cập kho bản dịch bên ngoài; chỉ search và cập nhật locale nội bộ vi-VN/en-US của custom module, dùng hook nội bộ.",
             "files": []
         },
         {

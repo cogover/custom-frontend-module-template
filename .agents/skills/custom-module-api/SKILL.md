@@ -5,7 +5,7 @@ description: Use when adding or changing API clients, endpoints, request types, 
 
 # Custom Module API
 
-Thêm API theo đúng HTTP infrastructure của custom module để cùng code chạy được trong router host và standalone.
+Thêm API theo đúng HTTP infrastructure của custom module để cùng code chạy được trong nền tảng Cogover và standalone.
 
 ## 1. HTTP client chung
 
@@ -58,7 +58,7 @@ export const requestURI = {
 ```
 
 1. Không hardcode domain/workspace origin.
-2. Path phải chạy qua Vite proxy ở standalone và cùng origin ở router host.
+2. Path phải chạy qua Vite proxy ở standalone và cùng origin ở nền tảng Cogover.
 3. Không đặt URL endpoint trực tiếp trong component.
 
 ## 4. Type response
@@ -131,7 +131,7 @@ const query = useQuery({
 ## 8. Production và standalone
 
 1. Cùng một API module chạy ở cả hai môi trường.
-2. Production gọi path tương đối qua router origin.
+2. Production gọi path tương đối qua domain của ứng dụng Cogover.
 3. Standalone gọi cùng path qua Vite proxy.
 4. Không kiểm tra hostname trong feature API để đổi URL.
 5. `DevConfigGate` lấy config cần thiết trước khi render standalone page.

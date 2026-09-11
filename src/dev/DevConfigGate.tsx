@@ -12,7 +12,7 @@ const NOT_RETRY_STATUS = [400, 401, 403];
 /**
  * CHỈ DÙNG CHO DEV STANDALONE — KHÔNG expose qua federation.
  *
- * Khi chạy trong host `router`, host đã gọi config API và set sẵn `commonSettings` vào
+ * Khi nhúng vào Cogover, nền tảng đã gọi config API và set sẵn `commonSettings` vào
  * Redux (shared store), nên component `App` được expose KHÔNG cần luồng này.
  * Standalone (`npm run dev`/`preview`) thì không có host → gate này gọi config API và đổ
  * vào store để các provider (ThemeProvider…) có account/workspace/theme thật.
