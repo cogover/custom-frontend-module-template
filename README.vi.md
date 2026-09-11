@@ -9,10 +9,10 @@ Dự án mẫu để phát triển Custom Module (phần mở rộng tùy chỉn
 Yêu cầu Node.js và tài khoản có quyền truy cập workspace Cogover. Dự án đã được kiểm tra với Node.js `20.19.6`.
 
 1. Clone dự án về máy.
-2. Sao chép `.env.sample` thành `.env.local` và điền tên workspace. Ví dụ với `https://cong-ty.cogover.com`:
+2. Sao chép `.env.sample` thành `.env.local` và điền tên workspace. Ví dụ với `https://company.cogover.com`:
 
     ```dotenv
-    VITE_WORKSPACE_NAME=cong-ty
+    VITE_WORKSPACE_NAME=company
     ```
 
 3. Cài thư viện:

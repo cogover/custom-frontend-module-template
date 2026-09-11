@@ -9,10 +9,10 @@ A template for developing Custom Modules for Cogover. Customize the sample page,
 Requires Node.js and an account with access to your Cogover workspace. This project has been tested with Node.js `20.19.6`.
 
 1. Clone the project to your machine.
-2. Copy `.env.sample` to `.env.local` and enter your workspace name. For example, for `https://cong-ty.cogover.com`:
+2. Copy `.env.sample` to `.env.local` and enter your workspace name. For example, for `https://company.cogover.com`:
 
     ```dotenv
-    VITE_WORKSPACE_NAME=cong-ty
+    VITE_WORKSPACE_NAME=company
     ```
 
 3. Install dependencies:
