@@ -1,79 +1,71 @@
 # custom-module-template
 
-Tài liệu tổng quan repository `custom-module-template`.
+Dự án mẫu để phát triển Custom Module (phần mở rộng tùy chỉnh) cho Cogover. Bạn có thể sửa trang mẫu, thêm trang mới và gọi API của workspace đã chọn.
 
-## Project Overview
+## Chạy dự án local
 
-`custom-module-template` là **skeleton/template để tạo 1 Custom Module** trong hệ Module Federation Cogover — một **remote** chỉ expose đúng 1 component `./CustomApp` (`src/App.tsx`), được nền tảng Cogover nhúng tại vị trí dành cho Custom Module.
+Yêu cầu Node.js và tài khoản có quyền truy cập workspace Cogover. Dự án đã được kiểm tra với Node.js `20.19.6`.
 
--   Federation `name: 'customModule'`, `exposes: { './CustomApp': './src/App.tsx' }`, `remotes` rỗng (không tiêu thụ remote nào). Cấu hình nằm trong `vite.config.ts`.
--   `App.tsx` chỉ tự bọc `AppSlugProvider`; Redux, ngữ cảnh điều hướng và bố cục trang do nền tảng Cogover cung cấp. Các provider còn lại chỉ phục vụ **chế độ dev standalone**.
--   Routing dùng **path TƯƠNG ĐỐI** (không leading slash) vì nền tảng Cogover quản lý phần đường dẫn bên ngoài module.
--   Đã loại bỏ FontAwesome khỏi code dự án; eslint chặn cứng import `@fortawesome/*`.
-
-## Chọn workspace khi chạy trên máy
-
-1. Sao chép `.env.sample` thành `.env.local`, điền tên workspace:
+1. Clone dự án về máy.
+2. Sao chép `.env.sample` thành `.env.local` và điền tên workspace. Ví dụ với `https://cong-ty.cogover.com`:
 
     ```dotenv
     VITE_WORKSPACE_NAME=cong-ty
     ```
 
-2. Chạy `npm ci`, sau đó `npm run dev`. Truy cập `https://localhost:5100`; không cần sửa file hosts. Chấp nhận chứng chỉ HTTPS tự ký của máy phát triển khi trình duyệt yêu cầu.
-3. Các yêu cầu API, file và kết nối thời gian thực được chuyển tới `https://cong-ty.cogover.com`. Khi đổi workspace, khởi động lại máy chủ phát triển và tải lại trang. Phiên đăng nhập trên localhost được tách riêng theo workspace.
-4. Khi chưa đăng nhập, trang tự chuyển đến trang đăng nhập Cogover và quay lại localhost sau khi xác thực. Token nhận qua URL được dùng để thiết lập phiên rồi xóa khỏi URL; nội dung module chỉ hiển thị sau khi có tài khoản và cấu hình hợp lệ.
+3. Cài thư viện:
 
-Cấu hình workspace chỉ phục vụ chạy trên máy; khi được nhúng vào Cogover, module dùng môi trường của nền tảng.
+    ```bash
+    npm ci
+    ```
 
-## Cấu trúc `src/`
+4. Chạy dự án ở môi trường local:
 
+    ```bash
+    npm run dev
+    ```
+
+## Các file thường dùng khi phát triển
+
+1. `src/pages/WelcomePage/index.tsx`: trang mẫu để bắt đầu chỉnh sửa giao diện.
+2. `src/pages/`: nơi đặt các trang mới.
+3. `src/routes.tsx`: khai báo đường dẫn và trang tương ứng trong `APP_ROUTES`.
+4. `src/components/`: các thành phần giao diện dùng chung, gồm `Link` và `Avatar`.
+5. `src/apis/`: các hàm gọi API và kiểu dữ liệu liên quan.
+6. `src/assets/`: ảnh, video, âm thanh và file tải xuống.
+7. `src/languages/locales/`: các file bản dịch.
+
+### Thêm trang mới
+
+Tạo trang trong `src/pages/`, sau đó thêm trang vào `APP_ROUTES` tại `src/routes.tsx`. Đường dẫn khai báo không có dấu `/` ở đầu, ví dụ `customers` hoặc `customers/:customerId`.
+
+### Liên kết giữa các trang
+
+Bắt buộc dùng `Link` có sẵn trong dự án:
+
+```tsx
+import Link from 'src/components/Link';
 ```
-src/
-├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
-├── assets/              # Image/static asset được Vite xử lý cho federation
-├── components/          # Component nội bộ dùng chung: Avatar, Link
-├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element}
-├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
-├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
-├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
-│   └── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
-├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider
-│   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
-├── store/               # configureStore — chỉ slice commonSettings
-├── languages/           # i18n bundle LOCAL (xem mục i18n bên dưới)
-├── apis/                # Axios client, retry, apiErrorHandler, config/, account/ (types)
-├── utils/ · theme/ · styles/
+
+Component này xử lý đường dẫn ứng dụng khi chạy trên Cogover. Không import `Link` trực tiếp từ `react-router-dom`, không tự ghép định danh ứng dụng vào URL và không dùng thẻ `<a>` để chuyển trang bên trong module.
+
+### Ảnh, video và các file khác
+
+Đặt tài nguyên trong `src/assets` và import khi sử dụng. Ví dụ:
+
+```tsx
+import logoUrl from 'src/assets/cogover-logo.svg';
+
+<img src={logoUrl} alt='Cogover' />;
 ```
 
-### Expose vs Dev
+Giữ `base: './'` trong `vite.config.ts` để tài nguyên được tải theo địa chỉ phục vụ module. Không viết trực tiếp đường dẫn như `/images/banner.png` trong giao diện vì có thể tải sai địa chỉ khi module được nhúng vào Cogover. Xem thêm [hướng dẫn tài nguyên tĩnh](.agents/skills/custom-module-foundation/SKILL.md#9-static-asset--critical).
 
--   **Xuất cho nền tảng Cogover**: chỉ `App.tsx` (qua `./CustomApp`). App dùng `AppSlugProvider` và `APP_ROUTES`.
--   Nền tảng Cogover truyền prop `appSlug` (định danh ứng dụng trong URL); `AppSlugProvider` phân phối giá trị này qua `useAppSlug()`.
--   Chế độ standalone/dev không có app slug; `useAppSlug()` trả chuỗi rỗng.
--   **Dev-only**: `main.tsx`, `MainProvider`, `DevConfigGate`; standalone render thẳng nội dung page.
+### Bản dịch
 
-### Thêm page mới
+Khi cần giao diện đa ngôn ngữ, làm theo [hướng dẫn custom-module-i18n](.agents/skills/custom-module-i18n/SKILL.md) trong dự án. Mặc định nội dung mới viết bằng tiếng Việt; chỉ bổ sung bản dịch khi có yêu cầu.
 
-Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES`; `App.tsx` tự map ra `<Routes>`.
+### Quy tắc giao diện
 
-## i18n (đa ngôn ngữ)
-
-Khi làm việc với bản dịch, tuân theo [skill custom-module-i18n](.agents/skills/custom-module-i18n/SKILL.md): dùng tài nguyên dịch trong repo và các import, namespace, quy tắc kiểm tra được hướng dẫn tại đó. Mặc định text mới viết tiếng Việt trực tiếp, không tự triển khai đa ngôn ngữ khi chưa được yêu cầu.
-
-## Địa chỉ tài nguyên tĩnh của remote
-
-`base: './'` giúp tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), thay vì theo domain của trang host (ứng dụng chủ). Với tài nguyên tham chiếu từ JavaScript, Vite dựa vào `import.meta.url` của file JavaScript remote; URL tương đối trong CSS được tính theo file CSS đang tải.
-
-1. Remote khác domain host: host ở `https://app.example.com`, file JavaScript remote ở `https://remote.example.com/assets/page.js` thì ảnh được build thành `banner-HASH.png` trong cùng thư mục phải tải từ `https://remote.example.com/assets/banner-HASH.png`, không phải `https://app.example.com/assets/banner-HASH.png`.
-2. Remote được host chuyển tiếp: file JavaScript tải từ `https://app.example.com/_cm_1/assets/page.js` thì ảnh theo `https://app.example.com/_cm_1/assets/banner-HASH.png`. Domain có thể trùng host nhưng đường dẫn phải phục vụ đúng remote.
-
-Đặt ảnh, video, audio, font và file tải xuống trong `src/assets`, import URL trong TypeScript/TSX; CSS dùng `url(...)` tương đối tới file nguồn. `base: './'` không tự sửa chuỗi URL viết trực tiếp như `/images/banner.png` trong JSX — đường dẫn đó vẫn trỏ về domain host.
-
-Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không bắt buộc URL tài nguyên khác domain host hoặc luôn có tiền tố `/_cm_N/`; phải khớp địa chỉ thực tế phục vụ remote. Chi tiết xem [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#9-static-asset--critical).
-
-## Convention chính
-
--   Styling: design token (`text-typo-primary`, `bg-background-default`, `border-divider-primary`…), spacing `rem`, typography `prose-*`, gom class bằng `cx` (`src/utils/cx`).
--   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng asset SVG thuộc dự án.
--   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`. Không import `Link` trực tiếp từ `react-router-dom`, không dùng `<a href>` cho điều hướng nội bộ và không tự nối app slug (định danh ứng dụng trong URL); component `Link` xử lý phần này.
--   `npm run build` = `tsc && vite build`; eslint chỉ chạy lúc `serve` (gate trong `vite.config.ts`), build dùng `npm run lint` riêng.
+1. Dùng màu, khoảng cách và kiểu chữ có sẵn theo [hướng dẫn custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md).
+2. Chạy `npm run lint` để kiểm tra lỗi mã nguồn sau khi chỉnh sửa.
