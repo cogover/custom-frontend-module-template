@@ -5,7 +5,6 @@ import eslintPlugin from 'vite-plugin-eslint';
 import path from 'path';
 import { defineConfig, loadEnv, ProxyOptions } from 'vite';
 import type { ClientRequest, IncomingMessage } from 'node:http';
-import basicSsl from '@vitejs/plugin-basic-ssl';
 import federation from '@originjs/vite-plugin-federation';
 
 export default defineConfig(({ command, mode }) => {
@@ -58,12 +57,12 @@ export default defineConfig(({ command, mode }) => {
         define: { 'import.meta.env.DEV_LOGIN_URL': JSON.stringify(`https://id.${siteDomain}/login`) },
         plugins: [
             react(),
-            basicSsl(),
             federation({
                 name: 'customModule',
                 filename: 'remoteEntry.js',
                 exposes: {
                     './CustomApp': './src/App.tsx',
+                    './Components/DemoCounter': './src/components/DemoCounter.tsx',
                 },
                 shared: [
                     '@cogover/client-sdk',
@@ -91,7 +90,6 @@ export default defineConfig(({ command, mode }) => {
         ].filter(Boolean),
         server: {
             host: 'localhost',
-            https: {},
             port: 5100,
             strictPort: true,
             open: true,
@@ -102,7 +100,7 @@ export default defineConfig(({ command, mode }) => {
                 '/static': workspaceProxy,
             },
         },
-        // Preview phục vụ remoteEntry cho host fetch cross-origin → cần CORS
+        // Preview dùng HTTP localhost để tải remoteEntry mà không cần chứng chỉ HTTPS.
         preview: {
             host: 'localhost',
             port: 5101,
