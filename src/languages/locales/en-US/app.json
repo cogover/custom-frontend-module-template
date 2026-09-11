@@ -7,5 +7,9 @@
         "traitCreative": "Design freely",
         "traitExtensible": "Easy to extend",
         "traitIntegrated": "Seamlessly connected to Cogover"
+    },
+    "demoCounter": {
+        "clickCount": "Click count: {{value}}",
+        "increment": "Increment"
     }
 }

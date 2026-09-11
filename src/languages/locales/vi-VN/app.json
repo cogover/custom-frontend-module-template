@@ -7,5 +7,9 @@
         "traitCreative": "Tự do thiết kế",
         "traitExtensible": "Dễ mở rộng",
         "traitIntegrated": "Liền mạch với Cogover"
+    },
+    "demoCounter": {
+        "clickCount": "Số lần bấm: {{value}}",
+        "increment": "Tăng số"
     }
 }

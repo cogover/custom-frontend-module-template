@@ -2,10 +2,15 @@ import i18nsDefault, { TFunction, TOptions } from 'i18next';
 import { isString } from 'lodash';
 import objectPath from 'object-path';
 import { useTranslation as useTranslationDefault } from 'react-i18next';
+import { useDisplayLanguage } from 'src/store/commonSettingsSlice';
 
 const i18n = i18nsDefault;
 
-const useTranslation = useTranslationDefault;
+const useTranslation: typeof useTranslationDefault = (ns, options) => {
+    const language = useDisplayLanguage();
+
+    return useTranslationDefault(ns, { lng: language, ...options });
+};
 
 const defaultT = ((key: string, options: TOptions) => {
     try {

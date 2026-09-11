@@ -6,6 +6,7 @@ import path from 'path';
 import { defineConfig, loadEnv, ProxyOptions } from 'vite';
 import type { ClientRequest, IncomingMessage } from 'node:http';
 import federation from '@originjs/vite-plugin-federation';
+import federationDev from './scripts/federation-dev.js';
 
 export default defineConfig(({ command, mode }) => {
     const env = loadEnv(mode, process.cwd());
@@ -87,6 +88,7 @@ export default defineConfig(({ command, mode }) => {
                     exclude: [],
                     failOnError: false,
                 }),
+            federationDev(),
         ].filter(Boolean),
         server: {
             host: 'localhost',

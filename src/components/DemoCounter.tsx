@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'src/languages/global';
+import { I18nNS } from 'src/languages/i18n';
 import cx from 'src/utils/cx';
 
 export default function DemoCounter() {
     const [count, setCount] = useState(0);
+    const { t } = useTranslation(I18nNS.APP);
 
     return (
         <div
@@ -11,7 +14,7 @@ export default function DemoCounter() {
                 'border border-divider-primary bg-background-default text-typo-primary prose-body2',
             )}
         >
-            <p role='status'>Số lần bấm: {count}</p>
+            <p role='status'>{t('demoCounter.clickCount', { value: count })}</p>
             <button
                 type='button'
                 onClick={() => setCount((previous) => previous + 1)}
@@ -22,7 +25,7 @@ export default function DemoCounter() {
                     'focus-visible:outline-offset-2 focus-visible:outline-primary-main',
                 )}
             >
-                Tăng số
+                {t('demoCounter.increment')}
             </button>
         </div>
     );

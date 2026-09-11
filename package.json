@@ -6,13 +6,14 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
+        "build-watch": "tsc && vite build --watch",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "generate-i18n-files": "node ./src/languages/generate-i18n-files.js && npx prettier ./src/languages --write",
         "precommit": "npm run build"
     },
     "dependencies": {
-        "@cogover/client-sdk": "^0.1.0",
+        "@cogover/client-sdk": "^0.1.1",
         "@fontsource-variable/nunito": "^5.0.17",
         "@hookform/resolvers": "^3.9.0",
         "@reduxjs/toolkit": "^2.2.1",
