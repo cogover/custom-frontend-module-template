@@ -67,7 +67,6 @@
         "vite-plugin-eslint": "^1.8.1"
     },
     "optionalDependencies": {
-        "@esbuild/darwin-arm6": "*",
         "@esbuild/darwin-arm64": "^0.20.2",
         "@rollup/rollup-linux-x64-gnu": "4.6.1",
         "@swc/core-darwin-arm64": "^1.12.7"
