@@ -19,7 +19,7 @@ File này cung cấp hướng dẫn cho Claude Code khi làm việc với reposi
     VITE_WORKSPACE_NAME=cong-ty
     ```
 
-2. Chạy `npm ci`, sau đó `npm run dev`. Truy cập `http://localhost:5100`; không cần sửa file hosts.
+2. Chạy `npm i`, sau đó `npm run dev`. Truy cập `http://localhost:5100`; không cần sửa file hosts.
 3. Các yêu cầu API, file và kết nối thời gian thực được chuyển tới `https://cong-ty.cogover.com`. Khi đổi workspace, khởi động lại máy chủ phát triển và tải lại trang. Phiên đăng nhập trên localhost được tách riêng theo workspace.
 4. Khi chưa đăng nhập, trang tự chuyển đến trang đăng nhập Cogover và quay lại localhost sau khi xác thực. Token nhận qua URL được dùng để thiết lập phiên rồi xóa khỏi URL; nội dung module chỉ hiển thị sau khi có tài khoản và cấu hình hợp lệ.
 

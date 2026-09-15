@@ -18,7 +18,7 @@ Requires Node.js and an account with access to your Cogover workspace. This proj
 3. Install dependencies:
 
     ```bash
-    npm ci
+    npm i
     ```
 
 4. Run the project locally:

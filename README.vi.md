@@ -18,7 +18,7 @@ Yêu cầu Node.js và tài khoản có quyền truy cập workspace Cogover. D�
 3. Cài thư viện:
 
     ```bash
-    npm ci
+    npm i
     ```
 
 4. Chạy dự án ở môi trường local:
