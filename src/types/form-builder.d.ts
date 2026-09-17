@@ -387,7 +387,7 @@ export interface FormBuilderScriptContext {
 export type FormBuilderScript = string | ((context: FormBuilderScriptContext) => void | Promise<void>);
 
 /**
- * API Form Builder nhận từ host. execScript có thể chưa được cung cấp.
+ * API Form Builder nhận từ host. Mỗi API có thể chưa được cung cấp tùy ngữ cảnh render.
  *
  * @example
  * ```ts
@@ -415,6 +415,21 @@ export interface FormBuilderApi {
      * ```
      */
     execScript?: (script: FormBuilderScript) => Promise<void>;
+
+    /**
+     * Tải lại bản ghi hiện tại của Form Builder từ server và cập nhật dữ liệu trên form.
+     * Host tự xác định ID bản ghi; component không truyền ID vào hàm này.
+     * Trả về bản ghi mới, hoặc null khi bản ghi không còn tồn tại.
+     *
+     * @example
+     * ```ts
+     * if (!formBuilder.refreshRecordDetail) throw new Error('Không thể làm mới bản ghi.');
+     * const record = await formBuilder.refreshRecordDetail();
+     * if (!record) return;
+     * console.log('Đã làm mới', record.id);
+     * ```
+     */
+    refreshRecordDetail?: () => Promise<FormBuilderRecord | null>;
 }
 
 /**

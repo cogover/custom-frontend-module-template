@@ -1,11 +1,11 @@
 ---
 name: custom-module-form-builder
-description: Use when creating or editing a federation component embedded in a Cogover Form Builder layout, declaring its expose path, receiving formBuilder props, or using execScript to control fields, layout elements, related lists, and Path Components in custom-module-template.
+description: Use when creating or editing a federation component embedded in a Cogover Form Builder layout, declaring its expose path, receiving formBuilder props, using execScript, or refreshing the current record in custom-module-template.
 ---
 
 # Custom Module Form Builder
 
-Tạo component nhúng trong layout Form Builder và thao tác form bằng `formBuilder.execScript`. Không áp dụng cho việc chỉ sửa trang CustomApp thông thường hoặc viết chuỗi script để dán vào cấu hình layout.
+Tạo component nhúng trong layout Form Builder, thao tác form bằng `formBuilder.execScript` và tải lại bản ghi hiện tại bằng `formBuilder.refreshRecordDetail`. Không áp dụng cho việc chỉ sửa trang CustomApp thông thường hoặc viết chuỗi script để dán vào cấu hình layout.
 
 ## 1. Kiểm tra code và kiểu có sẵn
 
@@ -33,7 +33,7 @@ Tạo component nhúng trong layout Form Builder và thao tác form bằng `form
 5. `_cm_1` trong bảng chỉ là ví dụ slot được gán trên layout. Không ghi cố định `_cm_1` hoặc `/_cm_N/` vào URL ảnh, CSS, code component hay lệnh build. Dùng import tài nguyên theo skill foundation.
 6. Không bọc component bằng CustomApp, bộ định tuyến riêng, header hoặc sidebar của ứng dụng chủ. Với thư viện có context dùng chung như client SDK, đối chiếu yêu cầu provider và cấu hình `shared` với tài liệu tích hợp Cogover trước khi sử dụng.
 
-## 3. Nhận formBuilder và gọi execScript
+## 3. Nhận formBuilder và gọi API
 
 ```ts
 import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/form-builder';
@@ -51,6 +51,16 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
 3. Không dùng `toString()`, nối chuỗi, `eval` hoặc `new Function` để chuyển hay chạy hàm. Kiểu hiện vẫn nhận chuỗi nhằm tương thích script cũ; component mới dùng hàm trực tiếp.
 4. Nền tảng Cogover tạo `screen` cho mỗi lần thực thi và áp dụng thay đổi trường, bố cục. Component chỉ thao tác qua API được cung cấp, không thay thế luồng cập nhật form của nền tảng.
 5. Nếu cần tách logic dùng lại, dùng `FormBuilderScript` hoặc `FormBuilderScriptContext` hiện có thay vì tự định nghĩa chữ ký mới.
+6. Khi cần tải lại bản ghi hiện tại từ server, gọi API không tham số:
+
+    ```ts
+    if (!formBuilder.refreshRecordDetail) throw new Error('Không thể làm mới bản ghi.');
+    const refreshedRecord = await formBuilder.refreshRecordDetail();
+    if (!refreshedRecord) return;
+    ```
+
+7. Không truyền record ID vào `refreshRecordDetail`; host tự bind ID của bản ghi thuộc Form Builder hiện tại trước khi cung cấp API cho component.
+8. Refresh cập nhật lại dữ liệu form theo bản ghi trên server. Chỉ gọi sau khi dữ liệu cần giữ đã được lưu, hoặc sau khi người dùng xác nhận bỏ thay đổi chưa lưu.
 
 ## 4. Điều khiển các thành phần
 
@@ -64,8 +74,8 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
 
 ## 5. Kết quả và lỗi
 
-1. Kiểm tra `formBuilder?.execScript` trước khi thao tác; vô hiệu hóa nút hoặc hiển thị trạng thái phù hợp nếu host chưa cung cấp.
-2. Bắt lỗi tại component và chỉ báo thành công sau khi `await execScript(...)` hoàn tất. Không nuốt lỗi hoặc báo đã áp dụng khi hàm chưa được gọi.
+1. Kiểm tra API cần dùng (`formBuilder?.execScript` hoặc `formBuilder?.refreshRecordDetail`) trước khi thao tác; vô hiệu hóa nút hoặc hiển thị trạng thái phù hợp nếu host chưa cung cấp.
+2. Bắt lỗi tại component và chỉ báo thành công sau khi API hoàn tất. Không nuốt lỗi hoặc báo đã áp dụng khi hàm chưa được gọi.
 3. Sửa giá trị ô bảng đi qua API bảng ngay. Nếu lỗi giữa chừng, không có cơ chế tự hoàn tác toàn bộ các ô đã sửa.
 4. Chạy script thành công không đồng nghĩa đã lưu record lên server. `submit()` lưu bảng liên quan, không phải toàn bộ form cha; chỉ gọi khi nghiệp vụ yêu cầu lưu.
 5. `screen.changeLayout` và `screen.triggerButton` trả void. Không dùng await để giả định việc chuyển layout hay toàn bộ hành động của nút đã hoàn tất.
@@ -74,6 +84,6 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
 
 1. Kiểm tra đường dẫn expose, file đích và chữ hoa/thường khớp với đường dẫn được cấu hình trên Form Builder.
 2. Chạy Prettier, ESLint và TypeScript cho phần thay đổi; kiểm tra dependencies của hook nếu có.
-3. Kiểm thử hành vi có sửa: thiếu API/thành phần, cập nhật trường hoặc ô, và lỗi được trả về component. Không dùng mock để thay thế chính luồng cập nhật đang cần xác nhận.
+3. Kiểm thử hành vi có sửa: thiếu API/thành phần, cập nhật trường hoặc ô, refresh bản ghi và lỗi được trả về component. Không dùng mock để thay thế chính luồng cập nhật đang cần xác nhận.
 4. Build theo yêu cầu của người dùng. Nếu được yêu cầu không build, không chạy build; báo rõ phạm vi đã kiểm tra. Khi build, dùng cấu hình relative base của foundation, không thêm slot cố định.
 5. Nếu bản triển khai báo không tìm thấy remote module, đối chiếu `remoteEntry.js` đang được phục vụ với cấu hình source; không kết luận source sai chỉ vì bản triển khai cũ.
