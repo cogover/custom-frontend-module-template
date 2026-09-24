@@ -66,8 +66,11 @@ export const requestURI = {
 Dùng type nền tảng hiện có:
 
 1. `SuccessResponse<Data, Meta>`
-2. `SuccessServiceResponse<Data, Meta>`
+2. `SuccessServiceResponse<Data, Meta>`: chỉ cho proxy cũ `REQUEST_TYPE.REVERSE_PROXY` (mục 6).
 3. `ErrorApiResponse<Data>`
+
+Route của Custom Backend Module (mục 6) trả đúng JSON do handler trả về: khai báo type theo contract của route, không
+bọc trong `SuccessResponse`/`SuccessServiceResponse` nếu handler không trả shape đó.
 
 ```tsx
 export interface RequestRecord {
@@ -102,12 +105,49 @@ update(requestId: string, payload: UpdateRequestPayload) {
 
 ## 6. Service RPC
 
-1. Dùng `createServiceHeader` cho endpoint RPC.
+1. Dùng `createServiceHeader` với hằng `REQUEST_TYPE` trong `src/utils/apiUtils.ts` cho endpoint RPC.
 2. Không hardcode `x-req-service` hoặc `x-req-type` tại call-site.
+
+### Custom Backend Module
+
+Route của Custom Backend Module (`/api/v1/ts-projects/{projectSlug}/...`) dùng `service: 3` và
+`REQUEST_TYPE.TS_PROJECT` (`x-req-type: 9`). Response là nguyên HTTP status, header và body do handler trả, không bọc
+`body`:
+
+```tsx
+const URI = '/api/v1/ts-projects/order_automation';
+
+export const orderURI = {
+    list: `${URI}/orders/list`,
+};
+
+export const orderApi = {
+    list(params: OrderListParams) {
+        return http.post<OrderListResult>(orderURI.list, params, {
+            headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.TS_PROJECT }),
+        });
+    },
+};
+
+// response.data chính là OrderListResult
+```
+
+Rules:
+
+1. Không dùng `SuccessServiceResponse` và không đọc `response.data.body`: kết quả nghiệp vụ có thể có field `body` riêng.
+2. Lỗi: kiểm tra `error.response.status` cùng `code`/`msg` trong `error.response.data`. `isProxyError(error)` là `true`
+   khi Authorization Server trả lỗi thay backend (phiên hết hạn, định tuyến, backend không phản hồi); body khi đó là
+   `{ r, msg }`.
+3. Thao tác ghi gửi header nghiệp vụ `Idempotency-Key` riêng cho từng thao tác, giữ nguyên key khi retry cùng thao tác.
+
+### Module khác qua proxy cũ
+
+Endpoint RPC của module khác (ví dụ `config-server`) vẫn dùng `REQUEST_TYPE.REVERSE_PROXY` (`x-req-type: 6`); kết quả
+nằm trong `body` của `SuccessServiceResponse`:
 
 ```tsx
 return http.post<SuccessServiceResponse<ServerConfig>>(serverConfigURI.configServer, params, {
-    headers: createServiceHeader({ service: 3, type: 6 }),
+    headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.REVERSE_PROXY }),
 });
 ```
 

@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import http, { SuccessResponse, SuccessServiceResponse } from '../apiBase';
 import { PublicConfig, ServerConfig, ServerConfigParams, SessionConfigParams } from './config.type';
 import { AxiosProgressEvent } from 'axios';
-import { createServiceHeader } from 'src/utils/apiUtils';
+import { createServiceHeader, REQUEST_TYPE } from 'src/utils/apiUtils';
 const URI = '/api/v1';
 
 export const serverConfigURI = {
@@ -28,7 +28,7 @@ export const configApi = {
     getServerConfigRpc(params: ServerConfigParams, onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void) {
         return http.post<SuccessServiceResponse<ServerConfig>>(serverConfigURI.configServer, params, {
             onDownloadProgress: onDownloadProgress,
-            headers: createServiceHeader({ service: 3, type: 6 }),
+            headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.REVERSE_PROXY }),
         });
     },
 };

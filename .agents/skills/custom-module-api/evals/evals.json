@@ -16,7 +16,13 @@
         {
             "id": 3,
             "prompt": "Gọi một endpoint RPC service=3 type=6 trong custom module.",
-            "expected_output": "Dùng http chung, SuccessServiceResponse và createServiceHeader; không hardcode origin hoặc infrastructure headers.",
+            "expected_output": "Dùng http chung, SuccessServiceResponse và createServiceHeader với REQUEST_TYPE.REVERSE_PROXY; không hardcode origin hoặc infrastructure headers.",
+            "files": []
+        },
+        {
+            "id": 4,
+            "prompt": "Gọi route POST /orders/list của Custom Backend Module có slug order_automation và hiển thị kết quả trong page.",
+            "expected_output": "Dùng http chung với path tương đối /api/v1/ts-projects/order_automation/orders/list và createServiceHeader({ service: 3, type: REQUEST_TYPE.TS_PROJECT }); type response là kết quả handler, không dùng SuccessServiceResponse và không đọc response.data.body; lỗi xét HTTP status, code và isProxyError; dùng TanStack Query.",
             "files": []
         }
     ]
