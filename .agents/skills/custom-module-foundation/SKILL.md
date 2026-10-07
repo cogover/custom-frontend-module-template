@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons) in custom-module-template.
+description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons, BreadCrumbs and PageWrapper sticky breadcrumb pages) in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -171,6 +171,45 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 4. Icon dùng bộ icon của SDK (`InfoCircleIcon`, `SlidersIcon`, `EllipsisVerticalIcon`, `ChevronDownIcon`, `SortIcon`, `FilterIcon`, `PlusIcon`, `EyeIcon`, `CopyIcon`, `PencilIcon`, `TrashIcon`…, danh sách đủ trong README của package). Icon kế thừa màu chữ (`currentColor`), cỡ qua prop `fontSize` (px). Chỉ tự vẽ SVG khi SDK chưa có.
 5. Menu thả xuống dùng `PopperButton` (nút mở menu), `GroupDropdownButton` (nút tách) hoặc `Popper` + `PopperMenu` + `PopperMenuItem`; mục có class `hide-on-click` tự đóng menu. Không tự dựng dropdown bằng `div` định vị tuyệt đối.
 6. Màn danh sách (header, bảng, phân trang, panel lọc) làm theo skill `custom-module-list-page`.
+7. Trang cài đặt/chi tiết có breadcrumb (như các màn cài đặt đối tượng của Cogover) dùng `PageWrapper` (thanh breadcrumb dính đầu trang khi cuộn) hoặc `BreadCrumbs` riêng lẻ; luôn truyền `linkComponent={Link}` của dự án, xem mục dưới.
+
+### Breadcrumb và trang có thanh breadcrumb dính — `PageWrapper`, `BreadCrumbs`
+
+```tsx
+import { Button, PageWrapper, PencilIcon } from '@cogover/client-sdk/ui';
+import Link from 'src/components/Link';
+
+<PageWrapper
+    title='Copy/dán bằng AI'
+    linkComponent={Link}
+    breadCrumbs={[
+        { label: 'Quản lý đối tượng', href: '/objects' },
+        {
+            label: 'Khách hàng chiến dịch',
+            children: [
+                { label: 'Danh sách trường dữ liệu', href: '/objects/campaign_customer/fields' },
+                { label: 'Danh sách giao diện', href: '/objects/campaign_customer/layouts' },
+            ],
+        },
+        { label: 'Copy/dán bằng AI' },
+    ]}
+    actions={
+        <Button variant='gray' startIcon={<PencilIcon />}>
+            Chỉnh sửa
+        </Button>
+    }
+>
+    <div className={cx('rounded border border-divider-primary bg-background-default p-[1.25rem]')}>…</div>
+</PageWrapper>;
+```
+
+Rules:
+
+1. `PageWrapper` là vùng cuộn của cả trang (cao `100svh - var(--top-toolbar-width)`); thanh breadcrumb `sticky top-0` nên giữ nguyên khi cuộn. Không bọc thêm `overflow-auto` hay tự dựng thanh breadcrumb dính.
+2. Mục cuối là trang hiện tại, không có `href`. Mục có `children` hiện ⌄ và mở menu trang con; thêm `isAutoRedirect` nếu bấm nhãn cũng chuyển trang.
+3. `href` tính từ gốc module, bắt đầu bằng `/` như `Link`. Thiếu `linkComponent` thì breadcrumb dùng `<a href>`, tải lại toàn trang và mất app slug.
+4. Nút thao tác của trang (Chỉnh sửa…) đặt vào `actions`, không đặt trong nội dung bên dưới.
+5. Chỉ cần dòng breadcrumb không dính (ví dụ trong một khối nội dung) thì dùng `BreadCrumbs` với cùng `items` và `linkComponent`.
 
 ### Label cho Checkbox, Radio, Switch — dùng `FormControlLabel`
 

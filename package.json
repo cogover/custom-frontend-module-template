@@ -13,7 +13,7 @@
         "precommit": "npm run build"
     },
     "dependencies": {
-        "@cogover/client-sdk": "^0.2.0",
+        "@cogover/client-sdk": "^0.2.1",
         "@fontsource-variable/nunito": "^5.0.17",
         "@hookform/resolvers": "^3.9.0",
         "@reduxjs/toolkit": "^2.2.1",
