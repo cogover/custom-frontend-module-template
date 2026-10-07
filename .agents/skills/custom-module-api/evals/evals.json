@@ -24,6 +24,12 @@
             "prompt": "Gọi route POST /orders/list của Custom Backend Module có slug order_automation và hiển thị kết quả trong page.",
             "expected_output": "Dùng http chung với path tương đối /api/v1/ts-projects/order_automation/orders/list và createServiceHeader({ service: 3, type: REQUEST_TYPE.TS_PROJECT }); type response là kết quả handler, không dùng SuccessServiceResponse và không đọc response.data.body; lỗi xét HTTP status, code và isProxyError; dùng TanStack Query.",
             "files": []
+        },
+        {
+            "id": 4,
+            "prompt": "Thêm trang danh sách liên hệ cho phép người dùng tự lọc theo bất kỳ trường nào của object contact.",
+            "expected_output": "Dùng FilterGenerator từ @cogover/client-sdk/ui với dataFields từ useObjectFields, đưa filterItems qua ignoreEmptyParamsConditions và logicTypeParams vào useRecords; không tự dựng select trường/toán tử, không gọi /api/v1/records trực tiếp, không bọc LibraryProvider trong App.",
+            "files": []
         }
     ]
 }

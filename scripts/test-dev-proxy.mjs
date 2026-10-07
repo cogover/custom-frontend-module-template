@@ -88,7 +88,14 @@ test('workspace configuration and real HTTP/WebSocket proxy isolation', async (t
             res.setHeader('Set-Cookie', 'HttpSessionId=; Domain=.cogover.com; Path=/; Max-Age=0; Secure; HttpOnly');
         }
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ url: req.url, cookie: req.headers.cookie, csrf: req.headers['x-csrf-token'] }));
+        res.end(
+            JSON.stringify({
+                url: req.url,
+                cookie: req.headers.cookie,
+                csrf: req.headers['x-csrf-token'],
+                xsrf: req.headers['x-xsrf-token'],
+            }),
+        );
     });
     let upgradeHeaders;
     upstream.on('upgrade', (req, socket) => {
@@ -131,12 +138,13 @@ test('workspace configuration and real HTTP/WebSocket proxy isolation', async (t
     await t.test('all HTTP paths preserve URL and only forward the selected session and CSRF', async () => {
         for (const path of ['/api/records?limit=2', '/files/report.pdf', '/static/example.css']) {
             const response = await fetch(`${first.origin}${path}`, {
-                headers: { cookie: cookieHeader(), 'X-CSRF-TOKEN': 'legacy-csrf' },
+                headers: { cookie: cookieHeader(), 'X-CSRF-TOKEN': 'legacy-csrf', 'X-XSRF-TOKEN': 'legacy-csrf' },
             });
             assert.deepEqual(await response.json(), {
                 url: path,
                 cookie: 'HttpSessionId=session-a; XSRF-TOKEN=csrf-a',
                 csrf: 'csrf-a',
+                xsrf: 'csrf-a',
             });
         }
         const response = await fetch(`${second.origin}/api/records`, { headers: { cookie: cookieHeader() } });
@@ -144,6 +152,7 @@ test('workspace configuration and real HTTP/WebSocket proxy isolation', async (t
             url: '/api/records',
             cookie: 'HttpSessionId=session-b; XSRF-TOKEN=csrf-b',
             csrf: 'csrf-b',
+            xsrf: 'csrf-b',
         });
     });
 
@@ -158,6 +167,7 @@ test('workspace configuration and real HTTP/WebSocket proxy isolation', async (t
             headers: {
                 cookie: 'HttpSessionId=old; cgv_dev_acme_cogover.com__HttpSessionId=session-a',
                 'X-CSRF-TOKEN': 'old',
+                'X-XSRF-TOKEN': 'old',
             },
         });
         assert.deepEqual(await response.json(), { url: '/api/records' });
@@ -187,5 +197,6 @@ test('workspace configuration and real HTTP/WebSocket proxy isolation', async (t
         });
         assert.equal(upgradeHeaders.cookie, 'HttpSessionId=session-a; XSRF-TOKEN=csrf-a');
         assert.equal(upgradeHeaders['x-csrf-token'], 'csrf-a');
+        assert.equal(upgradeHeaders['x-xsrf-token'], 'csrf-a');
     });
 });

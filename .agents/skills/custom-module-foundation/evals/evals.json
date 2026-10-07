@@ -36,6 +36,18 @@
             "prompt": "CI chỉ chạy npm run build một lần, sau đó cùng dist custom module có thể được deploy vào c1 hoặc c2. Cấu hình asset thế nào?",
             "expected_output": "Giữ base: './' để Vite resolve asset theo import.meta.url; không hardcode slot hoặc truyền --base=/_cm_N/; yêu cầu kiểm tra dist và URL tài nguyên khớp địa chỉ phục vụ remote; chỉ yêu cầu /_cm_N/assets/ nếu triển khai thực tế dùng đường dẫn đó.",
             "files": []
+        },
+        {
+            "id": 7,
+            "prompt": "Thêm công tắc 'Chỉ hiện bản ghi của tôi' có nhãn bấm được vào trang danh sách.",
+            "expected_output": "Dùng FormControlLabel với control={<Switch checked onChange />} từ @cogover/client-sdk/ui; không bọc Switch trong thẻ <label> HTML, không tự dựng flex quanh control.",
+            "files": []
+        },
+        {
+            "id": 8,
+            "prompt": "Hiển thị danh sách phòng ban dạng tag có nút xóa; phòng ban còn nhân sự thì không cho xóa và phải báo lý do. Ô chọn phòng ban phải báo đang tải khi đang kiểm tra lựa chọn.",
+            "expected_output": "Tag dùng deleteDisabled kèm deleteTooltip thay vì chặn ngầm trong onDelete; MultipleSelect dùng prop loading (và optionListLoading cho danh sách), không tự chồng Spinner.",
+            "files": []
         }
     ]
 }

@@ -31,9 +31,16 @@ export default defineConfig(({ command, mode }) => {
 
         proxyReq.removeHeader('cookie');
         proxyReq.removeHeader('X-CSRF-TOKEN');
+        // Axios tự gửi X-XSRF-TOKEN từ cookie XSRF-TOKEN chưa có tiền tố (có thể của workspace khác) nên phải thay bằng
+        // token của workspace hiện tại; server kiểm tra CSRF bằng header này.
+        proxyReq.removeHeader('X-XSRF-TOKEN');
         if (cookies.length) proxyReq.setHeader('cookie', cookies.join('; '));
         const csrfCookie = cookies.find((cookie) => cookie.startsWith('XSRF-TOKEN='));
-        if (csrfCookie) proxyReq.setHeader('X-CSRF-TOKEN', csrfCookie.slice('XSRF-TOKEN='.length));
+        if (csrfCookie) {
+            const csrfToken = csrfCookie.slice('XSRF-TOKEN='.length);
+            proxyReq.setHeader('X-CSRF-TOKEN', csrfToken);
+            proxyReq.setHeader('X-XSRF-TOKEN', csrfToken);
+        }
     };
 
     const workspaceProxy: ProxyOptions = {

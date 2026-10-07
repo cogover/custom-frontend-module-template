@@ -1,6 +1,6 @@
 ---
 name: custom-module-api
-description: Use when adding or changing API clients, endpoints, request types, TanStack Query hooks, mutations, query keys, RPC headers, retries, or API error handling in custom-module-template.
+description: Use when adding or changing API clients, endpoints, request types, TanStack Query hooks, mutations, query keys, RPC headers, retries, API error handling, or record filters built with FilterGenerator and useRecords from @cogover/client-sdk in custom-module-template.
 ---
 
 # Custom Module API
@@ -228,3 +228,87 @@ Sau mutation:
 await queryClient.invalidateQueries({ queryKey: requestApiKeys.detail(requestId) });
 await queryClient.invalidateQueries({ queryKey: requestApiKeys.all });
 ```
+
+## 13. Lọc bản ghi bằng FilterGenerator
+
+Khi người dùng cần tự đặt điều kiện lọc bản ghi của một object (chọn trường, điều kiện, giá trị; kết hợp AND/OR/tùy chỉnh), dùng `FilterGenerator` của `@cogover/client-sdk` và đọc dữ liệu bằng `useRecords`. Kết quả của `FilterGenerator` có đúng định dạng `filters` mà `useRecords` nhận.
+
+Good:
+
+```tsx
+import { useObjectFields, useRecords } from '@cogover/client-sdk/data';
+import {
+    FilterGenerator,
+    ignoreEmptyParamsConditions,
+    logicTypeParams,
+    type FilterGeneratorItem,
+    type FilterGeneratorLogicTypes,
+} from '@cogover/client-sdk/ui';
+import { useState } from 'react';
+
+export default function ContactFilter() {
+    const { data: dataFields = [] } = useObjectFields({ slug: 'contact' });
+    const [logicType, setLogicType] = useState<FilterGeneratorLogicTypes>('AND');
+    const [logicValue, setLogicValue] = useState('');
+    const [filterItems, setFilterItems] = useState<FilterGeneratorItem[]>([]);
+
+    const { data, isFetching } = useRecords({
+        objectSlug: 'contact',
+        size: 20,
+        filters: ignoreEmptyParamsConditions(filterItems),
+        type: logicTypeParams[logicType],
+        logic_sequence: logicType === 'CUSTOM' ? logicValue : undefined,
+    });
+
+    return (
+        <>
+            <FilterGenerator
+                dataFields={dataFields}
+                logicType={logicType}
+                logicValue={logicValue}
+                filterItems={filterItems}
+                onChangeLogicType={setLogicType}
+                onChangeLogicValue={setLogicValue}
+                onChangeFilterItems={setFilterItems}
+                clearable
+                onReset={() => setFilterItems([])}
+            />
+            <p className='prose-body2 text-typo-secondary'>
+                {isFetching ? 'Đang tải…' : `${data?.total ?? 0} bản ghi`}
+            </p>
+        </>
+    );
+}
+```
+
+Bad:
+
+```tsx
+const [field, setField] = useState('');
+const [value, setValue] = useState('');
+
+<select onChange={(e) => setField(e.target.value)}>...</select>;
+<input onChange={(e) => setValue(e.target.value)} />;
+
+http.post('/api/v1/records', { filters: [{ field, op: '=', params: value }], type: 1 });
+```
+
+Cách bad tự dựng UI lọc nên thiếu toán tử theo loại trường, ô chọn bản ghi cho trường lookup, ngày tương đối, logic tùy chỉnh và bản dịch; đồng thời gọi API record trực tiếp thay vì hook đã chuẩn hóa.
+
+Rules:
+
+1. Import component và helper từ `@cogover/client-sdk/ui`, hook dữ liệu từ `@cogover/client-sdk/data`. Không copy code FilterGenerator từ nơi khác vào module.
+2. `dataFields` lấy từ `useObjectFields({ slug })` của object cần lọc; không tự khai báo danh sách trường. Trường không hoạt động được ẩn tự động.
+3. Giữ `filterItems`, `logicType`, `logicValue` trong state của page và truyền thẳng vào `useRecords`: `filters` qua `ignoreEmptyParamsConditions`, `type` qua `logicTypeParams[logicType]`, `logic_sequence` chỉ khi `logicType` là `CUSTOM`.
+4. Không tự validate biểu thức logic tùy chỉnh, không tự giới hạn số dòng, không tự làm nút đặt lại: dùng `showCustomLogicError` (mặc định bật), `maxFilterItemCount` (mặc định 30), `clearable` + `onReset`.
+5. `disabled` ẩn danh sách điều kiện và khóa ô logic; `readOnly` vẫn hiển thị điều kiện nhưng không cho sửa.
+6. Giá trị của trường lựa chọn là `slug` của option; trường lookup là ID bản ghi. Không đổi các giá trị này sang nhãn hiển thị trước khi gửi lên server.
+7. Nút `{ }` cạnh ô giá trị chèn biến của người dùng hiện tại (ví dụ `$currentUser`, cờ `iu`); server tự thay giá trị khi lọc, không tự thay ở client.
+8. `FilterGenerator` gọi API metadata object, filter của trường lookup và danh sách bản ghi qua `LibraryProvider`; không truyền HTTP client riêng vào component.
+9. Cần bảng props đầy đủ (`getFieldOptions`, `renderValueInputWrapper`, `showPreview`, …) thì xem mục FilterGenerator trong README của `@cogover/client-sdk`.
+
+Chạy trong nền tảng Cogover và standalone:
+
+1. Khi nhúng, nền tảng Cogover đã đặt `LibraryProvider` và chia sẻ bản `@cogover/client-sdk` của nền tảng qua Module Federation. FilterGenerator cần bản SDK của nền tảng hỗ trợ component này.
+2. Standalone dùng `ClientSdkProvider` trong `MainProvider`; provider này lấy workspace, ngôn ngữ, theme từ Redux. Không bọc thêm `LibraryProvider` trong `App.tsx` hay component expose.
+3. Bấm tên bản ghi đã chọn ở trường lookup sẽ mở chi tiết bản ghi theo cách của nền tảng; ở standalone, trang bản ghi mở trong tab mới.

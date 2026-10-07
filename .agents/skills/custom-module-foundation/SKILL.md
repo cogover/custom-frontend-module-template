@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, or shared UI foundations in custom-module-template.
+description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states) in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -81,14 +81,15 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 
 ## 5. Provider
 
-1. Production dùng Redux và Router context do host cung cấp.
-2. Standalone dùng `MainProvider` và `DevConfigGate`.
-3. Provider nội bộ chỉ giữ dữ liệu custom module thực sự cần.
-4. Không dựng header, sidebar hoặc layout của host trong custom module.
+1. Production dùng Redux, Router context và `LibraryProvider` của `@cogover/client-sdk` do host cung cấp.
+2. Standalone dùng `MainProvider` và `DevConfigGate`; `MainProvider` có `ClientSdkProvider` cấp `LibraryProvider` từ dữ liệu workspace trong Redux.
+3. Không bọc `LibraryProvider` trong `App.tsx` hay component expose.
+4. Provider nội bộ chỉ giữ dữ liệu custom module thực sự cần.
+5. Không dựng header, sidebar hoặc layout của host trong custom module.
 
 ## 6. Module Federation
 
-1. Giữ React, React DOM, Redux và React Router trong `shared`.
+1. Giữ React, React DOM, Redux, React Router và `@cogover/client-sdk` trong `shared`.
 2. Trước khi thay đổi cấu hình Module Federation, đối chiếu với yêu cầu tích hợp Custom Module của Cogover; nếu chưa rõ, yêu cầu thông tin từ đơn vị cung cấp nền tảng.
 3. Dùng import tường minh khi federation plugin yêu cầu string literal.
 
@@ -159,3 +160,82 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 1. Chạy đúng `npm run build`, không thêm `--base`.
 2. Kiểm tra asset local đã được emit vào `dist/assets` và output không chứa URL root-relative `/assets/...` cho asset đó.
 3. Khi có môi trường chạy qua host, kiểm tra URL thực tế của tài nguyên khớp địa chỉ phục vụ remote, request trả `200` và nội dung hiển thị/phát được. Nếu remote khác domain host, tài nguyên phải theo domain remote; nếu host chuyển tiếp remote, tài nguyên phải theo đường dẫn chuyển tiếp. Chỉ yêu cầu `/_cm_N/assets/` khi đó là đường dẫn triển khai thực tế, không áp dụng cho mọi môi trường.
+
+## 10. Component giao diện từ `@cogover/client-sdk`
+
+1. Import component từ `@cogover/client-sdk/ui`; không copy code component vào module, không tự dựng lại control SDK đã có.
+2. Component đọc ngôn ngữ, theme và workspace từ `LibraryProvider` (mục 5); không truyền các cấu hình này vào từng component.
+3. Bộ lọc bản ghi dùng `FilterGenerator`, xem skill `custom-module-api` mục 13.
+
+### Label cho Checkbox, Radio, Switch — dùng `FormControlLabel`
+
+Good:
+
+```tsx
+import { FormControlLabel, Switch } from '@cogover/client-sdk/ui';
+
+<FormControlLabel
+    label='Nhận thông báo'
+    control={<Switch checked={enabled} onChange={(event) => setEnabled(event.target.checked)} />}
+/>;
+```
+
+Bad:
+
+```tsx
+<label>
+    <Switch checked={enabled} onChange={(event) => setEnabled(event.target.checked)} />
+    Nhận thông báo
+</label>
+```
+
+Cách bad làm Switch đổi trạng thái hai lần mỗi lần bấm: Switch tự click input, rồi thẻ `<label>` bọc ngoài click thêm lần nữa, nên công tắc trông như không bật được.
+
+Rules:
+
+1. Truyền control qua prop `control`, không truyền qua children.
+2. `FormControlLabel` tự tạo `id` cho control và gắn `htmlFor` cho label; chỉ tự đặt `id` khi nơi khác cần tham chiếu control.
+3. `disabled` của `FormControlLabel` khóa cả control lẫn màu label; không truyền `disabled` ở hai nơi.
+4. Đổi vị trí label bằng `labelPlacement` (`right` mặc định, `left`, `top`, `bottom`) và `labelAlign`; không tự dựng flex quanh control.
+5. Control không nhận `id` thì đặt `usingHtmlFor={false}`.
+
+### Trạng thái đang tải của `MultipleSelect`
+
+```tsx
+<MultipleSelect
+    fullWidth
+    loading={isResolvingValue}
+    optionListLoading={isFetchingOptions}
+    options={departments}
+    value={selected}
+    getLabel={(department) => department.name}
+    getValue={(department) => department.id}
+    onChange={setSelected}
+/>
+```
+
+Rules:
+
+1. `loading` hiện spinner trong ô nhập khi giá trị đang được xử lý (ví dụ đang xác định hoặc kiểm tra lựa chọn); tag đã chọn và nút xóa vẫn giữ nguyên.
+2. `optionListLoading` dành cho lúc danh sách lựa chọn đang tải.
+3. Không tự đặt `Spinner` chồng lên `MultipleSelect`, không `disabled` control chỉ để báo đang tải.
+4. Không truyền `loading` thì component giữ hành vi cũ (mặc định `false`).
+
+### Tag không cho xóa
+
+```tsx
+<Tag
+    onDelete={() => removeDepartment(department.id)}
+    deleteDisabled={department.hasPositions}
+    deleteTooltip='Phòng ban đang có nhân sự giữ vị trí'
+>
+    {department.name}
+</Tag>
+```
+
+Rules:
+
+1. Cần giữ nút xóa nhưng chặn thao tác thì dùng `deleteDisabled`; khi đó `onDelete` không được gọi.
+2. Luôn kèm `deleteTooltip` nói rõ lý do bị khóa.
+3. Không cho xóa và không cần giải thích thì bỏ `onDelete` hoặc đặt `showDeleteIcon={false}`.
+4. Không tự chặn trong `onDelete` bằng `if` rồi im lặng bỏ qua; người dùng sẽ không biết vì sao bấm không có tác dụng.

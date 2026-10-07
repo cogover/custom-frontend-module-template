@@ -37,7 +37,7 @@ src/
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
 │   └── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
-├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider
+├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider > ClientSdkProvider
 │   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
 ├── store/               # configureStore — chỉ slice commonSettings
 ├── languages/           # i18n bundle LOCAL (xem mục i18n bên dưới)
