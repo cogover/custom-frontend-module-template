@@ -17,15 +17,20 @@ import { useAppSlug } from './appSlugContext';
 export default function ClientSdkProvider({ children }: PropsWithChildren) {
     const workspace = useAppSelector((state) => state.commonSettings.workspace);
     const workspaceAccount = useAppSelector((state) => state.commonSettings.workspaceAccount);
+    const tableSetting = useAppSelector((state) => state.commonSettings.tableSetting);
     const locale = useDisplayLanguage();
     const themeMode = useSelectTheme() === ThemeType.dark ? 'dark' : 'light';
     const appSlug = useAppSlug();
-    const commonSettings = useMemo(() => ({ workspace, workspaceAccount }), [workspace, workspaceAccount]);
+    const commonSettings = useMemo(
+        () => ({ workspace, workspaceAccount, tableSetting }),
+        [workspace, workspaceAccount, tableSetting],
+    );
 
     return (
         <LibraryProvider
             locale={locale}
             themeMode={themeMode}
+            themeVersion={workspaceAccount?.setting?.themeVersion ?? 'v2'}
             workspaceId={workspace?.id ?? ''}
             appSlug={appSlug}
             http={http}

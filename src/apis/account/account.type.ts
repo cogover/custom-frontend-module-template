@@ -37,4 +37,6 @@ export interface AccountInfoResponse {
 export interface AccountSetting {
     theme?: ThemeType;
     brandColor?: string;
+    /** Phiên bản giao diện ô nhập của Cogover; Cogover mặc định `v2`. */
+    themeVersion?: 'v1' | 'v2';
 }

@@ -1,3 +1,4 @@
+import { ToastContainer } from '@cogover/client-sdk/ui';
 import { Suspense, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { i18n } from 'src/languages/global';
@@ -13,10 +14,21 @@ import { AppSlugProvider } from 'src/providers/AppSlugProvider';
  *   Chế độ standalone bọc các provider còn lại trong `main.tsx`.
  * - Route dùng path TƯƠNG ĐỐI (không leading slash) vì host mount remote dưới splat `*`.
  * - Danh sách route lấy từ `APP_ROUTES`.
+ * - Toast của `@cogover/client-sdk` dùng event riêng, host không hiển thị nên App tự mount `ToastContainer`
+ *   cho từng vị trí. Trang chỉ gọi `showToastMessage`, không mount thêm `ToastContainer`.
  */
 export interface CustomAppProps {
     appSlug?: string;
 }
+
+const TOAST_PLACEMENTS = [
+    'bottom-left',
+    'bottom-center',
+    'bottom-right',
+    'top-left',
+    'top-center',
+    'top-right',
+] as const;
 
 export default function App({ appSlug }: CustomAppProps) {
     const displayLanguage = useDisplayLanguage();
@@ -40,6 +52,9 @@ export default function App({ appSlug }: CustomAppProps) {
                     )}
                 </Routes>
             </Suspense>
+            {TOAST_PLACEMENTS.map((placement) => (
+                <ToastContainer key={placement} placement={placement} />
+            ))}
         </AppSlugProvider>
     );
 }

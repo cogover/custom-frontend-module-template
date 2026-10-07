@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states) in custom-module-template.
+description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons) in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -55,6 +55,8 @@ import Link from 'src/components/Link';
 <Link to='/records'>Danh sách bản ghi</Link>;
 ```
 
+`to` luôn bắt đầu bằng `/` và tính từ gốc module, kể cả link có tham số: `to={`/records/${record.id}`}`. Path không có `/` đầu là path tương đối, sẽ nối vào route hiện tại (standalone ra `/records/records/…`).
+
 `Link` nội bộ chịu trách nhiệm gắn app slug ở production, giữ nguyên path ở standalone, tránh slug lặp và tránh URL dạng `//user`.
 
 Không import trực tiếp từ React Router:
@@ -106,7 +108,7 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 1. Màu lấy từ design token trong `tailwind.config.js`.
 2. Spacing và kích thước dùng `rem`.
 3. Font size, weight và line-height dùng class `prose-*`.
-4. Ghép class bằng `cx()` và nhóm theo layout, spacing, visual, typography, interaction.
+4. Ghép class bằng `cx()` và nhóm theo layout, spacing, visual, typography, interaction. Class có điều kiện dùng object `{ 'text-typo-secondary': secondary }`, không dùng toán tử `? :` hay nối chuỗi trong `cx()`.
 5. Không hardcode giá trị khi dự án đã có token tương ứng.
 
 ## 9. Static asset — CRITICAL
@@ -166,6 +168,9 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 1. Import component từ `@cogover/client-sdk/ui`; không copy code component vào module, không tự dựng lại control SDK đã có.
 2. Component đọc ngôn ngữ, theme và workspace từ `LibraryProvider` (mục 5); không truyền các cấu hình này vào từng component.
 3. Bộ lọc bản ghi dùng `FilterGenerator`, xem skill `custom-module-api` mục 13.
+4. Icon dùng bộ icon của SDK (`InfoCircleIcon`, `SlidersIcon`, `EllipsisVerticalIcon`, `ChevronDownIcon`, `SortIcon`, `FilterIcon`, `PlusIcon`, `EyeIcon`, `CopyIcon`, `PencilIcon`, `TrashIcon`…, danh sách đủ trong README của package). Icon kế thừa màu chữ (`currentColor`), cỡ qua prop `fontSize` (px). Chỉ tự vẽ SVG khi SDK chưa có.
+5. Menu thả xuống dùng `PopperButton` (nút mở menu), `GroupDropdownButton` (nút tách) hoặc `Popper` + `PopperMenu` + `PopperMenuItem`; mục có class `hide-on-click` tự đóng menu. Không tự dựng dropdown bằng `div` định vị tuyệt đối.
+6. Màn danh sách (header, bảng, phân trang, panel lọc) làm theo skill `custom-module-list-page`.
 
 ### Label cho Checkbox, Radio, Switch — dùng `FormControlLabel`
 

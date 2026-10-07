@@ -55,7 +55,7 @@ module.exports = {
                 skipBlankLines: true,
             },
         ],
-        // Cấm dùng FontAwesome trong custom module này. Icon của module dùng asset SVG thuộc dự án.
+        // Cấm dùng FontAwesome trong custom module này. Icon lấy từ @cogover/client-sdk/ui hoặc asset SVG thuộc dự án.
         '@typescript-eslint/no-restricted-imports': [
             'error',
             {
@@ -64,6 +64,20 @@ module.exports = {
                         group: ['@fortawesome', '@fortawesome/*'],
                     },
                 ],
+            },
+        ],
+        // Ngày giờ hiển thị theo cài đặt workspace; không viết cứng chuỗi kiểu 'DD/MM/YYYY HH:mm'.
+        'no-restricted-syntax': [
+            'error',
+            {
+                selector: 'Literal[value=/(YYYY|DD).*[Hh]{1,2}:mm/]',
+                message:
+                    'Không viết cứng định dạng ngày giờ. Dùng useListDateTimeFormat() (src/hooks) theo cài đặt workspace, xem skill custom-module-list-page.',
+            },
+            {
+                selector: 'TemplateElement[value.raw=/(YYYY|DD).*[Hh]{1,2}:mm/]',
+                message:
+                    'Không viết cứng định dạng ngày giờ. Dùng useListDateTimeFormat() (src/hooks) theo cài đặt workspace, xem skill custom-module-list-page.',
             },
         ],
         '@typescript-eslint/no-unused-vars': ['warn'],

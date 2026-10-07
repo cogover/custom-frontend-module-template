@@ -1,0 +1,35 @@
+{
+    "skill_name": "custom-module-list-page",
+    "evals": [
+        {
+            "id": 1,
+            "prompt": "Làm trang danh sách đơn hàng có tìm kiếm, bộ lọc theo trạng thái và ngày tạo, phân trang.",
+            "expected_output": "Bố cục: ListViewTable có title prose-h6 + tổng số + ⓘ, renderActionButtons gồm PopperButton Cài đặt và GroupDropdownButton Tạo; prop pagination thay vì tự viết phân trang; panel ResizableMenu bên phải có tab 'Bộ lọc (n)' (n = số trường đang hiển thị), MultipleSelect chọn trường lọc, 'Đặt lại bộ lọc', TextField tìm kiếm có SearchIcon, các trường dùng FormItem noOutLine; không Drawer, không tìm kiếm trên header, không tự viết <table>; trang không cuộn hai lớp.",
+            "files": []
+        },
+        {
+            "id": 2,
+            "prompt": "Thêm cột Trạng thái (Nháp, Đang chạy, Tạm dừng, Kết thúc) và cột Thời gian tạo vào bảng danh sách.",
+            "expected_output": "Trạng thái hiển thị chấm màu + chữ cùng màu theo token (text-success, text-orange2-600, text-typo-secondary), không pill nền; thời gian tạo dùng useListDateTimeFormat() + dayjs, không viết cứng 'DD/MM/YYYY HH:mm', không đọc trực tiếp mã workspace.dateFormat/timeFormat.",
+            "files": []
+        },
+        {
+            "id": 3,
+            "prompt": "Thêm menu thao tác cho từng dòng: Xem chi tiết, Nhân bản, Tạm dừng, Kết thúc.",
+            "expected_output": "Cột cuối key 'action', label rỗng, width 40, paddingX 0, ghim phải; PopperButton không startIcon với EllipsisVerticalIcon; menu PopperMenu + PopperMenuItem class hide-on-click có icon SDK; Kết thúc đặt cuối và hỏi lại bằng ConfirmModal.",
+            "files": []
+        },
+        {
+            "id": 4,
+            "prompt": "Hiển thị tổng số lượt đã dùng của các chương trình ở header trang danh sách.",
+            "expected_output": "Số liệu tổng lấy từ backend (total hoặc API tổng hợp), không cộng dồn từ các dòng của trang hiện tại; không chèn hàng thẻ KPI giữa header và bảng.",
+            "files": []
+        },
+        {
+            "id": 5,
+            "prompt": "Cho tên chương trình trong bảng mở trang chi tiết, thêm thao tác Tạm dừng có thông báo kết quả.",
+            "expected_output": "Link nội bộ với path tuyệt đối '/promotion-programs/${id}' (không path tương đối); mutation Tạm dừng có showToastMessage khi thành công và khi lỗi (không nuốt lỗi), không mount thêm ToastContainer trong trang (App.tsx đã mount); danh sách được invalidate sau khi thành công.",
+            "files": []
+        }
+    ]
+}

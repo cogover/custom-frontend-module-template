@@ -86,20 +86,6 @@ export const useSelectBrandColor = () => {
     return brandColor;
 };
 
-export const useSelectDisplayDateFormat = () => {
-    return useAppSelector((state) => state.commonSettings.workspace?.dateFormat);
-};
-
-export const useSelectDisplayTimeFormat = () => {
-    return useAppSelector((state) => state.commonSettings.workspace?.timeFormat);
-};
-
-export const useSelectDateTimeFormat = () => {
-    const dateFormat = useSelectDisplayDateFormat();
-    const timeFormat = useSelectDisplayTimeFormat();
-    return `${dateFormat} ${timeFormat}`;
-};
-
 export const useSelectWorkspaceName = (): string => {
     const workspaceName = useAppSelector((state) => state.commonSettings.workspace?.name);
     const workspaceDomain = useAppSelector((state) => state.commonSettings.workspace?.domain);

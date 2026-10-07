@@ -32,6 +32,7 @@ src/
 ├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
 ├── assets/              # Image/static asset được Vite xử lý cho federation
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
+├── hooks/               # Hook dùng chung: useListDateTimeFormat, useSaveTableSetting, useUrlFilters
 ├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element}
 ├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
@@ -74,6 +75,8 @@ Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không b
 ## Convention chính
 
 -   Styling: design token (`text-typo-primary`, `bg-background-default`, `border-divider-primary`…), spacing `rem`, typography `prose-*`, gom class bằng `cx` (`src/utils/cx`).
--   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng asset SVG thuộc dự án.
+-   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng icon của `@cogover/client-sdk/ui` (`InfoCircleIcon`, `EllipsisVerticalIcon`, `SortIcon`…); chỉ dùng asset SVG thuộc dự án khi SDK chưa có icon phù hợp.
+-   Màn danh sách (header, bảng, phân trang, panel lọc): làm theo [skill custom-module-list-page](.agents/skills/custom-module-list-page/SKILL.md).
+-   Ngày giờ hiển thị theo cài đặt workspace qua `useListDateTimeFormat()` (`src/hooks`); eslint chặn chuỗi định dạng ngày giờ viết cứng.
 -   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`. Không import `Link` trực tiếp từ `react-router-dom`, không dùng `<a href>` cho điều hướng nội bộ và không tự nối app slug (định danh ứng dụng trong URL); component `Link` xử lý phần này.
 -   `npm run build` = `tsc && vite build`; eslint chỉ chạy lúc `serve` (gate trong `vite.config.ts`), build dùng `npm run lint` riêng.
