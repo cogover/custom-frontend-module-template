@@ -11,17 +11,23 @@ const WelcomePage = lazy(() => import('./pages/WelcomePage'));
  * - `key`  : định danh ổn định, dùng cho React key.
  * - `path` : path khai báo cho `<Route>`; bỏ trống = index route.
  * - `element`: phần tử render cho route.
+ * - `name` : tên page trên sidebar của layout dev standalone; bỏ trống = không hiện trên sidebar
+ *   (vd route có tham số `customers/:customerId`).
+ * - `icon` : icon trên sidebar dev; bỏ trống dùng icon trang mặc định.
  */
 export interface AppRoute {
     key: string;
     path?: string;
     element: ReactNode;
+    name?: string;
+    icon?: ReactNode;
 }
 
 /** Nguồn duy nhất định nghĩa router của module — `App` map ra `<Routes>`. */
 export const APP_ROUTES: AppRoute[] = [
     {
         key: 'welcome',
+        name: 'Trang giới thiệu',
         element: <WelcomePage />,
     },
 ];

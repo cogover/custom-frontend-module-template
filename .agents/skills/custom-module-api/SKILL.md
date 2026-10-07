@@ -142,14 +142,17 @@ Rules:
 
 ### Module khác qua proxy cũ
 
-Endpoint RPC của module khác (ví dụ `config-server`) vẫn dùng `REQUEST_TYPE.REVERSE_PROXY` (`x-req-type: 6`); kết quả
-nằm trong `body` của `SuccessServiceResponse`:
+Endpoint RPC của module khác còn đi qua proxy cũ dùng `REQUEST_TYPE.REVERSE_PROXY` (`x-req-type: 6`); kết quả nằm
+trong `body` của `SuccessServiceResponse`:
 
 ```tsx
-return http.post<SuccessServiceResponse<ServerConfig>>(serverConfigURI.configServer, params, {
+return http.post<SuccessServiceResponse<ReportData>>(reportURI.data, params, {
     headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.REVERSE_PROXY }),
 });
 ```
+
+Cấu hình workspace (`configApi.getServerConfigRpc`, `config-server`) dùng `REQUEST_TYPE.TS_PROJECT` (`x-req-type: 9`)
+giống Cogover: response là `SuccessResponse<ServerConfig>` không bọc `body`, đọc `response.data.data`.
 
 ## 7. Server state
 

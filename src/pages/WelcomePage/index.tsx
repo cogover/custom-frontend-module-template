@@ -11,7 +11,8 @@ export default function WelcomePage() {
     return (
         <main
             className={cx(
-                'relative flex min-h-screen w-full items-center justify-center overflow-hidden',
+                'relative flex min-h-[calc(100svh-var(--top-toolbar-width))] w-full',
+                'items-center justify-center overflow-hidden',
                 'bg-background-default px-[1.5rem] py-[4rem] text-typo-primary',
             )}
         >

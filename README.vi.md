@@ -79,7 +79,7 @@ Sau khi cài thư viện và cấu hình workspace ở trên, dùng cách này �
 
 ### Thêm trang mới
 
-Tạo trang trong `src/pages/`, sau đó thêm trang vào `APP_ROUTES` tại `src/routes.tsx`. Đường dẫn khai báo không có dấu `/` ở đầu, ví dụ `customers` hoặc `customers/:customerId`.
+Tạo trang trong `src/pages/`, sau đó thêm trang vào `APP_ROUTES` tại `src/routes.tsx`. Đường dẫn khai báo không có dấu `/` ở đầu, ví dụ `customers` hoặc `customers/:customerId`. Đặt `name` để trang hiện trên sidebar khi chạy `npm run dev`; layout header + sidebar này chỉ mô phỏng Cogover lúc phát triển.
 
 ### Liên kết giữa các trang
 

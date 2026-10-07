@@ -79,7 +79,7 @@ After installing dependencies and configuring your workspace above, use this wor
 
 ### Add a page
 
-Create a page in `src/pages/`, then add it to `APP_ROUTES` in `src/routes.tsx`. Declare paths without a leading `/`, such as `customers` or `customers/:customerId`.
+Create a page in `src/pages/`, then add it to `APP_ROUTES` in `src/routes.tsx`. Declare paths without a leading `/`, such as `customers` or `customers/:customerId`. Set `name` to show the page in the sidebar during `npm run dev`; this header + sidebar layout only simulates Cogover while developing.
 
 ### Link between pages
 

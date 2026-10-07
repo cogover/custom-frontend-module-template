@@ -23,7 +23,7 @@ Giữ custom module tương thích với nền tảng Cogover và chạy ổn đ
 ## 3. Điều hướng trong module
 
 1. Không khai báo `:appSlug` hoặc `cN` trong cấu hình đường dẫn của custom module; nền tảng Cogover đã quản lý hai segment này.
-2. Khai báo mọi route tại `src/routes.tsx`; `App.tsx` chỉ map `APP_ROUTES` thành `<Route>`.
+2. Khai báo mọi route tại `src/routes.tsx`; `App.tsx` chỉ map `APP_ROUTES` thành `<Route>`. Route có `name` hiện trên sidebar của layout dev (kèm `icon` nếu có); route có tham số (`customers/:customerId`) bỏ trống `name`.
 3. Path của page luôn tương đối.
 
 Good:
@@ -87,7 +87,7 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 2. Standalone dùng `MainProvider` và `DevConfigGate`; `MainProvider` có `ClientSdkProvider` cấp `LibraryProvider` từ dữ liệu workspace trong Redux.
 3. Không bọc `LibraryProvider` trong `App.tsx` hay component expose.
 4. Provider nội bộ chỉ giữ dữ liệu custom module thực sự cần.
-5. Không dựng header, sidebar hoặc layout của host trong custom module.
+5. Page và `App.tsx` không dựng header, sidebar hoặc layout của host. Standalone đã có layout dev `src/dev/layout` (header 56px, sidebar 60/240px, đặt `--top-toolbar-width`/`--left-toolbar-width` như Cogover): page tính chiều cao theo `calc(100svh-var(--top-toolbar-width))`, không viết nhánh riêng cho standalone.
 
 ## 6. Module Federation
 

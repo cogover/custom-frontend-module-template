@@ -26,9 +26,11 @@ export const configApi = {
         });
     },
     getServerConfigRpc(params: ServerConfigParams, onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void) {
-        return http.post<SuccessServiceResponse<ServerConfig>>(serverConfigURI.configServer, params, {
+        // Type 9 (`REQUEST_TYPE.TS_PROJECT`) giống end-user: trả nguyên body của backend (`SuccessResponse`),
+        // không bọc trong `body`.
+        return http.post<SuccessResponse<ServerConfig>>(serverConfigURI.configServer, params, {
             onDownloadProgress: onDownloadProgress,
-            headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.REVERSE_PROXY }),
+            headers: createServiceHeader({ service: 3, type: REQUEST_TYPE.TS_PROJECT }),
         });
     },
 };

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import 'src/languages/i18n';
 import App from './App.tsx';
 import DevConfigGate from './dev/DevConfigGate.tsx';
+import MainLayout from './dev/layout/MainLayout.tsx';
 import MainProvider from './providers';
 
 import '@fontsource-variable/nunito';
@@ -21,13 +22,16 @@ import 'dayjs/locale/vi';
  * `DevConfigGate` chỉ chạy ở standalone: gọi config API và đổ vào Redux để mô phỏng
  * môi trường mà host cung cấp. Không nằm trong component `App` được expose.
  *
- * Standalone chỉ render nội dung page; header và sidebar thuộc trách nhiệm của host.
+ * `MainLayout` (dev) mô phỏng header và sidebar của Cogover; sidebar liệt kê các page trong `APP_ROUTES` có `name`.
+ * Khi nhúng, Cogover tự cung cấp header và sidebar thật.
  */
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
         <MainProvider>
             <DevConfigGate>
-                <App />
+                <MainLayout>
+                    <App />
+                </MainLayout>
             </DevConfigGate>
         </MainProvider>
     </BrowserRouter>,

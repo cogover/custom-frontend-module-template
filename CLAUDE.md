@@ -33,11 +33,12 @@ src/
 ├── assets/              # Image/static asset được Vite xử lý cho federation
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
 ├── hooks/               # Hook dùng chung: useListDateTimeFormat, useSaveTableSetting, useUrlFilters
-├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element}
-├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > App
+├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element,name?,icon?}
+├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > MainLayout > App
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
-│   └── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
+│   ├── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
+│   └── layout/             # MainLayout: header + sidebar mô phỏng Cogover; sidebar = APP_ROUTES có `name`
 ├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider > ClientSdkProvider
 │   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
 ├── store/               # configureStore — chỉ slice commonSettings
@@ -51,11 +52,11 @@ src/
 -   **Xuất cho nền tảng Cogover**: chỉ `App.tsx` (qua `./CustomApp`). App dùng `AppSlugProvider` và `APP_ROUTES`.
 -   Nền tảng Cogover truyền prop `appSlug` (định danh ứng dụng trong URL); `AppSlugProvider` phân phối giá trị này qua `useAppSlug()`.
 -   Chế độ standalone/dev không có app slug; `useAppSlug()` trả chuỗi rỗng.
--   **Dev-only**: `main.tsx`, `MainProvider`, `DevConfigGate`; standalone render thẳng nội dung page.
+-   **Dev-only**: `main.tsx`, `MainProvider`, `DevConfigGate`, `dev/layout`; standalone bọc page trong layout dev (header + sidebar) để hình dung page khi nhúng vào Cogover.
 
 ### Thêm page mới
 
-Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES`; `App.tsx` tự map ra `<Routes>`.
+Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES`; `App.tsx` tự map ra `<Routes>`. Đặt `name` (và `icon` nếu cần) để page hiện trên sidebar của layout dev.
 
 ## i18n (đa ngôn ngữ)
 

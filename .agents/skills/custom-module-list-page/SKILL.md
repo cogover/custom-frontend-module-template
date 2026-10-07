@@ -20,21 +20,11 @@ Mọi khối của màn danh sách đã có sẵn trong `@cogover/client-sdk/ui`
 ## 1. Bố cục trang
 
 ```tsx
-import type { CSSProperties } from 'react';
-import { useAppSlug } from 'src/providers/appSlugContext';
 import cx from 'src/utils/cx';
 
-// Standalone không có thanh công cụ của Cogover; khi nhúng, biến này do Cogover đặt (56px).
-const STANDALONE_LAYOUT_VARS = { '--top-toolbar-width': '0px' } as CSSProperties;
-
 export default function PromotionProgramListPage() {
-    const appSlug = useAppSlug();
-
     return (
-        <div
-            className={cx('flex h-[calc(100svh-var(--top-toolbar-width))] bg-background-default')}
-            style={appSlug ? undefined : STANDALONE_LAYOUT_VARS}
-        >
+        <div className={cx('flex h-[calc(100svh-var(--top-toolbar-width))] bg-background-default')}>
             <div className={cx('flex w-0 flex-1 flex-col px-[1.5rem] py-[1rem]')}>
                 <ProgramTable /> {/* ListViewTable className='flex-1 h-0' — mục 2 */}
             </div>
@@ -341,13 +331,10 @@ Rules:
 import { FilterListIcon, FormItem, MultipleSelect, ResizableMenu, SearchIcon, TextField } from '@cogover/client-sdk/ui';
 
 function ProgramFilterMenu() {
-    const appSlug = useAppSlug();
-
     return (
         <ResizableMenu
             storageKey='promotion-programs'
             saveToLocalStorage
-            resizeBarClassName={cx({ 'top-0': !appSlug })}
             collapsedIcon={({ expandMenu }) => (
                 <button
                     type='button'
@@ -451,7 +438,7 @@ Rules:
     // Trường lọc gọi thẳng: onChange={(statuses) => updateFilters({ statuses })}
     ```
 
-8. Standalone: truyền `resizeBarClassName={cx({ 'top-0': !appSlug })}` cùng `STANDALONE_LAYOUT_VARS` ở mục 1; khi nhúng giữ mặc định của `ResizableMenu`.
+8. Không viết code riêng cho standalone (đặt lại `--top-toolbar-width`, `resizeBarClassName`): layout dev `src/dev/layout` đã có header 56px và sidebar như Cogover.
 9. Lọc theo bản ghi của object Cogover thì vẫn có thể dùng `FilterGenerator` (skill `custom-module-api` mục 13) đặt trong panel này.
 
 ## 6. Dữ liệu

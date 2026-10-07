@@ -6,8 +6,11 @@ import { i18n } from 'src/languages/global';
 import { setCommonSettingState } from 'src/store/commonSettingsSlice';
 import { useAppDispatch, useAppSelector } from 'src/store/hooks';
 import { FORWARD_AUTH_TOKEN_PARAM } from 'src/utils/authUtils';
+import { getDevLoginUrl } from './devLoginUrl';
 
 const NOT_RETRY_STATUS = [400, 401, 403];
+/** config-server: `No workspace info` — phiên không gắn với workspace nào. */
+const NO_WORKSPACE_INFO_CODE = 190065;
 
 /**
  * CHỈ DÙNG CHO DEV STANDALONE — KHÔNG expose qua federation.
@@ -28,11 +31,7 @@ export default function DevConfigGate({ children }: PropsWithChildren) {
         return url.href;
     }, []);
     const workspaceDomain = (import.meta.env.VITE_WORKSPACE_NAME as string).trim().toLowerCase();
-    const loginUrl = new URL(import.meta.env.DEV_LOGIN_URL as string);
-    loginUrl.searchParams.set('continue', continueUrl);
-    loginUrl.searchParams.set('workspaceDomain', workspaceDomain);
-    loginUrl.searchParams.set('lang', 'vi-VN');
-    const loginHref = loginUrl.href;
+    const loginHref = getDevLoginUrl(continueUrl);
 
     const { data, error, isError, isPending } = useQuery({
         queryKey: [configApiKeys.GET_SERVER_CONFIG, workspaceDomain, token, continueUrl],
@@ -40,7 +39,7 @@ export default function DevConfigGate({ children }: PropsWithChildren) {
             await configApi.checkSession({ token, continueUrl, workspaceDomain });
             return await configApi.getServerConfigRpc({ token });
         },
-        select: (resp) => resp.data.body.data,
+        select: (resp) => resp.data.data,
         refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
             const status = (error as AxiosError).response?.status;
@@ -49,8 +48,11 @@ export default function DevConfigGate({ children }: PropsWithChildren) {
         },
     });
 
+    const errorResponse = error?.response;
     const needsLogin =
-        (error as AxiosError | null)?.response?.status === 401 ||
+        errorResponse?.status === 401 ||
+        // Phiên đăng nhập chưa gắn workspace (token cấp khi thiếu `workspaceDomain`): đăng nhập lại để lấy phiên mới.
+        errorResponse?.data?.r === NO_WORKSPACE_INFO_CODE ||
         (!isPending && !isError && !data?.account) ||
         (sessionApplied && !account);
     // Token trả về không hợp lệ: dừng để người dùng chọn đăng nhập lại, tránh vòng lặp chuyển trang.
