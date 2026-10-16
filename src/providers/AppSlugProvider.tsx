@@ -1,11 +1,13 @@
 import { PropsWithChildren, useContext } from 'react';
-import { AppSlugContext } from './appSlugContext';
+import { AppSlugContext, setCurrentAppSlug } from './appSlugContext';
 
 interface AppSlugProviderProps extends PropsWithChildren {
     appSlug?: string;
 }
 
 function AppSlugContextProvider({ appSlug = '', children }: AppSlugProviderProps) {
+    // Gán trong lúc render để request của component con (chạy trong effect của con, trước effect của cha) đã có slug.
+    setCurrentAppSlug(appSlug);
     return <AppSlugContext.Provider value={appSlug}>{children}</AppSlugContext.Provider>;
 }
 

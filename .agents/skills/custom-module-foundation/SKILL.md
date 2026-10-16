@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons, BreadCrumbs and PageWrapper sticky breadcrumb pages) in custom-module-template.
+description: Use when changing architecture, routing, Link and useNavigate navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons, BreadCrumbs and PageWrapper sticky breadcrumb pages) in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -45,7 +45,7 @@ Bad:
 }
 ```
 
-## 4. Link nội bộ — bắt buộc
+## 4. Link và useNavigate nội bộ — bắt buộc
 
 Mọi link được viết trong custom module phải dùng component của dự án:
 
@@ -57,17 +57,29 @@ import Link from 'src/components/Link';
 
 `to` luôn bắt đầu bằng `/` và tính từ gốc module, kể cả link có tham số: `to={`/records/${record.id}`}`. Path không có `/` đầu là path tương đối, sẽ nối vào route hiện tại (standalone ra `/records/records/…`).
 
-`Link` nội bộ chịu trách nhiệm gắn app slug ở production, giữ nguyên path ở standalone, tránh slug lặp và tránh URL dạng `//user`.
+`Link` nội bộ chịu trách nhiệm gắn app slug ở production, giữ nguyên path ở standalone, tránh slug lặp và tránh URL dạng `//user`. Đích chỉ đổi query/hash (`?tab=2`, `#top`) hoặc path tương đối (`./detail`, `../table`) được giữ nguyên để React Router tính theo trang hiện tại. Nó cũng báo trước cho nền tảng Cogover mỗi lần điều hướng; khi module chạy trong ứng dụng mobile, nền tảng có thể tự mở trang đích thay cho module.
 
-Không import trực tiếp từ React Router:
+Điều hướng bằng code dùng hook của dự án, cùng quy ước path với `Link`:
 
 ```tsx
-import { Link } from 'react-router-dom';
+import useNavigate from 'src/hooks/useNavigate';
+
+const navigate = useNavigate();
+navigate(`/records/${record.id}`);
+navigate(-1);
+```
+
+Mở tab mới dùng `<Link to='/records' target='_blank'>`, không gọi `window.open` hay gán `window.location` cho link nội bộ.
+
+Không import `Link`, `useNavigate` trực tiếp từ React Router:
+
+```tsx
+import { Link, useNavigate } from 'react-router-dom';
 
 <Link to='/records'>Danh sách bản ghi</Link>;
 ```
 
-URL trên có thể thiếu app slug, khiến nền tảng Cogover redirect lại và giao diện nháy một lần.
+URL trên có thể thiếu app slug, khiến nền tảng Cogover redirect lại và giao diện nháy một lần; trên mobile, trang đích còn bị mở ngay trong khung của module.
 
 Không tự nối app slug:
 
@@ -165,7 +177,8 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 
 ## 10. Component giao diện từ `@cogover/client-sdk`
 
-1. Import component từ `@cogover/client-sdk/ui`; không copy code component vào module, không tự dựng lại control SDK đã có.
+1. Import component từ `@cogover/client-sdk`; không copy code component vào module, không tự dựng lại control SDK đã có.
+   Chỉ import từ `@cogover/client-sdk` (gốc); không import đường dẫn con (`@cogover/client-sdk/ui`, `/data`, `/provider`, `/http`) vì nền tảng chỉ chia sẻ gói gốc — import con sẽ bị đóng gói riêng và không thấy `LibraryProvider`. Riêng `@cogover/client-sdk/styles.css` giữ nguyên.
 2. Component đọc ngôn ngữ, theme và workspace từ `LibraryProvider` (mục 5); không truyền các cấu hình này vào từng component.
 3. Bộ lọc bản ghi dùng `FilterGenerator`, xem skill `custom-module-api` mục 13.
 4. Icon dùng bộ icon của SDK (`InfoCircleIcon`, `SlidersIcon`, `EllipsisVerticalIcon`, `ChevronDownIcon`, `SortIcon`, `FilterIcon`, `PlusIcon`, `EyeIcon`, `CopyIcon`, `PencilIcon`, `TrashIcon`…, danh sách đủ trong README của package). Icon kế thừa màu chữ (`currentColor`), cỡ qua prop `fontSize` (px). Chỉ tự vẽ SVG khi SDK chưa có.
@@ -176,7 +189,7 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 ### Breadcrumb và trang có thanh breadcrumb dính — `PageWrapper`, `BreadCrumbs`
 
 ```tsx
-import { Button, PageWrapper, PencilIcon } from '@cogover/client-sdk/ui';
+import { Button, PageWrapper, PencilIcon } from '@cogover/client-sdk';
 import Link from 'src/components/Link';
 
 <PageWrapper
@@ -216,7 +229,7 @@ Rules:
 Good:
 
 ```tsx
-import { FormControlLabel, Switch } from '@cogover/client-sdk/ui';
+import { FormControlLabel, Switch } from '@cogover/client-sdk';
 
 <FormControlLabel
     label='Nhận thông báo'

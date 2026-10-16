@@ -89,7 +89,7 @@ Always use the project's `Link` component:
 import Link from 'src/components/Link';
 ```
 
-This component handles application paths when running within Cogover. Do not import `Link` directly from `react-router-dom`, manually add the application identifier to URLs, or use `<a>` tags to navigate between pages within the module.
+This component handles application paths when running within Cogover. For programmatic navigation, use the project's `useNavigate` (`import useNavigate from 'src/hooks/useNavigate';`). Do not import `Link` or `useNavigate` directly from `react-router-dom`, manually add the application identifier to URLs, or use `<a>` tags or `window.open` to navigate between pages within the module; to open a new tab, set `target='_blank'` on `Link`.
 
 ### Images, videos, and other files
 

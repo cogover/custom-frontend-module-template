@@ -1,4 +1,4 @@
-import { Avatar, Popper, PopperMenuItem, showToastMessage } from '@cogover/client-sdk/ui';
+import { Avatar, Popper, PopperMenuItem, showToastMessage } from '@cogover/client-sdk';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { accountApi, accountApiKeys } from 'src/apis/account/account.api';

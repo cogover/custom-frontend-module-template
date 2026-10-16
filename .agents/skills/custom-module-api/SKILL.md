@@ -190,6 +190,10 @@ Feature API không tự thêm:
 
 HTTP client chung chịu trách nhiệm cho các header này. Feature chỉ thêm header nghiệp vụ riêng của endpoint.
 
+`X-App-Slug` lấy từ app slug nền tảng Cogover truyền vào `CustomApp` (`AppSlugProvider`); chỉ khi không có (standalone) mới suy ra từ đoạn đầu đường dẫn trang. Không đọc `window.location` để tự tính app slug: trong WebView (khung trình duyệt nhúng) của ứng dụng mobile, đường dẫn trang không chứa app slug.
+
+Trong WebView mobile, module phải được mở trên domain workspace (`https://<workspace>.cogover.com`) để request tương đối, cookie và CSRF hoạt động như trên web.
+
 ## 10. Retry
 
 1. Feature không tự viết vòng lặp retry.
@@ -239,14 +243,15 @@ Khi người dùng cần tự đặt điều kiện lọc bản ghi của một 
 Good:
 
 ```tsx
-import { useObjectFields, useRecords } from '@cogover/client-sdk/data';
 import {
     FilterGenerator,
     ignoreEmptyParamsConditions,
     logicTypeParams,
+    useObjectFields,
+    useRecords,
     type FilterGeneratorItem,
     type FilterGeneratorLogicTypes,
-} from '@cogover/client-sdk/ui';
+} from '@cogover/client-sdk';
 import { useState } from 'react';
 
 export default function ContactFilter() {
@@ -300,7 +305,7 @@ Cách bad tự dựng UI lọc nên thiếu toán tử theo loại trường, ô
 
 Rules:
 
-1. Import component và helper từ `@cogover/client-sdk/ui`, hook dữ liệu từ `@cogover/client-sdk/data`. Không copy code FilterGenerator từ nơi khác vào module.
+1. Import component, helper và hook dữ liệu từ `@cogover/client-sdk` (gốc, không dùng `/ui`, `/data`). Không copy code FilterGenerator từ nơi khác vào module.
 2. `dataFields` lấy từ `useObjectFields({ slug })` của object cần lọc; không tự khai báo danh sách trường. Trường không hoạt động được ẩn tự động.
 3. Giữ `filterItems`, `logicType`, `logicValue` trong state của page và truyền thẳng vào `useRecords`: `filters` qua `ignoreEmptyParamsConditions`, `type` qua `logicTypeParams[logicType]`, `logic_sequence` chỉ khi `logicType` là `CUSTOM`.
 4. Không tự validate biểu thức logic tùy chỉnh, không tự giới hạn số dòng, không tự làm nút đặt lại: dùng `showCustomLogicError` (mặc định bật), `maxFilterItemCount` (mặc định 30), `clearable` + `onReset`.

@@ -5,11 +5,11 @@ description: Use when adding, changing, translating, moving, or deleting user-fa
 
 # Custom Module i18n
 
-Giữ toàn bộ bản dịch tự chứa trong custom module và đồng bộ giữa các locale được bundle cùng remote.
+Bản dịch của module nằm trong repo và đồng bộ giữa các locale được bundle cùng remote; bản dịch của nền tảng Cogover được tự động gộp vào khi cần.
 
 ## 1. Local resources — bắt buộc
 
-Mọi tài nguyên i18n phải nằm trong chính repo này:
+Mọi bản dịch do module viết phải nằm trong chính repo này:
 
 ```text
 src/languages/locales/<locale>/<namespace>.json
@@ -22,15 +22,16 @@ import { useTranslation } from 'src/languages/global';
 import { I18nNS } from 'src/languages/i18n';
 ```
 
-Không đọc, tìm, cập nhật hoặc phụ thuộc vào:
+Bản dịch nền tảng: namespace không có trong repo (`common`, `object`, `data_field`…) tự lấy từ bản dịch nền tảng Cogover tại `/static/locales`; chỉ cần gọi `t('<ns>:<key>')`, ví dụ `t('common:common.noData')`. Namespace có ở cả hai thì gộp lại, key trong repo ưu tiên — muốn đổi chữ của nền tảng thì thêm đúng key đó vào file của repo. Cơ chế này nằm sẵn trong `src/languages/i18n.ts`, chạy cả khi nhúng lẫn standalone.
 
-1. Kho bản dịch bên ngoài dự án.
-2. Bản dịch của ứng dụng chủ hoặc module khác.
-3. URL `/static/locales/...`.
-4. Hook/i18n instance do host cung cấp.
-5. Tài nguyên dịch từ API bên ngoài.
+Không:
 
-Khi cần tái sử dụng key, chỉ search trong `src/languages/locales/` của custom module. Production và standalone phải dùng cùng bộ locale đã bundle trong remote.
+1. Tự `fetch` `/static/locales/...` hoặc chép file bản dịch nền tảng vào repo.
+2. Đọc, tìm hoặc cập nhật kho bản dịch bên ngoài dự án, bản dịch của module khác.
+3. Dùng hook/i18n instance do host cung cấp.
+4. Lấy tài nguyên dịch từ API bên ngoài.
+
+Khi cần thêm key mới cho module, search trong `src/languages/locales/` của custom module. Production và standalone dùng cùng bộ locale đã bundle trong remote.
 
 ## 2. Locale files
 
@@ -50,7 +51,7 @@ Mỗi key mới phải được thêm đồng thời vào tiếng Việt và ti�
 
 1. Page thông thường dùng `I18nNS.APP`.
 2. Chỉ tạo namespace mới khi nội dung đủ lớn và user đã duyệt.
-3. Khi thêm namespace: cập nhật `I18nNS`, tạo file cho mọi locale và bảo đảm namespace nằm trong `namespaces`.
+3. Khi thêm namespace: cập nhật `I18nNS` và tạo file cho mọi locale; file trong `src/languages/locales/` tự được nạp.
 
 Good:
 
@@ -69,7 +70,7 @@ const { t } = useTranslation('unknown_namespace');
 1. Import `useTranslation` từ `src/languages/global`.
 2. Import `Trans` từ `src/languages/global/Trans` khi nội dung có React element.
 3. Không import trực tiếp từ `react-i18next` trong page/component.
-4. Page không tự gọi `i18n.changeLanguage`; App/provider đồng bộ ngôn ngữ theo config hiện tại.
+4. Page/component không tự gọi `i18n.changeLanguage` và không tự import `src/languages/i18n`: `useTranslation`/`Trans` nội bộ tự khởi tạo i18n và đổi theo ngôn ngữ hiển thị của nền tảng Cogover, kể cả component expose không đi qua `App` (vd `./Components/*`, component nhúng Form Builder).
 
 ## 5. Prefix và key
 

@@ -55,7 +55,7 @@ module.exports = {
                 skipBlankLines: true,
             },
         ],
-        // Cấm dùng FontAwesome trong custom module này. Icon lấy từ @cogover/client-sdk/ui hoặc asset SVG thuộc dự án.
+        // Cấm dùng FontAwesome trong custom module này. Icon lấy từ @cogover/client-sdk hoặc asset SVG thuộc dự án.
         '@typescript-eslint/no-restricted-imports': [
             'error',
             {

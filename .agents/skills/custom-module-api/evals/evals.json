@@ -28,7 +28,7 @@
         {
             "id": 4,
             "prompt": "Thêm trang danh sách liên hệ cho phép người dùng tự lọc theo bất kỳ trường nào của object contact.",
-            "expected_output": "Dùng FilterGenerator từ @cogover/client-sdk/ui với dataFields từ useObjectFields, đưa filterItems qua ignoreEmptyParamsConditions và logicTypeParams vào useRecords; không tự dựng select trường/toán tử, không gọi /api/v1/records trực tiếp, không bọc LibraryProvider trong App.",
+            "expected_output": "Dùng FilterGenerator từ @cogover/client-sdk với dataFields từ useObjectFields, đưa filterItems qua ignoreEmptyParamsConditions và logicTypeParams vào useRecords; không tự dựng select trường/toán tử, không gọi /api/v1/records trực tiếp, không bọc LibraryProvider trong App.",
             "files": []
         }
     ]

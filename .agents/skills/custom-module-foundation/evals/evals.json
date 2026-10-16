@@ -40,7 +40,7 @@
         {
             "id": 7,
             "prompt": "Thêm công tắc 'Chỉ hiện bản ghi của tôi' có nhãn bấm được vào trang danh sách.",
-            "expected_output": "Dùng FormControlLabel với control={<Switch checked onChange />} từ @cogover/client-sdk/ui; không bọc Switch trong thẻ <label> HTML, không tự dựng flex quanh control.",
+            "expected_output": "Dùng FormControlLabel với control={<Switch checked onChange />} từ @cogover/client-sdk; không bọc Switch trong thẻ <label> HTML, không tự dựng flex quanh control.",
             "files": []
         },
         {

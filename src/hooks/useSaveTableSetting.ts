@@ -1,9 +1,4 @@
-import {
-    showToastMessage,
-    useUpdateTableSetting,
-    type ColumnType,
-    type TablePinnedColumns,
-} from '@cogover/client-sdk/ui';
+import { showToastMessage, useUpdateTableSetting, type ColumnType, type TablePinnedColumns } from '@cogover/client-sdk';
 import { useCallback } from 'react';
 import { useAppSlug } from 'src/providers/appSlugContext';
 import { setCommonSettingState } from 'src/store/commonSettingsSlice';

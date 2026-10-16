@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { getCurrentAppSlug } from 'src/providers/appSlugContext';
 import { getXsrfToken } from 'src/utils/authUtils';
 import { DEVELOPMENT_MODE } from 'src/utils/constant/app';
 import { uuidv4 } from 'src/utils/appUtils';
@@ -25,8 +26,11 @@ http.interceptors.request.use((config) => {
     config.headers.set('X-Req-Id', requestId++);
     config.headers.set('X-Req-From', requestSourceId);
 
+    const hostAppSlug = getCurrentAppSlug();
     const apps = window.appStore?.getState().commonSettings.apps;
-    if (apps?.length) {
+    if (hostAppSlug) {
+        config.headers.set('X-App-Slug', hostAppSlug);
+    } else if (apps?.length) {
         const appSlug = window.location.pathname.split('/').filter(Boolean)[0];
         const currentApp = apps.find((app) => app.slug === appSlug) ?? apps[0];
         config.headers.set('X-App-Slug', currentApp.slug);

@@ -32,6 +32,7 @@ Tạo component nhúng trong layout Form Builder, thao tác form bằng `formBui
 4. Giữ `base: './'` trong Vite theo [custom-module-foundation](../custom-module-foundation/SKILL.md). Mục đích chính là để tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), không theo domain của trang host (ứng dụng chủ). Nếu host chuyển tiếp remote, dùng địa chỉ chuyển tiếp thực tế; không bắt buộc URL khác domain host. Cùng một bản build dùng được ở nhiều slot là lợi ích đi kèm.
 5. `_cm_1` trong bảng chỉ là ví dụ slot được gán trên layout. Không ghi cố định `_cm_1` hoặc `/_cm_N/` vào URL ảnh, CSS, code component hay lệnh build. Dùng import tài nguyên theo skill foundation.
 6. Không bọc component bằng CustomApp, bộ định tuyến riêng, header hoặc sidebar của ứng dụng chủ. Với thư viện có context dùng chung như client SDK, đối chiếu yêu cầu provider và cấu hình `shared` với tài liệu tích hợp Cogover trước khi sử dụng.
+7. Chữ hiển thị dùng `useTranslation`/`Trans` của `src/languages/global` như page: i18n tự khởi tạo và theo ngôn ngữ của nền tảng dù component không đi qua `App`; không tự gọi `i18n.changeLanguage`. Xem [custom-module-i18n](../custom-module-i18n/SKILL.md).
 
 ## 3. Nhận formBuilder và gọi API
 

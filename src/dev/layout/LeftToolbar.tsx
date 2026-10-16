@@ -1,4 +1,4 @@
-import { ToggleCollapseButton, Tooltip } from '@cogover/client-sdk/ui';
+import { ToggleCollapseButton, Tooltip } from '@cogover/client-sdk';
 import { NavLink } from 'react-router-dom';
 import logoUrl from 'src/assets/cogover-logo.svg';
 import { APP_ROUTES } from 'src/routes';

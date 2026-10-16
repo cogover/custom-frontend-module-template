@@ -1,38 +1,39 @@
-import { forwardRef } from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps, To } from 'react-router-dom';
+import { forwardRef, MouseEvent } from 'react';
+import { Link as RouterLink, LinkProps as RouterLinkProps, useHref } from 'react-router-dom';
+import useNavigateInterceptor from 'src/hooks/useNavigateInterceptor';
 import { useAppSlug } from 'src/providers/appSlugContext';
+import { addAppSlugToLink, isAbsoluteUrl } from 'src/utils/appSlugUtils';
 
 export interface LinkProps extends RouterLinkProps {
     withAppSlug?: boolean;
 }
 
-const EXTERNAL_LINK_PATTERN = /^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i;
-
-function addAppSlugToPath(pathname: string, appSlug: string) {
-    const normalizedAppSlug = appSlug.trim().replace(/^\/+|\/+$/g, '');
-    if (!normalizedAppSlug || EXTERNAL_LINK_PATTERN.test(pathname)) return pathname;
-
-    const appRoot = `/${normalizedAppSlug}`;
-    if (pathname === appRoot || pathname.startsWith(`${appRoot}/`) || pathname.startsWith(`${appRoot}?`)) {
-        return pathname;
-    }
-
-    const normalizedPathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
-    return `${appRoot}${normalizedPathname}`;
+function opensNewTab(event: MouseEvent<HTMLAnchorElement>, target?: string) {
+    return target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
 }
 
-function addAppSlugToLink(to: To, appSlug: string): To {
-    if (typeof to === 'string') return addAppSlugToPath(to, appSlug);
-    if (!to.pathname) return to;
-
-    return { ...to, pathname: addAppSlugToPath(to.pathname, appSlug) };
-}
-
-const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ to, withAppSlug = true, ...props }, ref) => {
+const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ to, withAppSlug = true, onClick, ...props }, ref) => {
     const appSlug = useAppSlug();
+    const onNavigateIntercept = useNavigateInterceptor();
     const resolvedTo = withAppSlug ? addAppSlugToLink(to, appSlug) : to;
+    const routerHref = useHref(resolvedTo, { relative: props.relative });
+    // URL tuyệt đối giữ nguyên như `href` React Router gắn vào thẻ `<a>`.
+    const href = isAbsoluteUrl(resolvedTo) ? resolvedTo : routerHref;
 
-    return <RouterLink {...props} ref={ref} to={resolvedTo} />;
+    const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        onClick?.(event);
+        if (event.defaultPrevented || !onNavigateIntercept) return;
+
+        const handled = onNavigateIntercept({
+            href,
+            target: opensNewTab(event, props.target) ? '_blank' : '_self',
+            replace: props.replace,
+            source: 'link',
+        });
+        if (handled) event.preventDefault();
+    };
+
+    return <RouterLink {...props} ref={ref} to={resolvedTo} onClick={handleClick} />;
 });
 
 Link.displayName = 'Link';
