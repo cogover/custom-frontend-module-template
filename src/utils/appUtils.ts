@@ -1,9 +1,5 @@
 import { ThemeType } from 'src/theme/theme.type';
 
-export function redirectExternalUrl(url: string) {
-    window.location.href = url;
-}
-
 export const removeSearchParam = (key: string) => {
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.delete(key);

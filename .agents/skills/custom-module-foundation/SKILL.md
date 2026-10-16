@@ -71,6 +71,16 @@ navigate(-1);
 
 Mở tab mới dùng `<Link to='/records' target='_blank'>`, không gọi `window.open` hay gán `window.location` cho link nội bộ.
 
+Link ngoài (`https://…`, `mailto:`, `tel:`) cũng dùng `Link`; URL tuyệt đối được giữ nguyên, không gắn app slug:
+
+```tsx
+<Link to='https://www.cogover.com' target='_blank'>
+    Trang chủ Cogover
+</Link>
+```
+
+Không gọi `window.open` hay gán `window.location` kể cả với link ngoài: nền tảng Cogover cần nhận điều hướng để ứng dụng mobile tự mở trang đích.
+
 Không import `Link`, `useNavigate` trực tiếp từ React Router:
 
 ```tsx
