@@ -89,7 +89,7 @@ Bắt buộc dùng `Link` có sẵn trong dự án:
 import Link from 'src/components/Link';
 ```
 
-Component này xử lý đường dẫn ứng dụng khi chạy trên Cogover. Không import `Link` trực tiếp từ `react-router-dom`, không tự ghép định danh ứng dụng vào URL và không dùng thẻ `<a>` để chuyển trang bên trong module.
+Component này xử lý đường dẫn ứng dụng khi chạy trên Cogover. Chuyển trang bằng code dùng `useNavigate` của dự án (`import useNavigate from 'src/hooks/useNavigate';`). Không import `Link` hay `useNavigate` trực tiếp từ `react-router-dom`, không tự ghép định danh ứng dụng vào URL, không dùng thẻ `<a>` hay `window.open` để chuyển trang bên trong module; mở tab mới dùng `target='_blank'` trên `Link`. Link ngoài (`https://`, `mailto:`, `tel:`) cũng dùng `Link`, ví dụ `<Link to='https://…' target='_blank'>`; không dùng `window.open` hay gán `window.location` kể cả với link ngoài, vì nền tảng Cogover cần nhận điều hướng để ứng dụng mobile tự mở trang đích.
 
 ### Ảnh, video và các file khác
 

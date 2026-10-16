@@ -7,7 +7,7 @@ description: Use when creating or changing a list page (màn danh sách, trang d
 
 Màn danh sách của custom module phải giống màn danh sách của Cogover (ví dụ Cài đặt → Quản lý đối tượng). Trước khi code, dùng Read để xem ảnh mẫu [`assets/list-page-reference.jpg`](assets/list-page-reference.jpg) và đối chiếu lại khi kiểm tra.
 
-Mọi khối của màn danh sách đã có sẵn trong `@cogover/client-sdk/ui`, lấy từ đúng code của Cogover. **Không tự viết `<table>`, phân trang, thanh kéo panel hay dropdown.** Props chi tiết xem README của package (`node_modules/@cogover/client-sdk/README.md`).
+Mọi khối của màn danh sách đã có sẵn trong `@cogover/client-sdk`, lấy từ đúng code của Cogover. **Không tự viết `<table>`, phân trang, thanh kéo panel hay dropdown.** Props chi tiết xem README của package (`node_modules/@cogover/client-sdk/README.md`).
 
 | Vùng         | Component SDK                                                                             |
 | ------------ | ----------------------------------------------------------------------------------------- |
@@ -58,7 +58,7 @@ import {
     Tooltip,
     useTableV2,
     type ColumnType,
-} from '@cogover/client-sdk/ui';
+} from '@cogover/client-sdk';
 import { useSaveTableSetting } from 'src/hooks/useSaveTableSetting';
 import { TABLE_PAGE_SIZE_OPTIONS } from 'src/utils/constant/table';
 
@@ -294,7 +294,7 @@ import {
     PopperMenu,
     PopperMenuItem,
     StopCircleIcon,
-} from '@cogover/client-sdk/ui';
+} from '@cogover/client-sdk';
 
 function RowActionMenu({ program, onAction }: RowActionMenuProps) {
     return (
@@ -328,7 +328,7 @@ Rules:
 ## 5. Panel lọc: `ResizableMenu`
 
 ```tsx
-import { FilterListIcon, FormItem, MultipleSelect, ResizableMenu, SearchIcon, TextField } from '@cogover/client-sdk/ui';
+import { FilterListIcon, FormItem, MultipleSelect, ResizableMenu, SearchIcon, TextField } from '@cogover/client-sdk';
 
 function ProgramFilterMenu() {
     return (

@@ -1,9 +1,8 @@
-import { ToastContainer } from '@cogover/client-sdk/ui';
-import { Suspense, useEffect } from 'react';
+import { ToastContainer } from '@cogover/client-sdk';
+import { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { i18n } from 'src/languages/global';
+import { useSyncDisplayLanguage } from 'src/languages/global';
 import { APP_ROUTES } from 'src/routes';
-import { useDisplayLanguage } from 'src/store/commonSettingsSlice';
 import { AppSlugProvider } from 'src/providers/AppSlugProvider';
 
 /**
@@ -31,13 +30,7 @@ const TOAST_PLACEMENTS = [
 ] as const;
 
 export default function App({ appSlug }: CustomAppProps) {
-    const displayLanguage = useDisplayLanguage();
-
-    useEffect(() => {
-        if (i18n.language !== displayLanguage) {
-            void i18n.changeLanguage(displayLanguage);
-        }
-    }, [displayLanguage]);
+    useSyncDisplayLanguage();
 
     return (
         <AppSlugProvider appSlug={appSlug}>

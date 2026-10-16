@@ -1,5 +1,5 @@
 import * as queryHooks from '@tanstack/react-query';
-import { LibraryProvider } from '@cogover/client-sdk/provider';
+import { LibraryProvider } from '@cogover/client-sdk';
 import '@cogover/client-sdk/styles.css';
 import { PropsWithChildren, useMemo } from 'react';
 import http from 'src/apis/apiBase';

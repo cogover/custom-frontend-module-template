@@ -32,7 +32,7 @@ src/
 ├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
 ├── assets/              # Image/static asset được Vite xử lý cho federation
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
-├── hooks/               # Hook dùng chung: useListDateTimeFormat, useSaveTableSetting, useUrlFilters
+├── hooks/               # Hook dùng chung: useNavigate, useListDateTimeFormat, useSaveTableSetting, useUrlFilters
 ├── routes.tsx           # APP_ROUTES — nguồn DUY NHẤT định nghĩa route {key,path?,element,name?,icon?}
 ├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > MainLayout > App
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
@@ -42,7 +42,7 @@ src/
 ├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider > ClientSdkProvider
 │   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
 ├── store/               # configureStore — chỉ slice commonSettings
-├── languages/           # i18n bundle LOCAL (xem mục i18n bên dưới)
+├── languages/           # i18n: bản dịch trong repo + bản dịch nền tảng (xem mục i18n bên dưới)
 ├── apis/                # Axios client, retry, apiErrorHandler, config/, account/ (types)
 ├── utils/ · theme/ · styles/
 ```
@@ -60,7 +60,7 @@ Sửa **chỉ** `src/routes.tsx`: thêm entry vào `APP_ROUTES`; `App.tsx` tự 
 
 ## i18n (đa ngôn ngữ)
 
-Khi làm việc với bản dịch, tuân theo [skill custom-module-i18n](.agents/skills/custom-module-i18n/SKILL.md): dùng tài nguyên dịch trong repo và các import, namespace, quy tắc kiểm tra được hướng dẫn tại đó. Mặc định text mới viết tiếng Việt trực tiếp, không tự triển khai đa ngôn ngữ khi chưa được yêu cầu.
+Khi làm việc với bản dịch, tuân theo [skill custom-module-i18n](.agents/skills/custom-module-i18n/SKILL.md): dùng tài nguyên dịch trong repo và các import, namespace, quy tắc kiểm tra được hướng dẫn tại đó. Namespace không có trong repo tự lấy từ bản dịch nền tảng tại `/static/locales`; key trong repo ưu tiên; gọi `t('<ns>:<key>')`. Mặc định text mới viết tiếng Việt trực tiếp, không tự triển khai đa ngôn ngữ khi chưa được yêu cầu.
 
 ## Địa chỉ tài nguyên tĩnh của remote
 
@@ -76,8 +76,9 @@ Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không b
 ## Convention chính
 
 -   Styling: design token (`text-typo-primary`, `bg-background-default`, `border-divider-primary`…), spacing `rem`, typography `prose-*`, gom class bằng `cx` (`src/utils/cx`).
--   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng icon của `@cogover/client-sdk/ui` (`InfoCircleIcon`, `EllipsisVerticalIcon`, `SortIcon`…); chỉ dùng asset SVG thuộc dự án khi SDK chưa có icon phù hợp.
+-   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng icon của `@cogover/client-sdk` (`InfoCircleIcon`, `EllipsisVerticalIcon`, `SortIcon`…); chỉ dùng asset SVG thuộc dự án khi SDK chưa có icon phù hợp.
+-   Chỉ import từ `@cogover/client-sdk` (gốc); không import đường dẫn con (`@cogover/client-sdk/ui`, `/data`, `/provider`, `/http`) vì nền tảng chỉ chia sẻ gói gốc — import con sẽ bị đóng gói riêng và không thấy `LibraryProvider`. Riêng `@cogover/client-sdk/styles.css` giữ nguyên.
 -   Màn danh sách (header, bảng, phân trang, panel lọc): làm theo [skill custom-module-list-page](.agents/skills/custom-module-list-page/SKILL.md).
 -   Ngày giờ hiển thị theo cài đặt workspace qua `useListDateTimeFormat()` (`src/hooks`); eslint chặn chuỗi định dạng ngày giờ viết cứng.
--   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`. Không import `Link` trực tiếp từ `react-router-dom`, không dùng `<a href>` cho điều hướng nội bộ và không tự nối app slug (định danh ứng dụng trong URL); component `Link` xử lý phần này.
+-   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`; điều hướng bằng code dùng `import useNavigate from 'src/hooks/useNavigate';`. Không import `Link`/`useNavigate` trực tiếp từ `react-router-dom`, không dùng `<a href>`, `window.open` hay `window.location` cho điều hướng nội bộ (mở tab mới dùng `target='_blank'` trên `Link`; link ngoài `https://`/`mailto:`/`tel:` cũng dùng `Link`, ví dụ `<Link to='https://…' target='_blank'>`, không dùng `window.open`/`window.location` kể cả link ngoài) và không tự nối app slug (định danh ứng dụng trong URL); `Link` và `useNavigate` nội bộ xử lý phần này, đồng thời báo nền tảng Cogover trước khi điều hướng để ứng dụng mobile tự mở trang đích.
 -   `npm run build` = `tsc && vite build`; eslint chỉ chạy lúc `serve` (gate trong `vite.config.ts`), build dùng `npm run lint` riêng.
