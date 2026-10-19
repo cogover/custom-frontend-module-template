@@ -188,7 +188,7 @@ URL đầy đủ nhận từ API hoặc CDN là runtime resource, không phải 
 ## 10. Component giao diện từ `@cogover/client-sdk`
 
 1. Import component từ `@cogover/client-sdk`; không copy code component vào module, không tự dựng lại control SDK đã có.
-   Chỉ import từ `@cogover/client-sdk` (gốc); không import đường dẫn con (`@cogover/client-sdk/ui`, `/data`, `/provider`, `/http`) vì nền tảng chỉ chia sẻ gói gốc — import con sẽ bị đóng gói riêng và không thấy `LibraryProvider`. Riêng `@cogover/client-sdk/styles.css` giữ nguyên.
+   Chỉ import từ `@cogover/client-sdk` (gốc); không import đường dẫn con (`@cogover/client-sdk/ui`, `/data`, `/provider`, `/http`) vì nền tảng chỉ chia sẻ gói gốc — import con sẽ bị đóng gói thêm một bản SDK riêng vào bundle của module. Riêng `@cogover/client-sdk/styles.css` giữ nguyên.
 2. Component đọc ngôn ngữ, theme và workspace từ `LibraryProvider` (mục 5); không truyền các cấu hình này vào từng component.
 3. Bộ lọc bản ghi dùng `FilterGenerator`, xem skill `custom-module-api` mục 13.
 4. Icon dùng bộ icon của SDK (`InfoCircleIcon`, `SlidersIcon`, `EllipsisVerticalIcon`, `ChevronDownIcon`, `SortIcon`, `FilterIcon`, `PlusIcon`, `EyeIcon`, `CopyIcon`, `PencilIcon`, `TrashIcon`…, danh sách đủ trong README của package). Icon kế thừa màu chữ (`currentColor`), cỡ qua prop `fontSize` (px). Chỉ tự vẽ SVG khi SDK chưa có.
