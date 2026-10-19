@@ -1,6 +1,6 @@
 ---
 name: custom-module-api
-description: Use when adding or changing API clients, endpoints, request types, TanStack Query hooks, mutations, query keys, RPC headers, retries, API error handling, or record filters built with FilterGenerator and useRecords from @cogover/client-sdk in custom-module-template.
+description: Use when adding or changing API clients, endpoints, request types, TanStack Query hooks, mutations, query keys, RPC headers, retries, API error handling, record filters built with FilterGenerator and useRecords, or receiving Custom Backend Module push messages (refreshRecords, toast, message) with useSocketListener from @cogover/client-sdk in custom-module-template.
 ---
 
 # Custom Module API
@@ -320,3 +320,52 @@ Chạy trong nền tảng Cogover và standalone:
 1. Khi nhúng, nền tảng Cogover đã đặt `LibraryProvider` và chia sẻ bản `@cogover/client-sdk` của nền tảng qua Module Federation. FilterGenerator cần bản SDK của nền tảng hỗ trợ component này.
 2. Standalone dùng `ClientSdkProvider` trong `MainProvider`; provider này lấy workspace, ngôn ngữ, theme từ Redux. Không bọc thêm `LibraryProvider` trong `App.tsx` hay component expose.
 3. Bấm tên bản ghi đã chọn ở trường lookup sẽ mở chi tiết bản ghi theo cách của nền tảng; ở standalone, trang bản ghi mở trong tab mới.
+
+## 14. Nhận push message từ Custom Backend Module
+
+Custom Backend Module gửi push bằng `push.refreshRecords`, `push.toast`, `push.message` (`@cogover/sdk`). Module nhận bằng `useSocketListener` của `@cogover/client-sdk` (từ `0.3.0`); không tự mở WebSocket, không dùng `cogover-comm-web-sdk`.
+
+```tsx
+import { useSocketListener } from '@cogover/client-sdk';
+import type { MessagePayload, RefreshRecordsPayload } from '@cogover/client-sdk';
+import { useEffect } from 'react';
+
+const { subscribe, unsubscribe, status } = useSocketListener();
+
+useEffect(() => {
+    // Chưa có recordId (trang tạo mới): không subscribe theo bản ghi. Muốn nhận push đích danh thì subscribe riêng,
+    // không kèm objectSlug/recordId.
+    if (!recordId) return;
+    const target = { objectSlug: 'lead', recordId };
+    const onRefresh = (_payload: RefreshRecordsPayload) => refetch();
+    const onMessage = (payload: MessagePayload) => {
+        const data = payload.data as { event?: string } | null;
+        if (data?.event === 'order.synced') refetch();
+    };
+
+    subscribe('refreshRecords', onRefresh, target);
+    subscribe('message', onMessage, { ...target, source: 'order_sync' });
+    return () => {
+        unsubscribe('refreshRecords', onRefresh);
+        unsubscribe('message', onMessage);
+    };
+}, [recordId, refetch, subscribe, unsubscribe]);
+```
+
+| Event            | Backend gọi                                       | Payload                                                                                                                                          |
+| ---------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `refreshRecords` | `push.refreshRecords(object, recordIds, options)` | `{ recordId? }`                                                                                                                                  |
+| `toast`          | `push.toast(message, options)`                    | `{ title?, content?, position, size, durationSeconds, links, objectSlug?, recordIds? }`                                                          |
+| `message`        | `push.message({ content, contentType }, options)` | `{ data, content, contentType, recordId? }`; `contentType`: `'text'` \| `'template'`; `data` = `JSON.parse(content)`, không phải JSON thì `null` |
+
+Rules:
+
+1. Import từ gốc `@cogover/client-sdk` như mọi API khác của SDK ([custom-module-foundation](../custom-module-foundation/SKILL.md) mục 10); không import `@cogover/client-sdk/socket` trong module chạy qua nền tảng Cogover.
+2. Đăng ký và huỷ trong `useEffect`; `subscribe` trả về hàm huỷ, nên có thể viết `useEffect(() => subscribe('toast', onToast), [subscribe])`. `unsubscribe` phải nhận lại đúng hàm handler đã đăng ký. `subscribe`, `unsubscribe` ổn định giữa các lần render, đưa vào deps an toàn.
+3. Người nhận do backend quyết định (`options.recipients`). Push gửi cho người đang xem bản ghi (`"viewers"`, mặc định) chỉ tới khi subscribe có `objectSlug` + `recordId` đúng bản ghi đó; SDK tự tra object ID và đăng ký bản ghi với server. Push gửi đích danh (mảng personnel ID) tới mà không cần `objectSlug`/`recordId`; nhưng subscription đã truyền `recordId` sẽ bỏ qua push đích danh gắn với bản ghi khác.
+4. Lấy `recordId` từ nguồn của nơi hiển thị: component Form Builder trên trang chi tiết bản ghi đọc tham số `recordId` của route (`useParams()` của `react-router-dom`); Custom Page lấy từ route hoặc dữ liệu của chính trang. Trang tạo mới bản ghi không có `recordId` (`useParams()` trả `undefined`): khi đó không subscribe theo bản ghi. Không tin record ID do người dùng nhập để quyết định quyền.
+5. `source` chỉ lọc event `message`: backend gửi `content` là JSON có trường `source` (ví dụ tên project), trang truyền `source` tương ứng. Toast và refresh không phân biệt được module hay Process đã gửi.
+6. Trên trang chi tiết bản ghi, nền tảng Cogover đã tự hiện toast và tự tải lại bản ghi; handler chỉ để module phản ứng thêm (ví dụ `refetch` dữ liệu của chính module), không hiện lại toast. Ở chế độ standalone không có lớp nền tảng này.
+7. `payload.data` là dữ liệu không tin cậy (ai gọi được route backend cũng gửi được): kiểm tra cấu trúc trước khi dùng, không render HTML từ nó, không tự ghi dữ liệu chỉ dựa trên nó.
+8. `status`: `idle` (chưa đăng ký), `connecting`, `connected`, `unauthorized` (không có phiên đăng nhập; SDK ngừng kết nối lại). Push là best-effort, không đảm bảo luôn tới: dữ liệu quan trọng vẫn đọc lại qua API.
+9. Khi chạy trong nền tảng Cogover, module dùng `@cogover/client-sdk` của nền tảng (gói dùng chung qua Module Federation). Hook chỉ có khi nền tảng đã dùng client-sdk từ `0.3.0`: nền tảng cũ hơn thì `useSocketListener` là `undefined` và component lỗi khi render (không tự dùng bản cài trong dự án). Xác nhận phiên bản client-sdk của nền tảng trước khi triển khai. Chế độ standalone dùng bản cài trong dự án.

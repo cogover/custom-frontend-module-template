@@ -67,6 +67,25 @@ After installing dependencies and configuring your workspace above, use this wor
 5. Edit `src/components/DemoCounter.tsx`, save, and wait for a successful build to view the updated component in Form Builder.
 6. Once development is complete and the new build is deployed to Cogover, **replace the localhost URL in the layout configuration with the actual deployment path** described in the [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md#2-xuất-component-cho-form-builder) skill. For example, if the demo is deployed in slot `_cm_1`, use `_cm_1/Components/DemoCounter`. Use the slot assigned to your module.
 
+## Receive Custom Backend Module push messages
+
+A Custom Backend Module sends pushes with `push.refreshRecords`, `push.toast` and `push.message`. Receive them with the `useSocketListener` hook from `@cogover/client-sdk` (`0.3.0` or later), subscribing and unsubscribing in `useEffect`:
+
+```tsx
+import { useSocketListener } from '@cogover/client-sdk';
+import { useEffect } from 'react';
+
+const { subscribe, unsubscribe, status } = useSocketListener();
+
+useEffect(() => {
+    const onRefresh = () => refetch();
+    subscribe('refreshRecords', onRefresh, { objectSlug: 'lead', recordId });
+    return () => unsubscribe('refreshRecords', onRefresh);
+}, [recordId, refetch, subscribe, unsubscribe]);
+```
+
+Pass `objectSlug` + `recordId` to receive pushes sent to the viewers of that record (`recordId` comes from the route, for example `useParams()` in a Form Builder component; `refetch` reloads the module's data). Events, payloads and rules: skill [custom-module-api](.agents/skills/custom-module-api/SKILL.md#14-nhận-push-message-từ-custom-backend-module).
+
 ## Files commonly used during development
 
 1. `src/pages/WelcomePage/index.tsx`: the sample page to start customizing.

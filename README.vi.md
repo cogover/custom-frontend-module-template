@@ -67,6 +67,25 @@ Sau khi cài thư viện và cấu hình workspace ở trên, dùng cách này �
 5. Sửa `src/components/DemoCounter.tsx`, lưu và đợi build thành công để xem phiên bản mới trên Form Builder.
 6. Sau khi hoàn tất và triển khai bản build mới lên Cogover, **thay URL localhost trong cấu hình layout bằng đường dẫn triển khai thực tế** theo skill [custom-module-form-builder](.agents/skills/custom-module-form-builder/SKILL.md#2-xuất-component-cho-form-builder). Ví dụ với demo được triển khai ở vị trí `_cm_1`: `_cm_1/Components/DemoCounter`. Dùng đúng vị trí được cấp cho module của bạn.
 
+## Nhận push message từ Custom Backend Module
+
+Custom Backend Module gửi push bằng `push.refreshRecords`, `push.toast`, `push.message`. Module nhận bằng hook `useSocketListener` của `@cogover/client-sdk` (từ `0.3.0`), đăng ký và huỷ trong `useEffect`:
+
+```tsx
+import { useSocketListener } from '@cogover/client-sdk';
+import { useEffect } from 'react';
+
+const { subscribe, unsubscribe, status } = useSocketListener();
+
+useEffect(() => {
+    const onRefresh = () => refetch();
+    subscribe('refreshRecords', onRefresh, { objectSlug: 'lead', recordId });
+    return () => unsubscribe('refreshRecords', onRefresh);
+}, [recordId, refetch, subscribe, unsubscribe]);
+```
+
+Truyền `objectSlug` + `recordId` để nhận push gửi cho người đang xem bản ghi đó (`recordId` lấy từ route, ví dụ `useParams()` trong component Form Builder; `refetch` là hàm tải lại dữ liệu của module). Chi tiết event, payload và quy tắc: skill [custom-module-api](.agents/skills/custom-module-api/SKILL.md#14-nhận-push-message-từ-custom-backend-module).
+
 ## Các file thường dùng khi phát triển
 
 1. `src/pages/WelcomePage/index.tsx`: trang mẫu để bắt đầu chỉnh sửa giao diện.
