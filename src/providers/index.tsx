@@ -10,9 +10,9 @@ export default function MainProvider({ children }: PropsWithChildren) {
         <ReduxProvider>
             <ReactQueryProvider>
                 <ThemeProvider>
-                    <AppSlugProvider>
-                        <ClientSdkProvider>{children}</ClientSdkProvider>
-                    </AppSlugProvider>
+                    <ClientSdkProvider>
+                        <AppSlugProvider>{children}</AppSlugProvider>
+                    </ClientSdkProvider>
                 </ThemeProvider>
             </ReactQueryProvider>
         </ReduxProvider>

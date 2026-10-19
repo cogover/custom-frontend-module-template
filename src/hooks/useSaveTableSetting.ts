@@ -1,8 +1,15 @@
-import { showToastMessage, useUpdateTableSetting, type ColumnType, type TablePinnedColumns } from '@cogover/client-sdk';
+import {
+    showToastMessage,
+    useLibrary,
+    useUpdateTableSetting,
+    type ColumnType,
+    type TablePinnedColumns,
+} from '@cogover/client-sdk';
 import { useCallback } from 'react';
 import { useAppSlug } from 'src/providers/appSlugContext';
+import type { CommonSettingsState } from 'src/apis/config/config.type';
 import { setCommonSettingState } from 'src/store/commonSettingsSlice';
-import { useAppDispatch, useAppSelector } from 'src/store/hooks';
+import { useAppDispatch } from 'src/store/hooks';
 
 const DEFAULT_COLUMN_WIDTH = 150;
 
@@ -14,13 +21,14 @@ export interface TableSettingsValue<T> {
 
 /**
  * Lưu cấu hình cột của bảng (dùng làm `onConfirm` của `TableSettings`) lên server của Cogover.
- * Standalone: cập nhật thêm `tableSetting` trong Redux để `useTableV2` đọc đúng cấu hình mới khi mở lại trang.
+ * Standalone: cập nhật thêm `tableSetting` trong store dev (nguồn của `ClientSdkProvider`) để `useTableV2` đọc
+ * đúng cấu hình mới khi mở lại trang.
  * Khi nhúng, Cogover tự tải lại server config sau khi lưu.
  */
 export function useSaveTableSetting<T>(tableName: string) {
     const appSlug = useAppSlug();
     const dispatch = useAppDispatch();
-    const savedTableSettings = useAppSelector((state) => state.commonSettings.tableSetting);
+    const savedTableSettings = useLibrary().commonSettings?.tableSetting;
     const { mutateAsync } = useUpdateTableSetting();
 
     return useCallback(
@@ -41,8 +49,10 @@ export function useSaveTableSetting<T>(tableName: string) {
                         ? tableSettings.map((setting) =>
                               setting.tableName === tableName ? { ...setting, settings: serialized } : setting,
                           )
-                        : [...tableSettings, { tableName, settings: serialized } as (typeof tableSettings)[number]];
-                    dispatch(setCommonSettingState({ tableSetting }));
+                        : [...tableSettings, { tableName, settings: serialized }];
+                    dispatch(
+                        setCommonSettingState({ tableSetting: tableSetting as CommonSettingsState['tableSetting'] }),
+                    );
                 })
                 .catch((error: unknown) => {
                     showToastMessage({

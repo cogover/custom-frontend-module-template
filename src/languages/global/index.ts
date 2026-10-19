@@ -1,38 +1,20 @@
 import i18nsDefault, { TFunction, TOptions } from 'i18next';
 import { isString } from 'lodash';
 import objectPath from 'object-path';
-import { useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
+import { useLibrary } from '@cogover/client-sdk';
+import { useEffect } from 'react';
 import { useTranslation as useTranslationDefault } from 'react-i18next';
-import { ReactReduxContext } from 'react-redux';
 // Import này cũng khởi tạo i18n ngay khi dùng API dịch, kể cả component expose không đi qua `App`.
 import { DEFAULT_LANG } from 'src/languages/i18n';
-import type { RootState } from 'src/store';
 
 const i18n = i18nsDefault;
 
 /**
- * Ngôn ngữ hiển thị trong Redux `commonSettings` của nền tảng Cogover. Có store mà chưa có tài khoản
- * thì dùng `DEFAULT_LANG`; không có Redux Provider (vd test, nơi nhúng không có store) thì giữ ngôn ngữ
- * hiện tại của i18n, không báo lỗi.
- */
-const useDisplayLanguageSafe = () => {
-    const store = useContext(ReactReduxContext)?.store;
-    const subscribe = useCallback(
-        (onChange: () => void) => (store ? store.subscribe(onChange) : () => undefined),
-        [store],
-    );
-    const language = useSyncExternalStore(subscribe, () =>
-        store ? (store.getState() as RootState).commonSettings?.workspaceAccount?.language ?? DEFAULT_LANG : undefined,
-    );
-    return language ?? (i18n.language || DEFAULT_LANG);
-};
-
-/**
- * Đồng bộ ngôn ngữ i18n theo ngôn ngữ hiển thị của nền tảng Cogover (Redux `commonSettings`);
- * standalone chưa có tài khoản thì dùng `DEFAULT_LANG`. Trả về ngôn ngữ đang dùng.
+ * Đồng bộ ngôn ngữ i18n theo `locale` nền tảng Cogover cấp qua `useLibrary()`; chưa có thì dùng
+ * `DEFAULT_LANG`. Trả về ngôn ngữ đang dùng.
  */
 const useSyncDisplayLanguage = () => {
-    const language = useDisplayLanguageSafe();
+    const language = useLibrary().locale || DEFAULT_LANG;
 
     useEffect(() => {
         if (i18n.language !== language) {

@@ -190,7 +190,7 @@ Feature API không tự thêm:
 
 HTTP client chung chịu trách nhiệm cho các header này. Feature chỉ thêm header nghiệp vụ riêng của endpoint.
 
-`X-App-Slug` lấy từ app slug nền tảng Cogover truyền vào `CustomApp` (`AppSlugProvider`); chỉ khi không có (standalone) mới suy ra từ đoạn đầu đường dẫn trang. Không đọc `window.location` để tự tính app slug: trong WebView (khung trình duyệt nhúng) của ứng dụng mobile, đường dẫn trang không chứa app slug.
+`X-App-Slug` lấy từ app slug nền tảng Cogover truyền vào `CustomApp` (`AppSlugProvider`); thiếu prop (component `./Components/*`, được build tự bọc `AppSlugProvider`) thì lấy `useLibrary().appSlug`; standalone không có app slug nên không gửi header này. Không đọc `window.location` hay biến toàn cục để tự tính app slug: trong WebView (khung trình duyệt nhúng) của ứng dụng mobile, đường dẫn trang không chứa app slug.
 
 Trong WebView mobile, module phải được mở trên domain workspace (`https://<workspace>.cogover.com`) để request tương đối, cookie và CSRF hoạt động như trên web.
 
@@ -318,7 +318,7 @@ Rules:
 Chạy trong nền tảng Cogover và standalone:
 
 1. Khi nhúng, nền tảng Cogover đã đặt `LibraryProvider` và chia sẻ bản `@cogover/client-sdk` của nền tảng qua Module Federation. FilterGenerator cần bản SDK của nền tảng hỗ trợ component này.
-2. Standalone dùng `ClientSdkProvider` trong `MainProvider`; provider này lấy workspace, ngôn ngữ, theme từ Redux. Không bọc thêm `LibraryProvider` trong `App.tsx` hay component expose.
+2. Standalone dùng `ClientSdkProvider` trong `MainProvider`; provider này lấy workspace, ngôn ngữ, theme từ config mà `DevConfigGate` đã tải. Không bọc thêm `LibraryProvider` trong `App.tsx` hay component expose.
 3. Bấm tên bản ghi đã chọn ở trường lookup sẽ mở chi tiết bản ghi theo cách của nền tảng; ở standalone, trang bản ghi mở trong tab mới.
 
 ## 14. Nhận push message từ Custom Backend Module

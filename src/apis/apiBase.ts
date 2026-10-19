@@ -26,15 +26,9 @@ http.interceptors.request.use((config) => {
     config.headers.set('X-Req-Id', requestId++);
     config.headers.set('X-Req-From', requestSourceId);
 
-    const hostAppSlug = getCurrentAppSlug();
-    const apps = window.appStore?.getState().commonSettings.apps;
-    if (hostAppSlug) {
-        config.headers.set('X-App-Slug', hostAppSlug);
-    } else if (apps?.length) {
-        const appSlug = window.location.pathname.split('/').filter(Boolean)[0];
-        const currentApp = apps.find((app) => app.slug === appSlug) ?? apps[0];
-        config.headers.set('X-App-Slug', currentApp.slug);
-    }
+    // App slug do `AppSlugProvider` gán: prop `appSlug` của `CustomApp`, thiếu thì `useLibrary().appSlug`.
+    const appSlug = getCurrentAppSlug();
+    if (appSlug) config.headers.set('X-App-Slug', appSlug);
 
     const retryConfig = config as RetryRequestConfig;
     retryConfig.retriedCount = retryConfig.retriedCount ?? 0;

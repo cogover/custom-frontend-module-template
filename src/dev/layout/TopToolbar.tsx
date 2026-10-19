@@ -7,7 +7,7 @@ import type { ImageResponse } from 'src/apis/account/account.type';
 import { useAppSelector } from 'src/store/hooks';
 import cx from 'src/utils/cx';
 
-/** URL ảnh avatar từ dữ liệu file của Cogover (cỡ `small`), giống `AvatarField` của ui-kit. */
+/** URL ảnh avatar từ dữ liệu file của Cogover (cỡ `small`), giống ảnh đại diện trên web Cogover. */
 function getAvatarUrl(avatar?: ImageResponse | null) {
     if (!avatar || typeof avatar === 'string') return avatar ?? undefined;
     const fileId = avatar.fileId ?? avatar.file_id;

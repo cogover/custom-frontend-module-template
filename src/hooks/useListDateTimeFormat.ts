@@ -1,4 +1,4 @@
-import { useAppSelector } from 'src/store/hooks';
+import { useLibrary } from '@cogover/client-sdk';
 import { getListDateTimeFormat, getWorkspaceDateFormat } from 'src/utils/dateTimeFormat';
 
 /**
@@ -6,8 +6,9 @@ import { getListDateTimeFormat, getWorkspaceDateFormat } from 'src/utils/dateTim
  * Trả `dateTimeFormat` (vd `DD/MM/YYYY, HH:mm:ss`) và `dateFormat` (vd `DD/MM/YYYY`).
  */
 export function useListDateTimeFormat() {
-    const dateType = useAppSelector((state) => state.commonSettings.workspace?.dateFormat);
-    const timeType = useAppSelector((state) => state.commonSettings.workspace?.timeFormat);
+    const workspace = useLibrary().commonSettings?.workspace;
+    const dateType = workspace?.dateFormat;
+    const timeType = workspace?.timeFormat;
 
     return {
         dateTimeFormat: getListDateTimeFormat(dateType, timeType),

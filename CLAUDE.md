@@ -7,7 +7,7 @@ File này cung cấp hướng dẫn cho Claude Code khi làm việc với reposi
 `custom-module-template` là **skeleton/template để tạo 1 Custom Module** trong hệ Module Federation Cogover — một **remote** chỉ expose đúng 1 component `./CustomApp` (`src/App.tsx`), được nền tảng Cogover nhúng tại vị trí dành cho Custom Module.
 
 -   Federation `name: 'customModule'`, `exposes: { './CustomApp': './src/App.tsx' }`, `remotes` rỗng (không tiêu thụ remote nào). Cấu hình nằm trong `vite.config.ts`.
--   `App.tsx` chỉ tự bọc `AppSlugProvider`; Redux, ngữ cảnh điều hướng và bố cục trang do nền tảng Cogover cung cấp. Các provider còn lại chỉ phục vụ **chế độ dev standalone**.
+-   `App.tsx` tự bọc store Redux riêng của module (`ReduxProvider`) và `AppSlugProvider`; ngữ cảnh điều hướng, React Query, `LibraryProvider` của `@cogover/client-sdk` và bố cục trang do nền tảng Cogover cung cấp. Cấu hình nền tảng (ngôn ngữ, theme, workspace, người dùng, app) đọc qua `useLibrary()`; không đọc store hay biến toàn cục của nền tảng. Các provider còn lại chỉ phục vụ **chế độ dev standalone**.
 -   Routing dùng **path TƯƠNG ĐỐI** (không leading slash) vì nền tảng Cogover quản lý phần đường dẫn bên ngoài module.
 -   Đã loại bỏ FontAwesome khỏi code dự án; eslint chặn cứng import `@fortawesome/*`.
 
@@ -29,7 +29,7 @@ Cấu hình workspace chỉ phục vụ chạy trên máy; khi được nhúng v
 
 ```
 src/
-├── App.tsx              # Component EXPOSE: AppSlugProvider + Suspense + Routes
+├── App.tsx              # Component EXPOSE: ReduxProvider (store riêng) + AppSlugProvider + Suspense + Routes
 ├── assets/              # Image/static asset được Vite xử lý cho federation
 ├── components/          # Component nội bộ dùng chung: Avatar, Link
 ├── hooks/               # Hook dùng chung: useNavigate, useListDateTimeFormat, useSaveTableSetting, useUrlFilters
@@ -37,11 +37,11 @@ src/
 ├── main.tsx             # Entry STANDALONE (dev): BrowserRouter > MainProvider > DevConfigGate > MainLayout > App
 ├── pages/               # WelcomePage — Custom Page giới thiệu tối giản
 ├── dev/                 # CHỈ DÙNG KHI DEV — KHÔNG expose
-│   ├── DevConfigGate.tsx   # Gọi API config-server → đổ vào Redux, render children sau khi xong
+│   ├── DevConfigGate.tsx   # Gọi API config-server → đổ vào store dev, render children sau khi xong
 │   └── layout/             # MainLayout: header + sidebar mô phỏng Cogover; sidebar = APP_ROUTES có `name`
-├── providers/           # MainProvider: Redux > React Query > Theme > AppSlugProvider > ClientSdkProvider
+├── providers/           # MainProvider: Redux > React Query > Theme > ClientSdkProvider > AppSlugProvider
 │   └── ThemeProvider.tsx   # Đồng bộ data-theme cho chế độ standalone
-├── store/               # configureStore — chỉ slice commonSettings
+├── store/               # Store riêng của module (không chia sẻ với nền tảng); slice commonSettings chỉ cho dev
 ├── languages/           # i18n: bản dịch trong repo + bản dịch nền tảng (xem mục i18n bên dưới)
 ├── apis/                # Axios client, retry, apiErrorHandler, config/, account/ (types)
 ├── utils/ · theme/ · styles/
@@ -50,8 +50,8 @@ src/
 ### Expose vs Dev
 
 -   **Xuất cho nền tảng Cogover**: chỉ `App.tsx` (qua `./CustomApp`). App dùng `AppSlugProvider` và `APP_ROUTES`.
--   Nền tảng Cogover truyền prop `appSlug` (định danh ứng dụng trong URL); `AppSlugProvider` phân phối giá trị này qua `useAppSlug()`.
--   Chế độ standalone/dev không có app slug; `useAppSlug()` trả chuỗi rỗng.
+-   App slug (định danh ứng dụng trong URL) lấy từ prop `appSlug` của `CustomApp` khi nền tảng truyền, nếu không thì từ `useLibrary().appSlug`; `AppSlugProvider` phân phối giá trị này qua `useAppSlug()`.
+-   Component `./Components/*` được build tự bọc `AppSlugProvider` + store riêng (`scripts/expose-wrap.js`); thiếu prop thì `AppSlugProvider` lấy `useLibrary().appSlug`. Chế độ standalone/dev không có app slug; `useAppSlug()` trả chuỗi rỗng.
 -   **Dev-only**: `main.tsx`, `MainProvider`, `DevConfigGate`, `dev/layout`; standalone bọc page trong layout dev (header + sidebar) để hình dung page khi nhúng vào Cogover.
 
 ### Thêm page mới
@@ -81,4 +81,5 @@ Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không b
 -   Màn danh sách (header, bảng, phân trang, panel lọc): làm theo [skill custom-module-list-page](.agents/skills/custom-module-list-page/SKILL.md).
 -   Ngày giờ hiển thị theo cài đặt workspace qua `useListDateTimeFormat()` (`src/hooks`); eslint chặn chuỗi định dạng ngày giờ viết cứng.
 -   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`; điều hướng bằng code dùng `import useNavigate from 'src/hooks/useNavigate';`. Không import `Link`/`useNavigate` trực tiếp từ `react-router-dom`, không dùng `<a href>`, `window.open` hay `window.location` cho điều hướng nội bộ (mở tab mới dùng `target='_blank'` trên `Link`; link ngoài `https://`/`mailto:`/`tel:` cũng dùng `Link`, ví dụ `<Link to='https://…' target='_blank'>`, không dùng `window.open`/`window.location` kể cả link ngoài) và không tự nối app slug (định danh ứng dụng trong URL); `Link` và `useNavigate` nội bộ xử lý phần này, đồng thời báo nền tảng Cogover trước khi điều hướng để ứng dụng mobile tự mở trang đích.
+-   Chạy trên mobile: tuân theo quy tắc M1–M7 tại [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#11-chạy-trên-mobile); eslint chặn kênh nội bộ của trang nhúng/ứng dụng mobile (M1), `alert`/`confirm`/`prompt`/`window.print` (M5) và chiều cao theo màn hình, `position: fixed` trong `src/components` (M4).
 -   `npm run build` = `tsc && vite build`; eslint chỉ chạy lúc `serve` (gate trong `vite.config.ts`), build dùng `npm run lint` riêng.

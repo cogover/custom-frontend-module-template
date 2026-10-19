@@ -1,6 +1,6 @@
 ---
 name: custom-module-form-builder
-description: Use when creating or editing a federation component embedded in a Cogover Form Builder layout, declaring its expose path, receiving formBuilder props, using execScript, or refreshing the current record in custom-module-template.
+description: Use when creating or editing a federation component embedded in a Cogover Form Builder layout, declaring its expose path, receiving formBuilder props (execScript, refreshRecordDetail, record, mode, objectSlug), using execScript, reading the current record or screen mode, or refreshing the current record in custom-module-template.
 ---
 
 # Custom Module Form Builder
@@ -10,14 +10,24 @@ Tạo component nhúng trong layout Form Builder, thao tác form bằng `formBui
 ## 1. Kiểm tra code và kiểu có sẵn
 
 1. Tìm component và cấu hình `exposes` hiện có trước khi tạo mới; sửa hoặc tái sử dụng phần phù hợp.
-2. Đọc [src/types/form-builder.d.ts](../../../src/types/form-builder.d.ts). Đây là hợp đồng kiểu nội bộ cho `FormBuilderComponentProps`, `FormBuilderApi`, `FormBuilderScript`, `FormBuilderScriptContext` và toàn bộ `screen`.
-3. Đọc các khối `@example` ngay trên kiểu và phương thức liên quan; không tạo bản sao tài liệu hoặc định nghĩa lại các kiểu này trong component.
-4. Không dùng `any` hoặc cài thư viện khác để lấy API Form Builder. Chỉ dùng `import type` từ file khai báo có sẵn trong dự án.
-5. Nếu cần API chưa được khai báo, yêu cầu tài liệu API từ đơn vị cung cấp nền tảng Cogover; không tự bịa phương thức hay ép kiểu để bỏ qua lỗi.
+2. Kiểu hợp đồng nằm trong `@cogover/client-sdk` (mục "Module contract" trong README của gói): `FederationComponentProps`, `FederationFormBuilder`, `FormBuilderScript`, `FormBuilderScriptContext` và toàn bộ `screen`. [src/types/form-builder.d.ts](../../../src/types/form-builder.d.ts) chỉ re-export các kiểu này.
+3. Đọc các khối `@example` ngay trên kiểu và phương thức liên quan (trong `node_modules/@cogover/client-sdk/dist/contract/formBuilder.d.ts`); không tạo bản sao tài liệu hoặc định nghĩa lại các kiểu này trong component.
+4. Không dùng `any` hoặc cài thư viện khác để lấy API Form Builder. Chỉ dùng `import type` từ `@cogover/client-sdk`.
+5. `formBuilder` có đúng 5 thành phần dưới đây, giống nhau trên web và trên ứng dụng mobile. Mọi thành phần khác của Form Builder không thuộc hợp đồng: không dùng, không ép kiểu để truy cập. Cần API chưa có thì yêu cầu đơn vị cung cấp nền tảng Cogover bổ sung vào hợp đồng.
+
+    | Thành phần             | Ý nghĩa                                                                               | Có ở màn      |
+    | ---------------------- | ------------------------------------------------------------------------------------- | ------------- |
+    | `execScript(script)`   | Chạy script sửa form; `await` xong là đọc được giá trị mới. Không lưu form lên server | Tạo, Xem, Sửa |
+    | `refreshRecordDetail?` | Tải lại bản ghi hiện tại, trả bản ghi mới hoặc `null`                                 | Xem, Sửa      |
+    | `record`               | Giá trị bản ghi hiện tại, chỉ đọc, cập nhật khi form đổi; màn Tạo chưa có `id`        | Tạo, Xem, Sửa |
+    | `mode`                 | `'create'` \| `'view'` \| `'edit'`                                                    | Tạo, Xem, Sửa |
+    | `objectSlug`           | Slug object của bản ghi                                                               | Tạo, Xem, Sửa |
+
+6. `screen` (danh sách trường, ẩn/hiện…) chỉ có trong callback của `execScript`; ngoài callback đọc dữ liệu bằng `record`, `mode`, `objectSlug`.
 
 ## 2. Xuất component cho Form Builder
 
-1. Đặt component trong `src/components/` hoặc cấu trúc tương đương đã có. Component nhận `FormBuilderComponentProps` và được xuất mặc định.
+1. Đặt component trong `src/components/` hoặc cấu trúc tương đương đã có. Component nhận `FederationComponentProps` và được xuất mặc định.
 2. Đối chiếu đường dẫn host cần gọi trước khi thêm `exposes`. Quy ước đã thống nhất cho component trong Form Builder là:
 
     | Vị trí                    | Ví dụ                              |
@@ -31,13 +41,13 @@ Tạo component nhúng trong layout Form Builder, thao tác form bằng `formBui
 3. **Bắt buộc giữ nguyên mapping `'./CustomApp': './src/App.tsx'` trong `exposes` của `vite.config.ts`. Không được xóa, đổi khóa `./CustomApp` hoặc thay đổi đường dẫn `./src/App.tsx`.** Khi thêm component cho Form Builder, chỉ bổ sung khóa mới vào `exposes`.
 4. Giữ `base: './'` trong Vite theo [custom-module-foundation](../custom-module-foundation/SKILL.md). Mục đích chính là để tài nguyên được Vite xử lý theo địa chỉ phục vụ remote (module được nhúng), không theo domain của trang host (ứng dụng chủ). Nếu host chuyển tiếp remote, dùng địa chỉ chuyển tiếp thực tế; không bắt buộc URL khác domain host. Cùng một bản build dùng được ở nhiều slot là lợi ích đi kèm.
 5. `_cm_1` trong bảng chỉ là ví dụ slot được gán trên layout. Không ghi cố định `_cm_1` hoặc `/_cm_N/` vào URL ảnh, CSS, code component hay lệnh build. Dùng import tài nguyên theo skill foundation.
-6. Không bọc component bằng CustomApp, bộ định tuyến riêng, header hoặc sidebar của ứng dụng chủ. Với thư viện có context dùng chung như client SDK, đối chiếu yêu cầu provider và cấu hình `shared` với tài liệu tích hợp Cogover trước khi sử dụng.
+6. Khi build, mọi khóa `./Components/*` trong `exposes` tự được bọc `AppSlugProvider` (app slug lấy từ `useLibrary().appSlug`, request có `X-App-Slug`) và store riêng của module; component không tự bọc lại, chỉ thêm khóa vào `exposes` như bảng trên. Lớp bọc là function component nên component expose không nhận `ref` từ bên ngoài: không dựa vào `ref`/`forwardRef` ở cấp expose. Dữ liệu nền tảng đọc qua `useLibrary()`, không qua store. Không bọc component bằng CustomApp, bộ định tuyến riêng, header hoặc sidebar của ứng dụng chủ. Với thư viện có context dùng chung như client SDK, đối chiếu yêu cầu provider và cấu hình `shared` với tài liệu tích hợp Cogover trước khi sử dụng.
 7. Chữ hiển thị dùng `useTranslation`/`Trans` của `src/languages/global` như page: i18n tự khởi tạo và theo ngôn ngữ của nền tảng dù component không đi qua `App`; không tự gọi `i18n.changeLanguage`. Xem [custom-module-i18n](../custom-module-i18n/SKILL.md).
 
 ## 3. Nhận formBuilder và gọi API
 
 ```ts
-import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/form-builder';
+import type { FederationComponentProps, FormBuilderScript } from '@cogover/client-sdk';
 ```
 
 1. Nhận `formBuilder` qua props của component. Dùng API qua prop này; không yêu cầu nền tảng truyền riêng `screen`.
@@ -75,7 +85,7 @@ import type { FormBuilderComponentProps, FormBuilderScript } from 'src/types/for
 
 ## 5. Kết quả và lỗi
 
-1. Kiểm tra API cần dùng (`formBuilder?.execScript` hoặc `formBuilder?.refreshRecordDetail`) trước khi thao tác; vô hiệu hóa nút hoặc hiển thị trạng thái phù hợp nếu host chưa cung cấp.
+1. Kiểm tra `formBuilder` có được truyền không (component có thể render ngoài form) và `formBuilder.refreshRecordDetail` (không có ở màn Tạo, `mode === 'create'`) trước khi thao tác; vô hiệu hóa nút hoặc hiển thị trạng thái phù hợp khi không có.
 2. Bắt lỗi tại component và chỉ báo thành công sau khi API hoàn tất. Không nuốt lỗi hoặc báo đã áp dụng khi hàm chưa được gọi.
 3. Sửa giá trị ô bảng đi qua API bảng ngay. Nếu lỗi giữa chừng, không có cơ chế tự hoàn tác toàn bộ các ô đã sửa.
 4. Chạy script thành công không đồng nghĩa đã lưu record lên server. `submit()` lưu bảng liên quan, không phải toàn bộ form cha; chỉ gọi khi nghiệp vụ yêu cầu lưu.

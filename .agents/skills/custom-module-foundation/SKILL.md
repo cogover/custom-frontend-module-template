@@ -1,6 +1,6 @@
 ---
 name: custom-module-foundation
-description: Use when changing architecture, routing, Link and useNavigate navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons, BreadCrumbs and PageWrapper sticky breadcrumb pages) in custom-module-template.
+description: Use when changing architecture, routing, Link and useNavigate navigation, providers, Module Federation, theme, Vite base, images, video, audio, fonts, downloads, static assets, shared UI foundations, or UI components and icons from @cogover/client-sdk (FormControlLabel with Checkbox/Radio/Switch, MultipleSelect loading, Tag delete states, PopperMenu, SDK icons, BreadCrumbs and PageWrapper sticky breadcrumb pages), or making a module run in the Cogover mobile app (rules M1–M7: no window.CogoverWebView/flutter_inappwebview, no 100vh/position fixed in layout components, no alert/confirm/prompt/print, downloads, tokens) in custom-module-template.
 ---
 
 # Custom Module Foundation
@@ -16,8 +16,8 @@ Giữ custom module tương thích với nền tảng Cogover và chạy ổn đ
 ## 2. Tích hợp với nền tảng Cogover
 
 1. Nền tảng Cogover quản lý phần đường dẫn ứng dụng và vị trí Custom Module bên ngoài module.
-2. Nền tảng Cogover truyền `appSlug` vào `CustomApp` qua prop.
-3. `AppSlugProvider` phân phối prop đó; component con đọc bằng `useAppSlug()`.
+2. App slug đến từ prop `appSlug` của `CustomApp` khi nền tảng truyền, nếu không thì từ `useLibrary().appSlug`.
+3. `AppSlugProvider` (bọc sẵn trong `App.tsx` và mọi component `./Components/*`) phân phối giá trị đó; component con đọc bằng `useAppSlug()`.
 4. Standalone không có app slug; context trả chuỗi rỗng.
 
 ## 3. Điều hướng trong module
@@ -105,15 +105,15 @@ Không dùng `<a href>` cho điều hướng nội bộ vì sẽ reload toàn tr
 
 ## 5. Provider
 
-1. Production dùng Redux, Router context và `LibraryProvider` của `@cogover/client-sdk` do host cung cấp.
-2. Standalone dùng `MainProvider` và `DevConfigGate`; `MainProvider` có `ClientSdkProvider` cấp `LibraryProvider` từ dữ liệu workspace trong Redux.
+1. Production dùng Router context, React Query và `LibraryProvider` của `@cogover/client-sdk` do host cung cấp. Cấu hình nền tảng chỉ đọc qua `useLibrary()`: `locale`, `themeMode`, `appSlug`, `workspaceId`, `commonSettings` (`workspace` gồm `id`, `dateFormat`, `timeFormat`, `numberFormat`, `nameFormat`; `workspaceAccount.personnelId`; `personnel`; `tableSetting`; `apps` dạng `{ slug, name }`). Không đọc store Redux hay biến toàn cục của host.
+2. Store Redux trong `src/store` là của riêng module, không chia sẻ với host: `App.tsx` tự bọc `ReduxProvider`; component expose `./Components/*` được build tự bọc `AppSlugProvider` và `ReduxProvider` (`src/providers/withExposeProviders.tsx`, áp qua `scripts/expose-wrap.js`). Standalone dùng `MainProvider` và `DevConfigGate`; `DevConfigGate` lưu config vào store, `ClientSdkProvider` dựng `LibraryProvider` từ đó với các trường như host cấp.
 3. Không bọc `LibraryProvider` trong `App.tsx` hay component expose.
 4. Provider nội bộ chỉ giữ dữ liệu custom module thực sự cần.
 5. Page và `App.tsx` không dựng header, sidebar hoặc layout của host. Standalone đã có layout dev `src/dev/layout` (header 56px, sidebar 60/240px, đặt `--top-toolbar-width`/`--left-toolbar-width` như Cogover): page tính chiều cao theo `calc(100svh-var(--top-toolbar-width))`, không viết nhánh riêng cho standalone.
 
 ## 6. Module Federation
 
-1. Giữ React, React DOM, Redux, React Router và `@cogover/client-sdk` trong `shared`.
+1. `shared` chỉ gồm các thư viện host cam kết chia sẻ: `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `@cogover/client-sdk`, `react-hook-form`, `yup`, `dayjs`. Thư viện khác (kể cả `react-redux`, `@reduxjs/toolkit`) module tự đóng gói, không thêm vào `shared`.
 2. Trước khi thay đổi cấu hình Module Federation, đối chiếu với yêu cầu tích hợp Custom Module của Cogover; nếu chưa rõ, yêu cầu thông tin từ đơn vị cung cấp nền tảng.
 3. Dùng import tường minh khi federation plugin yêu cầu string literal.
 
@@ -306,3 +306,26 @@ Rules:
 2. Luôn kèm `deleteTooltip` nói rõ lý do bị khóa.
 3. Không cho xóa và không cần giải thích thì bỏ `onDelete` hoặc đặt `showDeleteIcon={false}`.
 4. Không tự chặn trong `onDelete` bằng `if` rồi im lặng bỏ qua; người dùng sẽ không biết vì sao bấm không có tác dụng.
+
+## 11. Chạy trên mobile
+
+Ứng dụng mobile của Cogover mở Custom Page và component Form Builder trong một trang web nhúng. Module viết đúng các quy tắc dưới đây chạy giống nhau trên web và trên mobile; module vi phạm chỉ chạy sai trên mobile, không ảnh hưởng ứng dụng. ESLint của dự án chặn sẵn M1, M4 (trong `src/components`) và M5.
+
+1. **M1. Chỉ dùng nền tảng qua hợp đồng công khai.** Gồm `useLibrary()` của `@cogover/client-sdk` (mục 5) và prop `formBuilder` của component trên layout, đúng 5 thành phần `execScript`, `refreshRecordDetail` (chỉ màn Xem/Sửa), `record`, `mode`, `objectSlug` (skill [custom-module-form-builder](../custom-module-form-builder/SKILL.md)). Không đọc biến toàn cục của trang; không gọi `window.CogoverWebView`, `flutter_inappwebview`, `CogoverEmbed`, `__COGOVER_FEDERATION_HOST__`, không import `@cogover/client-sdk/embed-bridge`: đây là kênh nội bộ giữa trang Cogover và ứng dụng Cogover mobile (cầu nối WebView). Nền tảng tự dùng kênh này để chuyển `formBuilder`, cấu hình và điều hướng; định dạng có thể đổi theo phiên bản ứng dụng, không có trên web và không được hỗ trợ cho module. Thay bằng: `formBuilder` cho form, `useLibrary()` cho cấu hình, `Link`/`useNavigate` của dự án cho điều hướng. ESLint chặn các tên này.
+
+    ```tsx
+    // Sai
+    (window as any).CogoverWebView.postMessage(JSON.stringify({ type: 'nav.open', url }));
+    // Đúng
+    <Link to={url}>Mở bản ghi</Link>;
+    ```
+
+2. **M2. Kiểm tra tính năng có tồn tại trước khi dùng, luôn có đường thay thế** khi không có: trên web, trên phiên bản ứng dụng cũ. Không tự dò môi trường bằng `navigator.userAgent` hay biến toàn cục của trang.
+
+3. **M3. Điều hướng trong module bằng `Link` và `useNavigate` của dự án** (mục 4), đường dẫn tính từ gốc module như `/records`; nền tảng tự giữ trang con của module trong cùng màn hình và nút Back lùi từng trang. Rời module (trang Cogover khác, trang ngoài) dùng URL đầy đủ trên `Link`, ví dụ `<Link to='https://…' target='_blank'>`. Không tự ghép app slug hay `cN`.
+4. **M4. Component trên layout không dùng chiều cao theo màn hình** (`100vh`, `100svh`, `100dvh`, `h-screen`, `min-h-screen`) hay `position: fixed` (class `fixed`): khung chứa component trên mobile co giãn theo nội dung nên chiều cao tăng mãi, phần tử cố định đè lên giao diện ứng dụng. Để nội dung tự co giãn; lớp phủ dùng `Modal`, `Popper`, `PopperMenu` của `@cogover/client-sdk`. Custom Page toàn màn hình vẫn tính chiều cao theo mục 5.
+5. **M5. Không dùng `alert`, `confirm`, `prompt`, `window.print`.** Thông báo bằng `showToastMessage` hoặc `Modal`; hỏi xác nhận bằng `ConfirmModal`; cần in thì xuất file qua API (M6).
+6. **M6. Tải file qua link tải của API** (URL file do server trả), mở bằng `Link` có `target='_blank'`. Không tự tạo `blob:` bằng `URL.createObjectURL` rồi bấm hộ thẻ `<a download>`: ứng dụng mobile không nhận được file.
+7. **M7. Không đọc hay lưu token, không lưu dữ liệu nhạy cảm vào `localStorage`/`sessionStorage`.** Phiên đăng nhập do nền tảng quản lý bằng cookie; request API dùng client có sẵn (skill `custom-module-api`). Gọi dịch vụ ngoài cần khoá hoặc mật khẩu thì đi qua Custom Backend Module, credential lưu trong Project.
+
+ESLint kiểm class `fixed`, `h-screen` trong `className` và đối số `cx()`/`clsx()`/`twMerge()`, kiểm đơn vị `vh` và `position: fixed` trong mọi chuỗi; không đọc được file CSS/SCSS. M4 trong stylesheet hoặc class ghép ngoài các chỗ trên, cùng M2, M3, M6, M7 phải tự kiểm khi review.

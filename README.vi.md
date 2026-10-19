@@ -86,6 +86,36 @@ useEffect(() => {
 
 Truyền `objectSlug` + `recordId` để nhận push gửi cho người đang xem bản ghi đó (`recordId` lấy từ route, ví dụ `useParams()` trong component Form Builder; `refetch` là hàm tải lại dữ liệu của module). Chi tiết event, payload và quy tắc: skill [custom-module-api](.agents/skills/custom-module-api/SKILL.md#14-nhận-push-message-từ-custom-backend-module).
 
+## Chạy trên mobile
+
+Ứng dụng mobile của Cogover mở Custom Page và component Form Builder trong một trang web nhúng. Để module chạy giống trên web, tuân theo các quy tắc sau (chi tiết: skill [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#11-chạy-trên-mobile)):
+
+1. Chỉ dùng nền tảng Cogover qua hợp đồng công khai: `useLibrary()` của `@cogover/client-sdk` (ngôn ngữ, theme, workspace, người dùng, app) và prop `formBuilder` gồm đúng 5 thành phần `execScript`, `refreshRecordDetail` (chỉ màn Xem/Sửa), `record`, `mode`, `objectSlug`. Không đọc biến toàn cục của trang, không gọi `window.CogoverWebView`, `flutter_inappwebview`, `CogoverEmbed`.
+2. Kiểm tra tính năng có tồn tại trước khi dùng và luôn có đường thay thế khi không có (trên web, phiên bản ứng dụng cũ).
+3. Chuyển trang trong module bằng `Link` và `useNavigate` của dự án; rời module bằng URL đầy đủ.
+4. Component trên layout không dùng chiều cao theo màn hình (`100vh`, `h-screen`) hay `position: fixed`; lớp phủ dùng `Modal`, `Popper` của `@cogover/client-sdk`.
+5. Không dùng `alert`, `confirm`, `prompt`, `window.print`; thông báo bằng `showToastMessage`, hỏi xác nhận bằng `ConfirmModal`.
+6. Tải file qua link tải của API, không tự tạo `blob:`.
+7. Không đọc hay lưu token, không lưu dữ liệu nhạy cảm vào `localStorage`; gọi dịch vụ ngoài qua Custom Backend Module.
+
+`npm run lint` báo lỗi khi vi phạm quy tắc 1, 4 (trong `src/components`) và 5.
+
+Các API mới của hợp đồng (prop `formBuilder` với `record`, `mode`, `objectSlug`; `commonSettings.apps` của `useLibrary()`) cần nền tảng Cogover phát hành cùng `@cogover/client-sdk` 0.4.0. Trên nền tảng cũ các API này là `undefined`: kiểm tồn tại trước khi dùng (ví dụ `formBuilder?.mode`, `useLibrary().commonSettings?.apps ?? []`) và có đường khác khi không có.
+
+Vì sao: `window.CogoverWebView`, `CogoverEmbed`, `flutter_inappwebview`, `__COGOVER_FEDERATION_HOST__` và gói `@cogover/client-sdk/embed-bridge` là kênh nội bộ giữa trang Cogover và ứng dụng Cogover mobile. Nền tảng tự dùng kênh này để chuyển `formBuilder`, cấu hình và điều hướng; định dạng có thể đổi theo phiên bản ứng dụng và không có trên web, nên module gọi thẳng sẽ hỏng. `npm run lint` chặn các tên này.
+
+```tsx
+// Sai: gọi thẳng kênh nội bộ.
+(window as any).CogoverWebView.postMessage(JSON.stringify({ type: 'nav.open', url }));
+
+// Đúng: đi qua hợp đồng công khai.
+<Link to={url}>Mở bản ghi</Link>;
+await formBuilder?.execScript(({ screen }) => {
+    const field = screen.get('name');
+    if (field) field.value = 'Test';
+});
+```
+
 ## Các file thường dùng khi phát triển
 
 1. `src/pages/WelcomePage/index.tsx`: trang mẫu để bắt đầu chỉnh sửa giao diện.

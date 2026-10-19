@@ -1,4 +1,4 @@
-/** Mã `workspace.dateFormat` của Cogover → chuỗi định dạng dayjs (giống ui-kit). */
+/** Mã `workspace.dateFormat` của Cogover → chuỗi định dạng dayjs, giống cách hiển thị trên web Cogover. */
 export const WORKSPACE_DATE_FORMATS: Record<number, string> = {
     1: 'DD/MM/YYYY',
     2: 'DD MMM YYYY',
@@ -20,7 +20,7 @@ export const WORKSPACE_TIME_FORMATS: Record<number, string> = {
  * `<ngày theo workspace>, <giờ có giây>`, ví dụ `01/10/2026, 09:27:01`.
  */
 export function getListDateTimeFormat(dateFormat?: number | null, timeFormat?: number | null) {
-    // Mặc định giống ui-kit: thiếu cài đặt thì dùng định dạng mã 1.
+    // Mặc định giống web Cogover: thiếu cài đặt thì dùng định dạng mã 1.
     const time = (timeFormat ?? 1) === 1 ? 'hh:mm:ss A' : 'HH:mm:ss';
     return `${getWorkspaceDateFormat(dateFormat)}, ${time}`;
 }

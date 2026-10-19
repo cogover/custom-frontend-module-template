@@ -77,6 +77,7 @@ export default function DevConfigGate({ children }: PropsWithChildren) {
                     applicationConfig: data.applicationConfig,
                     billingPermission: data.billingPermission,
                     personnel: data.personnel,
+                    apps: data.apps,
                     workspaceAuthError: data.workspaceAuthError,
                     serviceAppUser: data.serviceAppUser,
                 }),

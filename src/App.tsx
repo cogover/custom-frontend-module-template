@@ -4,13 +4,15 @@ import { Route, Routes } from 'react-router-dom';
 import { useSyncDisplayLanguage } from 'src/languages/global';
 import { APP_ROUTES } from 'src/routes';
 import { AppSlugProvider } from 'src/providers/AppSlugProvider';
+import ReduxProvider from 'src/providers/ReduxProvider';
 
 /**
  * Component được expose ra federation (key `./CustomApp`).
  *
  * Lưu ý:
- * - App chỉ tự cung cấp AppSlugContext; Redux, Router và layout do host cung cấp.
- *   Chế độ standalone bọc các provider còn lại trong `main.tsx`.
+ * - App tự bọc store Redux riêng của module và AppSlugContext; Router, React Query, `LibraryProvider` của
+ *   `@cogover/client-sdk` và layout do host cung cấp. Cấu hình nền tảng (ngôn ngữ, theme, workspace…) đọc qua
+ *   `useLibrary()`, không đọc store của host. Chế độ standalone bọc các provider còn lại trong `main.tsx`.
  * - Route dùng path TƯƠNG ĐỐI (không leading slash) vì host mount remote dưới splat `*`.
  * - Danh sách route lấy từ `APP_ROUTES`.
  * - Toast của `@cogover/client-sdk` dùng event riêng, host không hiển thị nên App tự mount `ToastContainer`
@@ -33,21 +35,23 @@ export default function App({ appSlug }: CustomAppProps) {
     useSyncDisplayLanguage();
 
     return (
-        <AppSlugProvider appSlug={appSlug}>
-            <Suspense>
-                <Routes>
-                    {APP_ROUTES.map((route) =>
-                        route.path ? (
-                            <Route key={route.key} path={route.path} element={route.element} />
-                        ) : (
-                            <Route key={route.key} index element={route.element} />
-                        ),
-                    )}
-                </Routes>
-            </Suspense>
-            {TOAST_PLACEMENTS.map((placement) => (
-                <ToastContainer key={placement} placement={placement} />
-            ))}
-        </AppSlugProvider>
+        <ReduxProvider>
+            <AppSlugProvider appSlug={appSlug}>
+                <Suspense>
+                    <Routes>
+                        {APP_ROUTES.map((route) =>
+                            route.path ? (
+                                <Route key={route.key} path={route.path} element={route.element} />
+                            ) : (
+                                <Route key={route.key} index element={route.element} />
+                            ),
+                        )}
+                    </Routes>
+                </Suspense>
+                {TOAST_PLACEMENTS.map((placement) => (
+                    <ToastContainer key={placement} placement={placement} />
+                ))}
+            </AppSlugProvider>
+        </ReduxProvider>
     );
 }

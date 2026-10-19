@@ -86,6 +86,36 @@ useEffect(() => {
 
 Pass `objectSlug` + `recordId` to receive pushes sent to the viewers of that record (`recordId` comes from the route, for example `useParams()` in a Form Builder component; `refetch` reloads the module's data). Events, payloads and rules: skill [custom-module-api](.agents/skills/custom-module-api/SKILL.md#14-nhận-push-message-từ-custom-backend-module).
 
+## Run on mobile
+
+The Cogover mobile app opens Custom Pages and Form Builder components inside an embedded web page. To make your module behave the same as on the web, follow these rules (details: [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#11-chạy-trên-mobile)):
+
+1. Use the Cogover platform only through its public contract: `useLibrary()` from `@cogover/client-sdk` (language, theme, workspace, current user, apps) and the `formBuilder` prop with exactly five members: `execScript`, `refreshRecordDetail` (view and edit screens only), `record`, `mode`, `objectSlug`. Do not read page globals, and do not call `window.CogoverWebView`, `flutter_inappwebview`, or `CogoverEmbed`.
+2. Check that a feature exists before using it, and always provide a fallback (on the web, on older app versions).
+3. Navigate within the module with the project's `Link` and `useNavigate`; leave the module with a full URL.
+4. Components on a layout must not use viewport-based heights (`100vh`, `h-screen`) or `position: fixed`; use `Modal` or `Popper` from `@cogover/client-sdk` for overlays.
+5. Do not use `alert`, `confirm`, `prompt`, or `window.print`; notify with `showToastMessage` and ask for confirmation with `ConfirmModal`.
+6. Download files through the API's download link; do not create `blob:` URLs yourself.
+7. Do not read or store tokens, and do not store sensitive data in `localStorage`; call external services through a Custom Backend Module.
+
+`npm run lint` reports violations of rules 1, 4 (in `src/components`), and 5.
+
+The new contract APIs (the `formBuilder` prop's `record`, `mode`, `objectSlug`; `commonSettings.apps` from `useLibrary()`) require the Cogover platform released with `@cogover/client-sdk` 0.4.0. On older platforms these APIs are `undefined`: check that they exist before using them (for example `formBuilder?.mode`, `useLibrary().commonSettings?.apps ?? []`) and provide a fallback.
+
+Why: `window.CogoverWebView`, `CogoverEmbed`, `flutter_inappwebview`, `__COGOVER_FEDERATION_HOST__` and the `@cogover/client-sdk/embed-bridge` package are the internal channel between the Cogover page and the Cogover mobile app. The platform uses it to pass `formBuilder`, settings and navigation; its format can change with any app version and it does not exist on the web, so modules that call it directly break. `npm run lint` blocks these names.
+
+```tsx
+// Wrong: calling the internal channel directly.
+(window as any).CogoverWebView.postMessage(JSON.stringify({ type: 'nav.open', url }));
+
+// Right: use the public contract.
+<Link to={url}>Open record</Link>;
+await formBuilder?.execScript(({ screen }) => {
+    const field = screen.get('name');
+    if (field) field.value = 'Test';
+});
+```
+
 ## Files commonly used during development
 
 1. `src/pages/WelcomePage/index.tsx`: the sample page to start customizing.

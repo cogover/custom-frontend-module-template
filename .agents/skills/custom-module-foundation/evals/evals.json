@@ -48,6 +48,12 @@
             "prompt": "Hiển thị danh sách phòng ban dạng tag có nút xóa; phòng ban còn nhân sự thì không cho xóa và phải báo lý do. Ô chọn phòng ban phải báo đang tải khi đang kiểm tra lựa chọn.",
             "expected_output": "Tag dùng deleteDisabled kèm deleteTooltip thay vì chặn ngầm trong onDelete; MultipleSelect dùng prop loading (và optionListLoading cho danh sách), không tự chồng Spinner.",
             "files": []
+        },
+        {
+            "id": 9,
+            "prompt": "Thêm component Form Builder hiển thị bảng chi tiết cao bằng màn hình, nút Xoá hỏi lại người dùng trước khi xoá và nút Tải báo cáo; component phải chạy được trên ứng dụng mobile của Cogover.",
+            "expected_output": "Component không dùng 100vh/h-screen/position fixed, để nội dung tự co giãn; hỏi lại bằng ConfirmModal (không confirm), báo kết quả bằng showToastMessage (không alert); tải báo cáo qua link tải của API, không tự tạo blob:; không gọi window.CogoverWebView, flutter_inappwebview hay biến toàn cục của trang nhúng; npm run lint sạch.",
+            "files": []
         }
     ]
 }

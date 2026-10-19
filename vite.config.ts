@@ -6,6 +6,7 @@ import path from 'path';
 import { defineConfig, loadEnv, ProxyOptions } from 'vite';
 import type { ClientRequest, IncomingMessage } from 'node:http';
 import federation from '@originjs/vite-plugin-federation';
+import exposeWrap, { wrapExposes } from './scripts/expose-wrap.js';
 import federationDev from './scripts/federation-dev.js';
 
 export default defineConfig(({ command, mode }) => {
@@ -64,22 +65,23 @@ export default defineConfig(({ command, mode }) => {
         './CustomApp': './src/App.tsx',
         './Components/DemoCounter': './src/components/DemoCounter.tsx',
     };
+    // Component `./Components/*` tự được bọc provider của module (AppSlugProvider, store riêng) khi build.
+    const exposeWrapPlugin = exposeWrap(exposes);
 
     return {
         base: './',
         define: { 'import.meta.env.DEV_LOGIN_URL': JSON.stringify(`https://id.${siteDomain}/login`) },
         plugins: [
+            exposeWrapPlugin,
             react(),
             federation({
                 name: 'customModule',
                 filename: 'remoteEntry.js',
-                exposes,
+                exposes: wrapExposes(exposes),
                 shared: [
                     '@cogover/client-sdk',
                     'react',
                     'react-dom',
-                    'react-redux',
-                    '@reduxjs/toolkit',
                     'react-router-dom',
                     '@tanstack/react-query',
                     'react-hook-form',

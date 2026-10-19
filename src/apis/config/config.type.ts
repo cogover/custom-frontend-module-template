@@ -82,6 +82,7 @@ export interface TableSetting {
 export interface AppMenu {
     id: string;
     slug: string;
+    name: string;
     [key: string]: unknown;
 }
 
