@@ -7,3 +7,4 @@
 3. Store Redux của module không còn chia sẻ với nền tảng: `react-redux`, `@reduxjs/toolkit` bỏ khỏi `shared`; `App` và các component `./Components/*` tự bọc store riêng.
 4. Component `./Components/*` được build tự bọc `AppSlugProvider`, request gửi `X-App-Slug` theo app đang mở.
 5. Quy tắc "Chạy trên mobile" (M1–M7) và ESLint chặn kênh nội bộ giữa trang Cogover và ứng dụng mobile, hộp thoại trình duyệt, chiều cao theo màn hình trong component.
+6. Nâng `@cogover/client-sdk` lên 0.4.2 (bridge mobile chốt dạng dữ liệu dialog/popup `ui.overlay*`; module không phải đổi code).
