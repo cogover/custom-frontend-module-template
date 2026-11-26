@@ -94,7 +94,7 @@ import type { FederationComponentProps, FormBuilderScript } from '@cogover/clien
 ## 6. Kiểm tra trước khi bàn giao
 
 1. Kiểm tra đường dẫn expose, file đích và chữ hoa/thường khớp với đường dẫn được cấu hình trên Form Builder.
-2. Chạy Prettier, ESLint và TypeScript cho phần thay đổi; kiểm tra dependencies của hook nếu có.
+2. Chạy Prettier, lint (`npm run lint`, Oxlint) và TypeScript cho phần thay đổi; kiểm tra dependencies của hook nếu có.
 3. Kiểm thử hành vi có sửa: thiếu API/thành phần, cập nhật trường hoặc ô, refresh bản ghi và lỗi được trả về component. Không dùng mock để thay thế chính luồng cập nhật đang cần xác nhận.
 4. Build theo yêu cầu của người dùng. Nếu được yêu cầu không build, không chạy build; báo rõ phạm vi đã kiểm tra. Khi build, dùng cấu hình relative base của foundation, không thêm slot cố định.
 5. Nếu bản triển khai báo không tìm thấy remote module, đối chiếu `remoteEntry.js` đang được phục vụ với cấu hình source; không kết luận source sai chỉ vì bản triển khai cũ.

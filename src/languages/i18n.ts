@@ -53,6 +53,7 @@ function getStaticBuildTime() {
         .then((res) => res.json() as Promise<unknown>)
         .then((meta) => {
             const buildTime: unknown = isPlainObject(meta) ? (meta as { buildTime?: unknown }).buildTime : undefined;
+            // eslint-disable-next-line typescript/no-base-to-string -- buildTime đọc từ JSON (số/chuỗi), giữ String() như cũ
             return buildTime === undefined || buildTime === null ? '' : String(buildTime);
         })
         .catch(() => '');

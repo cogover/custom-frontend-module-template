@@ -28,6 +28,7 @@ function parseValue(type: UrlFilterType, raw: string | null) {
 
 function serializeValue(value: unknown) {
     if (Array.isArray(value)) return value.join(',');
+    // eslint-disable-next-line typescript/no-base-to-string -- giá trị filter là chuỗi/số/boolean, giữ String() như cũ
     return value == null ? '' : String(value);
 }
 

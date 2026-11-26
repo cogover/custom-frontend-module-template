@@ -17,8 +17,13 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": ".",
-        "allowJs": true
+        // TypeScript 7 bỏ `baseUrl`: import gốc dự án (`src/...`) khai báo qua `paths` với đường dẫn tương đối
+        "paths": { "*": ["./*"] },
+        "allowJs": true,
+        // TypeScript 7 mặc định `types: []`; `*` giữ hành vi cũ (tự nạp mọi gói @types, vd @types/node cho `process`)
+        "types": ["*"],
+        // TypeScript 7: 1 bộ kiểm tra kiểu thay vì chạy song song mặc định — giảm ~1/2 RAM của tsc/oxlint --type-aware
+        "checkers": 1
     },
     "include": ["src"],
     "references": [

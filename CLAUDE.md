@@ -9,7 +9,7 @@ File này cung cấp hướng dẫn cho Claude Code khi làm việc với reposi
 -   Federation `name: 'customModule'`, `exposes: { './CustomApp': './src/App.tsx' }`, `remotes` rỗng (không tiêu thụ remote nào). Cấu hình nằm trong `vite.config.ts`.
 -   `App.tsx` tự bọc store Redux riêng của module (`ReduxProvider`) và `AppSlugProvider`; ngữ cảnh điều hướng, React Query, `LibraryProvider` của `@cogover/client-sdk` và bố cục trang do nền tảng Cogover cung cấp. Cấu hình nền tảng (ngôn ngữ, theme, workspace, người dùng, app) đọc qua `useLibrary()`; không đọc store hay biến toàn cục của nền tảng. Các provider còn lại chỉ phục vụ **chế độ dev standalone**.
 -   Routing dùng **path TƯƠNG ĐỐI** (không leading slash) vì nền tảng Cogover quản lý phần đường dẫn bên ngoài module.
--   Đã loại bỏ FontAwesome khỏi code dự án; eslint chặn cứng import `@fortawesome/*`.
+-   Đã loại bỏ FontAwesome khỏi code dự án; lint (Oxlint) chặn cứng import `@fortawesome/*`.
 
 ## Chọn workspace khi chạy trên máy
 
@@ -76,10 +76,10 @@ Dùng cùng một bản build ở nhiều slot là lợi ích đi kèm. Không b
 ## Convention chính
 
 -   Styling: design token (`text-typo-primary`, `bg-background-default`, `border-divider-primary`…), spacing `rem`, typography `prose-*`, gom class bằng `cx` (`src/utils/cx`).
--   CẤM import `@fortawesome/*` (eslint error). Khi cần icon, dùng icon của `@cogover/client-sdk` (`InfoCircleIcon`, `EllipsisVerticalIcon`, `SortIcon`…); chỉ dùng asset SVG thuộc dự án khi SDK chưa có icon phù hợp.
+-   CẤM import `@fortawesome/*` (lỗi lint). Khi cần icon, dùng icon của `@cogover/client-sdk` (`InfoCircleIcon`, `EllipsisVerticalIcon`, `SortIcon`…); chỉ dùng asset SVG thuộc dự án khi SDK chưa có icon phù hợp.
 -   Chỉ import từ `@cogover/client-sdk` (gốc); không import đường dẫn con (`@cogover/client-sdk/ui`, `/data`, `/provider`, `/http`) vì nền tảng chỉ chia sẻ gói gốc — import con sẽ bị đóng gói thêm một bản SDK riêng vào bundle của module. Riêng `@cogover/client-sdk/styles.css` giữ nguyên.
 -   Màn danh sách (header, bảng, phân trang, panel lọc): làm theo [skill custom-module-list-page](.agents/skills/custom-module-list-page/SKILL.md).
--   Ngày giờ hiển thị theo cài đặt workspace qua `useListDateTimeFormat()` (`src/hooks`); eslint chặn chuỗi định dạng ngày giờ viết cứng.
+-   Ngày giờ hiển thị theo cài đặt workspace qua `useListDateTimeFormat()` (`src/hooks`); lint chặn chuỗi định dạng ngày giờ viết cứng (rule `cogover/no-datetime-format-literal` trong `oxlint-plugins/cogover-module-rules.js`).
 -   **Bắt buộc** dùng component `Link` nội bộ cho liên kết điều hướng trong cả page và chế độ dev: `import Link from 'src/components/Link';`; điều hướng bằng code dùng `import useNavigate from 'src/hooks/useNavigate';`. Không import `Link`/`useNavigate` trực tiếp từ `react-router-dom`, không dùng `<a href>`, `window.open` hay `window.location` cho điều hướng nội bộ (mở tab mới dùng `target='_blank'` trên `Link`; link ngoài `https://`/`mailto:`/`tel:` cũng dùng `Link`, ví dụ `<Link to='https://…' target='_blank'>`, không dùng `window.open`/`window.location` kể cả link ngoài) và không tự nối app slug (định danh ứng dụng trong URL); `Link` và `useNavigate` nội bộ xử lý phần này, đồng thời báo nền tảng Cogover trước khi điều hướng để ứng dụng mobile tự mở trang đích.
--   Chạy trên mobile: tuân theo quy tắc M1–M7 tại [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#11-chạy-trên-mobile); eslint chặn kênh nội bộ của trang nhúng/ứng dụng mobile (M1), `alert`/`confirm`/`prompt`/`window.print` (M5) và chiều cao theo màn hình, `position: fixed` trong `src/components` (M4).
--   `npm run build` = `tsc && vite build`; eslint chỉ chạy lúc `serve` (gate trong `vite.config.ts`), build dùng `npm run lint` riêng.
+-   Chạy trên mobile: tuân theo quy tắc M1–M7 tại [custom-module-foundation](.agents/skills/custom-module-foundation/SKILL.md#11-chạy-trên-mobile); lint chặn kênh nội bộ của trang nhúng/ứng dụng mobile (M1), `alert`/`confirm`/`prompt`/`window.print` (M5) và chiều cao theo màn hình, `position: fixed` trong `src/components` (M4).
+-   `npm run build` = `tsc && vite build` (TypeScript 7); lint chạy riêng bằng `npm run lint` (Oxlint `--type-aware`, cấu hình `.oxlintrc.json`, quy tắc riêng của module trong `oxlint-plugins/cogover-module-rules.js`, test `node --test scripts/test-lint-mobile-rules.mjs`).

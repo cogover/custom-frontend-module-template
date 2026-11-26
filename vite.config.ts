@@ -1,7 +1,4 @@
 import react from '@vitejs/plugin-react-swc';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import eslintPlugin from 'vite-plugin-eslint';
 import path from 'path';
 import { defineConfig, loadEnv, ProxyOptions } from 'vite';
 import type { ClientRequest, IncomingMessage } from 'node:http';
@@ -89,16 +86,6 @@ export default defineConfig(({ command, mode }) => {
                     'dayjs',
                 ],
             }),
-            // Chỉ lint khi dev (serve) — tránh xung đột với virtual module của federation lúc build.
-            // Lint khi build/CI dùng riêng `npm run lint`.
-            command === 'serve' &&
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                eslintPlugin({
-                    cache: false,
-                    include: ['./src/**/*.js', './src/**/*.jsx', './src/**/*.ts', './src/**/*.tsx'],
-                    exclude: [],
-                    failOnError: false,
-                }),
             federationDev(exposes),
         ].filter(Boolean),
         server: {
